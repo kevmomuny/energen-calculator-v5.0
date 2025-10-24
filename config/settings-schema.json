@@ -1,0 +1,74 @@
+{
+  "version": "4.5.0",
+  "schema": {
+    "excelDefaults": {
+      "description": "Baseline from Excel - Never modified",
+      "labor": {
+        "standardRate": 191,
+        "overtimeRate": 255.50,
+        "doubleTimeRate": 400,
+        "nonContractRate": 200,
+        "shopRate": 175
+      },
+      "materials": {
+        "oilPricePerGallon": 16,
+        "coolantPricePerGallon": 15,
+        "filters": {
+          "small": 45,
+          "medium": 85,
+          "large": 125
+        }
+      },
+      "markups": {
+        "parts": 1.20,
+        "oil": 1.50,
+        "coolant": 1.50,
+        "freight": 1.05,
+        "admin": 0.03
+      },
+      "travel": {
+        "mileageRate": 2.50,
+        "minimumCharge": 150
+      },
+      "tax": {
+        "defaultRate": 0.1025,
+        "environmentalFee": 35,
+        "permitFee": 250
+      }
+    },
+    "clientProfiles": {
+      "description": "Saved client-specific settings",
+      "example": {
+        "clientId": "CRM-12345",
+        "name": "Cal Fire",
+        "settings": {
+          "taxOverride": 0.0775,
+          "preferredServices": ["A", "B", "E"],
+          "contractTerms": "NET30",
+          "specialRates": {}
+        }
+      }
+    },
+    "bidMetadata": {
+      "description": "Embedded in each PDF",
+      "structure": {
+        "bidId": "string",
+        "timestamp": "ISO8601",
+        "version": "semver",
+        "baseProfile": "clientId or 'default'",
+        "settingsHash": "sha256",
+        "settings": "encrypted JSON",
+        "audit": {
+          "createdBy": "userId",
+          "approvedBy": "userId",
+          "modifications": []
+        }
+      }
+    }
+  },
+  "encryption": {
+    "algorithm": "AES-256-GCM",
+    "keyDerivation": "PBKDF2",
+    "iterations": 100000
+  }
+}

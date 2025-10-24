@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Selection Modal - Test</title>
+    
+    <!-- Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
+    
+    <!-- Contact Modal Styles -->
+    <link rel="stylesheet" href="styles/contact-modal.css">
+    
+    <style>
+        :root {
+            --bg-primary: #0a0b0d;
+            --bg-secondary: #12141a;
+            --bg-tertiary: #1a1d26;
+            --bg-elevated: #22252f;
+            --text-primary: #e4e6eb;
+            --text-secondary: #9ca3af;
+            --text-tertiary: #6b7280;
+            --accent-blue: #3b82f6;
+            --accent-electric: #60a5fa;
+            --accent-success: #10b981;
+            --border-subtle: #1f2937;
+        }
+        
+        body {
+            font-family: 'SF Mono', Monaco, monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 40px;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: var(--accent-electric);
+            margin-bottom: 20px;
+        }
+        
+        .test-section {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: var(--accent-electric);
+        }
+        
+        .logo-picker-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-picker-modal.active {
+            display: flex;
+        }
+        
+        .logo-picker-content {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .logo-picker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo-picker-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .logo-picker-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Contact Selection Modal Test</h1>
+        
+        <div class="test-section">
+            <h2 style="color: var(--text-primary); margin-bottom: 15px;">Test Scenarios</h2>
+            <button onclick="testWithContacts()">Test with Sample Contacts</button>
+            <button onclick="testWithNoContacts()">Test with No Contacts</button>
+            <button onclick="testWithPhotos()">Test with Contact Photos</button>
+        </div>
+        
+        <div class="test-section">
+            <h2 style="color: var(--text-primary); margin-bottom: 15px;">Contact Manager Status</h2>
+            <div id="status" style="font-size: 12px; color: var(--text-secondary);"></div>
+        </div>
+    </div>
+    
+    <!-- Contact Picker Modal -->
+    <div class="logo-picker-modal" id="contactPickerModal">
+        <div class="logo-picker-content">
+            <div class="logo-picker-header">
+                <h3 class="logo-picker-title">Select Primary Contact</h3>
+                <button class="logo-picker-close" onclick="closeContactPicker()">✕</button>
+            </div>
+            <div class="contact-grid" id="contactGrid">
+                <!-- Contact options will be populated here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script type="module">
+        import { contactService } from './services/contact-service.js';
+        import { contactSelector } from './services/contact-selector.js';
+        
+        // Make available globally for test functions
+        window.contactService = contactService;
+        window.contactSelector = contactSelector;
+        
+        // Initialize
+        updateStatus();
+    </script>
+    
+    <script src="./js/contact-manager.js"></script>
+    
+    <script>
+        function updateStatus() {
+            const status = document.getElementById('status');
+            const manager = window.contactManager;
+            
+            if (manager) {
+                const contacts = manager.getAllContacts();
+                status.innerHTML = `
+                    <div>Contact Manager: ✅ Loaded</div>
+                    <div>Total Contacts: ${contacts.length}</div>
+                    <div>Primary Contact: ${manager.getPrimaryContact()?.name || 'None'}</div>
+                `;
+            } else {
+                status.innerHTML = '<div>Contact Manager: ❌ Not loaded</div>';
+            }
+        }
+        
+        function testWithContacts() {
+            const manager = window.contactManager;
+            
+            // Clear existing
+            manager.contacts = [];
+            
+            // Add sample contacts
+            manager.addContact({
+                name: 'John Doe',
+                company: 'Acme Corporation',
+                email: 'john.doe@acme.com',
+                phone: '(555) 123-4567',
+                title: 'Facilities Manager'
+            });
+            
+            manager.addContact({
+                name: 'Jane Smith',
+                company: 'Acme Corporation',
+                email: 'jane.smith@acme.com',
+                phone: '(555) 987-6543',
+                title: 'Operations Director'
+            });
+            
+            manager.addContact({
+                name: 'Bob Johnson',
+                company: 'Acme Corporation',
+                email: 'bob.johnson@acme.com',
+                phone: '(555) 456-7890',
+                title: 'Site Supervisor'
+            });
+            
+            updateStatus();
+            
+            // Show modal
+            window.contactSelector.showSelector(
+                'Acme Corporation',
+                'acme.com',
+                null,
+                (contact) => {
+                    alert(`Selected: ${contact.name}`);
+                    updateStatus();
+                }
+            );
+        }
+        
+        function testWithNoContacts() {
+            const manager = window.contactManager;
+            manager.contacts = [];
+            updateStatus();
+            
+            // Show modal with no contacts
+            window.contactSelector.showSelector(
+                'Empty Company',
+                'empty.com',
+                null,
+                (contact) => {
+                    alert(`Selected: ${contact.name}`);
+                    updateStatus();
+                }
+            );
+        }
+        
+        function testWithPhotos() {
+            const manager = window.contactManager;
+            manager.contacts = [];
+            
+            // Add contacts with photo URLs
+            manager.addContact({
+                name: 'Alice Wonder',
+                company: 'Tech Corp',
+                email: 'alice@techcorp.com',
+                phone: '(555) 111-2222',
+                title: 'CEO',
+                photoUrl: 'https://ui-avatars.com/api/?name=AW&background=667eea&color=fff&size=200&bold=true'
+            });
+            
+            manager.addContact({
+                name: 'Charlie Brown',
+                company: 'Tech Corp',
+                email: 'charlie@techcorp.com',
+                phone: '(555) 333-4444',
+                title: 'CTO',
+                photoUrl: 'https://ui-avatars.com/api/?name=CB&background=f093fb&color=fff&size=200&bold=true'
+            });
+            
+            updateStatus();
+            
+            // Show modal
+            window.contactSelector.showSelector(
+                'Tech Corp',
+                'techcorp.com',
+                null,
+                (contact) => {
+                    alert(`Selected: ${contact.name}`);
+                    updateStatus();
+                }
+            );
+        }
+        
+        function closeContactPicker() {
+            document.getElementById('contactPickerModal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

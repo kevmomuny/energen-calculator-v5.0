@@ -1,0 +1,23 @@
+{
+  "bug_id": "service-c-selection-1761191888399",
+  "workflow_id": "service-c-selection",
+  "category": "missing_ui_element",
+  "priority": 85,
+  "evidence": {
+    "workflow_id": "service-c-selection",
+    "started_at": "2025-10-23T03:58:05.930Z",
+    "steps": [],
+    "screenshots": [
+      {
+        "filename": "service-c-selection-FAILURE-1761191888398.png",
+        "path": "C:\\ECalc\\active\\energen-calculator-v5.0\\agent-coordination\\evidence\\service-c-selection-FAILURE-1761191888398.png",
+        "timestamp": "2025-10-23T03:58:08.399Z"
+      }
+    ],
+    "console_logs": [],
+    "failed_at": "2025-10-23T03:58:08.301Z",
+    "duration_ms": 2371,
+    "error": "Error: Service checkbox not found: #serviceC\n    at <anonymous>:3:30\n    at <anonymous>:7:9"
+  },
+  "discovered_at": "2025-10-23T05:46:27.491Z"
+}

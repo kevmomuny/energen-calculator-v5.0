@@ -1,0 +1,19 @@
+{
+  "bug_id": "api-get-api-health-comprehensive-1761191876679",
+  "workflow_id": "api-get-api-health-comprehensive",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "analyzed_at": "2025-10-23T16:10:42.268Z",
+  "root_cause": "API endpoint returning error or not found",
+  "confidence": 50,
+  "recommended_fix": "Debug existing endpoint error handling",
+  "files_affected": [
+    "src/api/server-secure.cjs"
+  ],
+  "requires_human_review": true,
+  "verification_details": [
+    "✓ Parsed endpoint: GET /api/health/comprehensive",
+    "✓ Server file exists",
+    "⚠️ Endpoint /api/health/comprehensive EXISTS but returns error - needs debugging"
+  ]
+}

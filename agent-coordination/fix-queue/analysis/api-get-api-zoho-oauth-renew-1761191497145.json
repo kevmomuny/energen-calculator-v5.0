@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-get-api-zoho-oauth-renew-1761191497145",
+  "workflow_id": "api-get-api-zoho-oauth-renew",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-get-api-zoho-oauth-renew",
+    "started_at": "2025-10-23T03:51:37.143Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T03:51:37.145Z",
+    "duration_ms": 2,
+    "error": "request to http://localhost:3002/api/zoho/oauth/renew failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.433Z"
+}

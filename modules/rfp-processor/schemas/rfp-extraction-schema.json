@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RFP Extraction Schema",
+  "description": "Schema for data extracted from RFP/RFQ documents",
+  "type": "object",
+  "properties": {
+    "bidNumber": {
+      "type": "string",
+      "description": "Unique bid/RFP number"
+    },
+    "projectName": {
+      "type": "string",
+      "description": "Name or title of the project"
+    },
+    "agency": {
+      "type": "string",
+      "description": "Agency or organization issuing the RFP"
+    },
+    "dueDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Bid submission deadline"
+    },
+    "services": {
+      "type": "array",
+      "description": "List of services requested",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "estimatedDuration": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": ["bidNumber", "projectName", "services"]
+}

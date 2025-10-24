@@ -1,0 +1,99 @@
+# llms.txt - Energen Calculator v5.0
+# Structured information for LLM consumption
+
+## System Overview
+name: Energen Calculator v5.0
+type: Commercial Service Pricing Calculator
+company: Energen Systems Inc.
+domain: Emergency Generator Maintenance
+
+## Architecture
+backend: Node.js Express
+frontend: Vanilla JS with Webpack
+database: None (stateless)
+apis: Google Maps, CDTFA Tax, Zoho CRM
+
+## Core Endpoints
+POST /api/calculate - Main calculation engine
+POST /api/generate-pdf - PDF generation
+POST /api/zoho/create-quote - CRM integration
+GET /api/tax-rate - California tax lookup
+GET /health - System status
+
+## Data Flow
+1. User inputs generator specs and services
+2. System calculates labor, parts, fluids
+3. Applies mobilization stacking discounts
+4. Fetches real-time tax rate
+5. Generates PDF quote
+6. Optionally syncs to Zoho CRM
+
+## Key Files
+src/api/server-secure.cjs - Main server
+src/api/complete-calculation-engine.cjs - Pricing logic
+frontend/integrated-ui.html - Complete UI
+modules/@energen/* - Modular components
+
+## Services Offered
+A: Comprehensive Inspection
+B: Oil & Filter Service
+C: Coolant Service
+D: Fluid Analysis
+E: Load Bank Testing
+F: Diesel Engine Tune-Up
+G: Gas Engine Tune-Up
+H: Electrical Testing
+I: Transfer Switch Service
+J: Thermal Imaging
+
+## Pricing Constants
+Labor Rate: $191/hour
+Oil: $16/gallon (50% markup)
+Coolant: $15/gallon (50% markup)
+Mileage: $2.50/mile
+Parts Markup: 20%
+Freight: 5%
+
+## Generator Categories
+2-14 kW: Residential
+15-30 kW: Small Commercial
+35-150 kW: Medium Commercial
+155-250 kW: Large Commercial
+255-400 kW: Industrial Small
+405-500 kW: Industrial Medium
+505-670 kW: Industrial Large
+675-1050 kW: Data Center
+1055-1500 kW: Major Facility
+1500-2050 kW: Campus/Complex
+
+## Validation Rules
+kW: 10-5000
+Distance: 0-1000 miles
+Contract: 1-60 months
+Services: Minimum 1 required
+ZIP: 5 digits required
+State: 2 letter code
+
+## Integration Requirements
+Google API: Single key for all services
+Zoho: OAuth2 with refresh token
+Tax API: CDTFA for California
+PDF: 8-component professional format
+
+## Known Issues
+Port Mismatch: Frontend expects 3002, backend runs 3002
+Service K: UI exists, no backend logic
+CUSTOM Service: UI exists, no pricing logic
+
+## Development Status
+Core Services A-J: 100% Complete
+PDF Generation: 100% Complete
+Zoho Integration: 100% Complete
+Tax Calculation: 100% Complete
+Services K & CUSTOM: 0% Complete
+
+## Contact
+Company: Energen Systems Inc.
+Location: Northern California
+Established: 1987 (as Western Machine Mechanical)
+Rebranded: 2024 (as Energen Systems)

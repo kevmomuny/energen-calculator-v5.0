@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-get-api-config-google-maps-key-1761193315659",
+  "workflow_id": "api-get-api-config-google-maps-key",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-get-api-config-google-maps-key",
+    "started_at": "2025-10-23T04:21:55.656Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T04:21:55.659Z",
+    "duration_ms": 3,
+    "error": "request to http://localhost:3002/api/config/google-maps-key failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.414Z"
+}

@@ -1,0 +1,19 @@
+{
+  "bug_id": "api-get-api-zoho-oauth-callback-1761193315934",
+  "workflow_id": "api-get-api-zoho-oauth-callback",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "analyzed_at": "2025-10-23T16:14:06.845Z",
+  "root_cause": "API endpoint returning error or not found",
+  "confidence": 50,
+  "recommended_fix": "Debug existing endpoint error handling",
+  "files_affected": [
+    "src/api/server-secure.cjs"
+  ],
+  "requires_human_review": true,
+  "verification_details": [
+    "✓ Parsed endpoint: GET /api/zoho/oauth/callback",
+    "✓ Server file exists",
+    "⚠️ Endpoint /api/zoho/oauth/callback EXISTS but returns error - needs debugging"
+  ]
+}

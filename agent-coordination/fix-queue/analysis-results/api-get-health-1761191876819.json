@@ -1,0 +1,19 @@
+{
+  "bug_id": "api-get-health-1761191876819",
+  "workflow_id": "api-get-health",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "analyzed_at": "2025-10-23T16:14:54.983Z",
+  "root_cause": "API endpoint returning error or not found",
+  "confidence": 50,
+  "recommended_fix": "Debug existing endpoint error handling",
+  "files_affected": [
+    "src/api/server-secure.cjs"
+  ],
+  "requires_human_review": true,
+  "verification_details": [
+    "✓ Parsed endpoint: GET /health",
+    "✓ Server file exists",
+    "⚠️ Endpoint /health EXISTS but returns error - needs debugging"
+  ]
+}

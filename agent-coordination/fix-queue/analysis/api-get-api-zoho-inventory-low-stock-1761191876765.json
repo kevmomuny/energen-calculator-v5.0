@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-get-api-zoho-inventory-low-stock-1761191876765",
+  "workflow_id": "api-get-api-zoho-inventory-low-stock",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-get-api-zoho-inventory-low-stock",
+    "started_at": "2025-10-23T03:57:56.763Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T03:57:56.765Z",
+    "duration_ms": 2,
+    "error": "request to http://localhost:3002/api/zoho/inventory/low-stock failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.430Z"
+}

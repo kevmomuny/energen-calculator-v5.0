@@ -1,0 +1,49 @@
+# Ignore non-code files for context
+node_modules/
+*.log
+*.md
+*.txt
+*.json
+*.html
+*.css
+test-*.html
+test-*.cjs
+*.test.js
+*.spec.js
+
+# Include only production code
+!package.json
+!.env.example
+!src/api/*.cjs
+!src/api/*.js
+!frontend/js/*.js
+!frontend/modules/*.js
+!modules/**/*.js
+!modules/**/*.cjs
+
+# Exclude build and output
+dist/
+build/
+output/
+logs/
+coverage/
+
+# Exclude documentation
+docs/
+*.pdf
+*.docx
+*.xlsx
+
+# Exclude test files
+tests/
+__tests__/
+*.test.*
+*.spec.*
+
+# Exclude temporary files
+*.tmp
+*.bak
+*.swp
+*~
+.DS_Store
+Thumbs.db

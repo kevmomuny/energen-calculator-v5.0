@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Display Test</title>
+    <style>
+        body {
+            background: #0a0b0d;
+            color: #e4e6eb;
+            font-family: monospace;
+            padding: 20px;
+        }
+        #units-container {
+            min-height: 200px;
+            border: 2px dashed rgba(255,255,255,0.2);
+            padding: 10px;
+            margin: 20px 0;
+        }
+        .unit-container {
+            background: #1a1d26;
+            border: 1px solid #1f2937;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        .status {
+            padding: 10px;
+            background: #22252f;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Unit Display Test</h1>
+
+    <div class="status" id="status">Waiting...</div>
+
+    <div id="units-container">
+        <div style="color: #9ca3af; text-align: center;">Loading units...</div>
+    </div>
+
+    <button onclick="addTestUnit()">Add Test Unit</button>
+
+    <script>
+        let unitCounter = 1;
+
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+            console.log('Status:', message);
+        }
+
+        function addTestUnit() {
+            updateStatus('Adding test unit...');
+
+            const container = document.getElementById('units-container');
+            if (!container) {
+                updateStatus('ERROR: Container not found!');
+                return;
+            }
+
+            // Clear loading message
+            if (container.querySelector('div') && container.querySelector('div').innerText === 'Loading units...') {
+                container.innerHTML = '';
+            }
+
+            const unitId = 'unit-' + unitCounter++;
+            const unitHtml = `
+                <div class="unit-container" id="${unitId}">
+                    <h3>Unit ${unitCounter - 1}</h3>
+                    <p>kW: 150</p>
+                    <p>Brand: Test Generator</p>
+                    <p>Services: A, B, C</p>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', unitHtml);
+            updateStatus(`Added Unit ${unitCounter - 1}`);
+        }
+
+        // Auto-add a unit on load
+        window.onload = function() {
+            updateStatus('Page loaded, adding initial unit...');
+            setTimeout(() => {
+                addTestUnit();
+            }, 500);
+        };
+    </script>
+</body>
+</html>

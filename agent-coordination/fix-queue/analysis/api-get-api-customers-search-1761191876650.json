@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-get-api-customers-search-1761191876650",
+  "workflow_id": "api-get-api-customers-search",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-get-api-customers-search",
+    "started_at": "2025-10-23T03:57:56.648Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T03:57:56.650Z",
+    "duration_ms": 2,
+    "error": "request to http://localhost:3002/api/customers/search failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.415Z"
+}

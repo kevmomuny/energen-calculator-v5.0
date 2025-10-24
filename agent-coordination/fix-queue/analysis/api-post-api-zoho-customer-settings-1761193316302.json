@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-post-api-zoho-customer-settings-1761193316302",
+  "workflow_id": "api-post-api-zoho-customer-settings",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-post-api-zoho-customer-settings",
+    "started_at": "2025-10-23T04:21:56.300Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T04:21:56.302Z",
+    "duration_ms": 2,
+    "error": "request to http://localhost:3002/api/zoho/customer-settings failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.477Z"
+}

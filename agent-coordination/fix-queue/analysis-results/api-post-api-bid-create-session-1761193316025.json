@@ -1,0 +1,20 @@
+{
+  "bug_id": "api-post-api-bid-create-session-1761193316025",
+  "workflow_id": "api-post-api-bid-create-session",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "analyzed_at": "2025-10-23T16:15:37.113Z",
+  "root_cause": "API endpoint returning error or not found",
+  "confidence": 90,
+  "recommended_fix": "Implement missing endpoint",
+  "files_affected": [
+    "src/api/server-secure.cjs"
+  ],
+  "requires_human_review": false,
+  "verification_details": [
+    "✓ Parsed endpoint: POST /api/bid/create/session",
+    "✓ Server file exists",
+    "✓ Endpoint /api/bid/create/session MISSING - needs implementation",
+    "✓ Found 42 similar POST endpoints as templates"
+  ]
+}

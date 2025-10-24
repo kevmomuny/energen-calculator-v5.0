@@ -1,0 +1,22 @@
+{
+  "bug_id": "multi-unit-quote-creation-1761191498017",
+  "workflow_id": "multi-unit-quote-creation",
+  "timestamp": "2025-10-23T04:53:39.131Z",
+  "patches": [
+    {
+      "note": "Manual fix required - strategy add_multi_unit_button not auto-fixable",
+      "requires_manual_intervention": true,
+      "file": "frontend/integrated-ui.html",
+      "description": "Missing UI element: #openMultiUnitModal"
+    }
+  ],
+  "fix_type": "add_multi_unit_button",
+  "confidence": 90,
+  "requires_human_review": false,
+  "file": "multi-unit-quote-creation-1761191498017.json",
+  "validated_at": "2025-10-23T05:37:30.354Z",
+  "validated_by": "Branch-Validator-Agent",
+  "tests_passed": false,
+  "failure_reason": "Tests failed on isolated branch",
+  "requires_manual_review": true
+}

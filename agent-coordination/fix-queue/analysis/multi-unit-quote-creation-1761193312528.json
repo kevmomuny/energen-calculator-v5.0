@@ -1,0 +1,23 @@
+{
+  "bug_id": "multi-unit-quote-creation-1761193312528",
+  "workflow_id": "multi-unit-quote-creation",
+  "category": "missing_ui_element",
+  "priority": 75,
+  "evidence": {
+    "workflow_id": "multi-unit-quote-creation",
+    "started_at": "2025-10-23T04:21:51.165Z",
+    "steps": [],
+    "screenshots": [
+      {
+        "filename": "multi-unit-quote-creation-FAILURE-1761193312524.png",
+        "path": "C:\\ECalc\\active\\energen-calculator-v5.0\\agent-coordination\\evidence\\multi-unit-quote-creation-FAILURE-1761193312524.png",
+        "timestamp": "2025-10-23T04:21:52.528Z"
+      }
+    ],
+    "console_logs": [],
+    "failed_at": "2025-10-23T04:21:52.316Z",
+    "duration_ms": 1151,
+    "error": "Error: Multi-unit button not found: #openMultiUnitModal\n    at <anonymous>:3:25\n    at <anonymous>:6:9"
+  },
+  "discovered_at": "2025-10-23T05:46:27.488Z"
+}

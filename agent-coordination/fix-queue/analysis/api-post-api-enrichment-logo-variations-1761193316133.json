@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-post-api-enrichment-logo-variations-1761193316133",
+  "workflow_id": "api-post-api-enrichment-logo-variations",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-post-api-enrichment-logo-variations",
+    "started_at": "2025-10-23T04:21:56.131Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T04:21:56.133Z",
+    "duration_ms": 2,
+    "error": "request to http://localhost:3002/api/enrichment/logo-variations failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.457Z"
+}

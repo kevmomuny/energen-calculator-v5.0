@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Settings Live Update - Energen v5.0</title>
+    <style>
+        body {
+            background: #0f0f0f;
+            color: #e4e6eb;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .test-section {
+            background: #1a1a1a;
+            border: 1px solid #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .unit-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: #9ca3af;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            background: #0a0a0a;
+            border: 1px solid #2d2d2d;
+            color: #e4e6eb;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .service-item {
+            background: #0a0a0a;
+            border: 1px solid #2d2d2d;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .service-item:hover {
+            border-color: #2563eb;
+            background: #1a1a1a;
+        }
+
+        .service-item.selected {
+            background: #1e293b;
+            border-color: #2563eb;
+        }
+
+        .service-item input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .price-display {
+            background: #0a0a0a;
+            border: 1px solid #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #2d2d2d;
+        }
+
+        .price-row:last-child {
+            border-bottom: none;
+            font-size: 20px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .settings-bar {
+            background: #1a1a1a;
+            border: 1px solid #2d2d2d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .settings-item label {
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+        .settings-item input {
+            background: #0a0a0a;
+            border: 1px solid #2d2d2d;
+            color: #e4e6eb;
+            padding: 5px 10px;
+            border-radius: 4px;
+            width: 80px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+
+        .status-message {
+            background: #065f46;
+            color: #6ee7b7;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .status-message.error {
+            background: #7f1d1d;
+            color: #fca5a5;
+        }
+
+        .status-message.show {
+            display: block;
+        }
+
+        .log-section {
+            background: #0a0a0a;
+            border: 1px solid #2d2d2d;
+            padding: 15px;
+            border-radius: 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            background: #1a1a1a;
+            border-left: 3px solid #2563eb;
+        }
+
+        .log-entry.error {
+            border-left-color: #ef4444;
+        }
+
+        .log-entry.success {
+            border-left-color: #10b981;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Settings Live Update Test - Energen v5.0</h1>
+            <p>Test that changing settings immediately updates all calculated prices</p>
+        </div>
+
+        <!-- Quick Settings Bar -->
+        <div class="settings-bar">
+            <div class="settings-item">
+                <label>Labor Rate:</label>
+                <input type="number" id="quickLaborRate" value="191" step="1">
+            </div>
+            <div class="settings-item">
+                <label>Oil Price:</label>
+                <input type="number" id="quickOilPrice" value="10.54" step="0.01">
+            </div>
+            <div class="settings-item">
+                <label>Oil Markup:</label>
+                <input type="number" id="quickOilMarkup" value="1.5" step="0.1">
+            </div>
+            <div class="settings-item">
+                <label>Tax Rate:</label>
+                <input type="number" id="quickTaxRate" value="0.0775" step="0.0001">
+            </div>
+            <button class="btn" onclick="applyQuickSettings()">Apply Settings</button>
+            <button class="btn" onclick="openFullSettings()">Full Settings</button>
+        </div>
+
+        <div class="test-section">
+            <h2>Generator Unit Configuration</h2>
+            <div class="unit-form">
+                <div class="form-group">
+                    <label>Generator Size (kW)</label>
+                    <input type="number" id="kw" value="500" min="10" max="2000">
+                </div>
+                <div class="form-group">
+                    <label>Distance (miles)</label>
+                    <input type="number" id="distance" value="25" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Contract Years</label>
+                    <select id="contractYears">
+                        <option value="1">1 Year</option>
+                        <option value="2">2 Years</option>
+                        <option value="3" selected>3 Years</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Location State</label>
+                    <select id="state">
+                        <option value="CA" selected>California</option>
+                        <option value="NV">Nevada</option>
+                        <option value="AZ">Arizona</option>
+                    </select>
+                </div>
+            </div>
+
+            <h3>Select Services</h3>
+            <div class="service-grid" id="serviceGrid">
+                <!-- Services will be loaded here -->
+            </div>
+
+            <button class="btn" onclick="calculatePricing()">Calculate Pricing</button>
+            <div id="statusMessage" class="status-message"></div>
+        </div>
+
+        <div class="price-display" id="priceDisplay">
+            <h3>Calculated Pricing</h3>
+            <div class="price-row">
+                <span>Labor Cost:</span>
+                <span id="laborCost">$0.00</span>
+            </div>
+            <div class="price-row">
+                <span>Materials Cost:</span>
+                <span id="materialsCost">$0.00</span>
+            </div>
+            <div class="price-row">
+                <span>Travel Cost:</span>
+                <span id="travelCost">$0.00</span>
+            </div>
+            <div class="price-row">
+                <span>Subtotal:</span>
+                <span id="subtotal">$0.00</span>
+            </div>
+            <div class="price-row">
+                <span>Tax:</span>
+                <span id="tax">$0.00</span>
+            </div>
+            <div class="price-row">
+                <span>Total Annual Cost:</span>
+                <span id="totalCost">$0.00</span>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Event Log</h3>
+            <div class="log-section" id="eventLog">
+                <div class="log-entry">System initialized...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load modules -->
+    <script type="module">
+        import { initializeApp } from './init.js'
+        import { api } from './services/api.js'
+
+        window.api = api
+
+        // Service definitions
+        const services = {
+            'A': { name: 'Comprehensive Inspection', freq: 4 },
+            'B': { name: 'Oil & Filter Service', freq: 1 },
+            'C': { name: 'Coolant Service', freq: 0.5 },
+            'D': { name: 'Oil & Fuel Analysis', freq: 1 },
+            'E': { name: 'Load Bank Testing', freq: 1 },
+            'F': { name: 'Engine Tune-Up', freq: 0.33 },
+            'G': { name: 'Gas Engine Tune-Up', freq: 0.33 },
+            'H': { name: 'Generator Electrical Testing', freq: 0.2 },
+            'I': { name: 'Transfer Switch Service', freq: 1 },
+            'J': { name: 'Thermal Imaging Scan', freq: 1 }
+        }
+
+        let currentSettings = JSON.parse(localStorage.getItem('energenSettings') || '{}')
+        let lastCalculation = null
+
+        // Initialize services on page load
+        window.addEventListener('DOMContentLoaded', async () => {
+            await initializeApp()
+            loadServices()
+            loadCurrentSettings()
+            addEventLog('System initialized with v5.0 modules', 'success')
+
+            // Listen for settings updates
+            window.addEventListener('settingsUpdated', (event) => {
+                addEventLog(`Settings updated: ${JSON.stringify(event.detail)}`)
+                if (lastCalculation) {
+                    addEventLog('Auto-recalculating prices...', 'success')
+                    calculatePricing()
+                }
+            })
+        })
+
+        function loadServices() {
+            const grid = document.getElementById('serviceGrid')
+            grid.innerHTML = ''
+
+            Object.entries(services).forEach(([code, service]) => {
+                const div = document.createElement('div')
+                div.className = 'service-item'
+                div.innerHTML = `
+                    <label>
+                        <input type="checkbox" value="${code}" onchange="toggleService(this)">
+                        <strong>${code}:</strong> ${service.name}
+                        <br><small>Frequency: ${service.freq} times/year</small>
+                    </label>
+                `
+                grid.appendChild(div)
+            })
+        }
+
+        function loadCurrentSettings() {
+            if (currentSettings.laborRate) {
+                document.getElementById('quickLaborRate').value = currentSettings.laborRate
+            }
+            if (currentSettings.oilPrice) {
+                document.getElementById('quickOilPrice').value = currentSettings.oilPrice
+            }
+            if (currentSettings.oilMarkup) {
+                document.getElementById('quickOilMarkup').value = currentSettings.oilMarkup
+            }
+            if (currentSettings.taxRate) {
+                document.getElementById('quickTaxRate').value = currentSettings.taxRate
+            }
+        }
+
+        window.toggleService = function(checkbox) {
+            const item = checkbox.closest('.service-item')
+            if (checkbox.checked) {
+                item.classList.add('selected')
+            } else {
+                item.classList.remove('selected')
+            }
+        }
+
+        window.applyQuickSettings = function() {
+            const newSettings = {
+                laborRate: parseFloat(document.getElementById('quickLaborRate').value),
+                oilPrice: parseFloat(document.getElementById('quickOilPrice').value),
+                oilMarkup: parseFloat(document.getElementById('quickOilMarkup').value),
+                taxRate: parseFloat(document.getElementById('quickTaxRate').value)
+            }
+
+            // Save to localStorage
+            const allSettings = { ...currentSettings, ...newSettings }
+            localStorage.setItem('energenSettings', JSON.stringify(allSettings))
+            currentSettings = allSettings
+
+            // Dispatch event to trigger recalculation
+            window.dispatchEvent(new CustomEvent('settingsUpdated', {
+                detail: newSettings
+            }))
+
+            addEventLog(`Applied quick settings: Labor=$${newSettings.laborRate}, Oil=$${newSettings.oilPrice}`, 'success')
+        }
+
+        window.openFullSettings = function() {
+            // Open the full settings modal
+            if (window.state && window.state.modules && window.state.modules.settings) {
+                window.state.modules.settings.open()
+            } else {
+                window.open('./settings-modal-excel-actual.html', 'settings', 'width=1400,height=900')
+            }
+        }
+
+        window.calculatePricing = async function() {
+            const selectedServices = Array.from(document.querySelectorAll('.service-item input:checked'))
+                .map(cb => cb.value)
+
+            if (selectedServices.length === 0) {
+                showStatus('Please select at least one service', 'error')
+                return
+            }
+
+            const data = {
+                kw: parseInt(document.getElementById('kw').value),
+                services: selectedServices,
+                distance: parseFloat(document.getElementById('distance').value),
+                contractYears: parseInt(document.getElementById('contractYears').value),
+                state: document.getElementById('state').value,
+                ...currentSettings // Include current settings
+            }
+
+            try {
+                addEventLog(`Calculating with settings: Labor=$${currentSettings.laborRate || 191}`)
+
+                const result = await api.calculatePricing(data)
+                lastCalculation = data
+
+                // Update display
+                document.getElementById('laborCost').textContent = formatCurrency(result.laborCost || 0)
+                document.getElementById('materialsCost').textContent = formatCurrency(result.materialsCost || 0)
+                document.getElementById('travelCost').textContent = formatCurrency(result.travelCost || 0)
+                document.getElementById('subtotal').textContent = formatCurrency(result.subtotal || 0)
+                document.getElementById('tax').textContent = formatCurrency(result.tax || 0)
+                document.getElementById('totalCost').textContent = formatCurrency(result.total || 0)
+
+                showStatus('Calculation completed successfully', 'success')
+                addEventLog(`Calculation complete: Total=${formatCurrency(result.total)}`, 'success')
+            } catch (error) {
+                console.error('Calculation error:', error)
+                showStatus('Calculation failed: ' + error.message, 'error')
+                addEventLog('Calculation error: ' + error.message, 'error')
+            }
+        }
+
+        window.recalculateAll = function() {
+            if (lastCalculation) {
+                calculatePricing()
+            }
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount || 0)
+        }
+
+        function showStatus(message, type = 'success') {
+            const statusEl = document.getElementById('statusMessage')
+            statusEl.textContent = message
+            statusEl.className = `status-message show ${type}`
+
+            setTimeout(() => {
+                statusEl.classList.remove('show')
+            }, 3000)
+        }
+
+        function addEventLog(message, type = 'info') {
+            const log = document.getElementById('eventLog')
+            const entry = document.createElement('div')
+            entry.className = `log-entry ${type}`
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`
+            log.appendChild(entry)
+            log.scrollTop = log.scrollHeight
+        }
+    </script>
+</body>
+</html>

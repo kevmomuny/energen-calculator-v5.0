@@ -1,0 +1,116 @@
+{
+  "version": "4.5.0",
+  "source": "ServiceCalculator.xlsx - August 13, 2024",
+  "lastUpdated": "2024-08-13T00:00:00Z",
+  "readonly": true,
+  
+  "labor": {
+    "rates": {
+      "standard": 191.00,
+      "overtime": 255.50,
+      "doubleTime": 400.00,
+      "nonContract": 200.00,
+      "emergency": 300.00,
+      "shop": 175.00
+    },
+    "minimums": {
+      "serviceCall": 2,
+      "emergency": 4,
+      "weekend": 4
+    }
+  },
+  
+  "materials": {
+    "fluids": {
+      "oilPerGallon": 16.00,
+      "coolantPerGallon": 15.00,
+      "defPerGallon": 12.00
+    },
+    "filters": {
+      "oil": {
+        "2-30kW": 45.00,
+        "35-150kW": 85.00,
+        "155-500kW": 125.00,
+        "505-1050kW": 185.00,
+        "1055-2050kW": 245.00
+      },
+      "fuel": {
+        "primary": 65.00,
+        "secondary": 45.00,
+        "waterSeparator": 95.00
+      },
+      "air": {
+        "small": 35.00,
+        "medium": 65.00,
+        "large": 95.00
+      }
+    }
+  },
+  
+  "markups": {
+    "parts": 1.20,
+    "fluids": {
+      "oil": 1.50,
+      "coolant": 1.50,
+      "def": 1.35
+    },
+    "freight": 1.05,
+    "admin": 0.03,
+    "emergency": 1.50
+  },
+  
+  "travel": {
+    "mileageRate": 2.50,
+    "zones": {
+      "local": {"miles": 25, "minimum": 0},
+      "regional": {"miles": 50, "minimum": 150},
+      "distant": {"miles": 100, "minimum": 300},
+      "remote": {"miles": 999, "minimum": 500}
+    }
+  },
+  
+  "fees": {
+    "environmental": 35.00,
+    "permit": 250.00,
+    "disposal": {
+      "oil": 3.50,
+      "coolant": 4.50,
+      "filters": 15.00
+    },
+    "emergency": 500.00
+  },
+  
+  "surcharges": {
+    "afterHours": 0.50,
+    "weekend": 0.25,
+    "holiday": 1.00,
+    "emergency": 0.75
+  },
+  
+  "tax": {
+    "california": {
+      "default": 0.1025,
+      "government": 0.0775,
+      "resale": 0.0000
+    }
+  },
+  
+  "escalation": {
+    "annual": 0.03,
+    "fuel": 0.05,
+    "labor": 0.04
+  },
+  
+  "serviceIntervals": {
+    "A": {"months": 3, "description": "Quarterly"},
+    "B": {"months": 12, "description": "Annual"},
+    "C": {"months": 24, "description": "Biennial"},
+    "D": {"months": 12, "description": "Annual"},
+    "E": {"months": 12, "description": "Annual"},
+    "F": {"months": 36, "description": "3-Year"},
+    "G": {"months": 36, "description": "3-Year"},
+    "H": {"months": 60, "description": "5-Year"},
+    "I": {"months": 12, "description": "Annual"},
+    "J": {"months": 12, "description": "Annual"}
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "workflow_id": "api-post-api-calculate",
+  "description": "Test POST /api/calculate",
+  "category": "api",
+  "critical_path": true,
+  "assigned_agent": "api-core-endpoints",
+  "steps": [
+    {
+      "type": "api",
+      "action": "post-request",
+      "endpoint": "/api/calculate",
+      "method": "POST",
+      "validation": "response status 200 or expected status"
+    }
+  ],
+  "expected_duration_ms": 1000,
+  "dependencies": []
+}

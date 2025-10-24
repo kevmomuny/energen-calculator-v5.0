@@ -1,0 +1,23 @@
+{
+  "workflow_id": "zoho-account-sync",
+  "description": "Sync customer account to Zoho CRM",
+  "category": "integration",
+  "critical_path": true,
+  "assigned_agent": "zoho-crm-agent",
+  "steps": [
+    {
+      "type": "integration",
+      "action": "search-account",
+      "service": "zoho-crm",
+      "validation": "account found or created"
+    },
+    {
+      "type": "integration",
+      "action": "verify-account-fields",
+      "service": "zoho-crm",
+      "validation": "all required fields populated"
+    }
+  ],
+  "expected_duration_ms": 3000,
+  "dependencies": []
+}

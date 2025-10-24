@@ -1,0 +1,15 @@
+<!-- Service F/G Template: By Recommendation with Not Included/Add Service Toggle -->
+<!-- Used for: Service F (Fuel System Cleaning), Service G (Turbocharger Overhaul) -->
+<div class="service-card" id="${unitId}-service-${code}" data-fuel-type="${fuelType}">
+    <div class="service-name">${serviceName}</div>
+    <div style="font-size: 9px; color: var(--text-secondary); margin-bottom: 8px;">${serviceDescription}</div>
+    <div class="service-price" id="${unitId}-service-${code}-price">
+        ${priceText}
+    </div>
+    
+    <!-- Not Included / Add Service Toggle -->
+    <div class="frequency-selector">
+        <button class="frequency-btn active" data-freq="0">Not Included</button>
+        <button class="frequency-btn" data-freq="1">Add Service</button>
+    </div>
+</div>

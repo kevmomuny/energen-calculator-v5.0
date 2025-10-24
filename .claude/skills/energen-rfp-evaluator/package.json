@@ -1,0 +1,41 @@
+{
+  "name": "energen-rfp-evaluator",
+  "version": "2.0.0",
+  "description": "Comprehensive RFP evaluation and bid package generation for generator maintenance services",
+  "main": "index.js",
+  "scripts": {
+    "evaluate-rfp": "node scripts/evaluate-rfp.cjs",
+    "generate-bid-scope": "node scripts/generate-rfp-bid-scope.cjs",
+    "fill-forms": "node scripts/fill-rfp-forms.cjs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "rfp",
+    "bid",
+    "generator",
+    "maintenance",
+    "automation"
+  ],
+  "author": "Energen Systems",
+  "license": "PROPRIETARY",
+  "dependencies": {
+    "pdf-parse": "^1.1.1",
+    "xlsx": "^0.18.5",
+    "exceljs": "^4.3.0",
+    "docx": "^8.5.0",
+    "mammoth": "^1.6.0",
+    "sharp": "^0.33.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "os": [
+    "win32",
+    "darwin",
+    "linux"
+  ]
+}

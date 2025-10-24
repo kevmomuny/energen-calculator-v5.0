@@ -1,0 +1,28 @@
+
+    // Upload to Zoho WorkDrive (graceful fail if not configured)
+    try {
+      if (workdriveIntegration && workdriveIntegration.quoteFolderId) {
+        logger.info('[PDF] Uploading to WorkDrive...');
+        
+        const workdriveFile = await workdriveIntegration.uploadPDF(
+          result.filepath,
+          result.filename
+        );
+        
+        logger.info('[PDF] ✅ Uploaded to WorkDrive:', workdriveFile.workdrivePermalink);
+        
+        // Add WorkDrive metadata to response
+        result.workdrive = {
+          fileId: workdriveFile.workdriveFileId,
+          permalink: workdriveFile.workdrivePermalink,
+          size: workdriveFile.workdriveSize,
+          synced: true
+        };
+      } else {
+        logger.info('[PDF] WorkDrive not configured, skipping upload');
+      }
+    } catch (wdError) {
+      logger.warn('[PDF] WorkDrive upload failed (continuing with local copy):', wdError.message);
+      // Don't fail the entire request if WorkDrive fails
+    }
+

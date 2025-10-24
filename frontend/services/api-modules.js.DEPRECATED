@@ -1,0 +1,341 @@
+/**
+ * Production API Modules for Energen Calculator v4.5
+ * Provides clean interfaces to all backend services
+ */
+
+const API_BASE = window.location.hostname === 'localhost'
+    ? 'http://localhost:3002'
+    : window.location.origin;
+
+/**
+ * Calculation Engine Module
+ * Handles all pricing and service calculations
+ */
+export class CalculationEngine {
+    constructor() {
+        this.endpoint = `${API_BASE}/api/calculate`;
+    }
+
+    async calculate(data) {
+        const response = await fetch(this.endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                kw: data.kw,
+                services: data.services,
+                distance: data.distance || 0,
+                unitCount: data.unitCount || 1,
+                address: data.address || '',
+                city: data.city || '',
+                state: data.state || 'CA',
+                zip: data.zip || '',
+                contractYears: data.contractYears || 1,
+                settings: data.settings || window.calculatorSettings || {}
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Calculation failed: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        return {
+            laborHours: parseFloat(result.laborHours) || 0,
+            laborCost: parseFloat(result.labor) || 0,
+            materialsCost: parseFloat(result.parts) || 0,
+            travelCost: parseFloat(result.travel) || 0,
+            shopTime: parseFloat(result.shopTime) || 0,
+            subtotal: parseFloat(result.subtotal) || 0,
+            tax: parseFloat(result.tax) || 0,
+            total: parseFloat(result.annual) || parseFloat(result.total) || 0,
+            breakdown: result.breakdown,
+            services: data.services.map(s => ({
+                code: s,
+                name: window.SERVICES?.[s]?.name || s,
+                price: result.breakdown?.[s]?.total || 0
+            }))
+        };
+    }
+
+    /**
+     * Calculate individual service price using Excel lookup tables
+     * @param {string} serviceCode - Service code (A-F)
+     * @param {number} kw - Generator kW rating
+     * @param {number} frequency - Annual frequency (1, 2, 4, etc.)
+     * @returns {Object} Service pricing details with breakdown
+     */
+    async calculateServicePrice(serviceCode, kw, frequency = 1) {
+        try {
+            const response = await fetch(`${API_BASE}/api/service-price`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    serviceCode,
+                    kw,
+                    frequency,
+                    settings: window.calculatorSettings || {}
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Service price calculation failed: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error('Error calculating service price:', error);
+            // Fallback to simple calculation if API fails
+            const basePrices = {
+                'A': 1000 + (kw * 14.5),
+                'B': 800 + (kw * 10.5),
+                'C': 600 + (kw * 10.5),
+                'D': 300 + (kw * 1.5),
+                'E': 2000 + (kw * 12.5),
+                'F': 1500 + (kw * 13.5)
+            };
+            
+            const base = basePrices[serviceCode] || 1000;
+            const freqMultiplier = { 4: 1.0, 2: 0.9, 1: 0.85 };
+            const annual = Math.round(base * (freqMultiplier[frequency] || 1));
+            
+            return {
+                serviceCode,
+                description: `Service ${serviceCode}`,
+                annual,
+                monthly: Math.round(annual / 12),
+                perInstance: base,
+                frequency
+            };
+        }
+    }
+}
+
+/**
+ * PDF Generator Module
+ * Handles professional PDF generation
+ */
+export class PDFGenerator {
+    constructor() {
+        this.endpoint = `${API_BASE}/api/generate-pdf`;
+    }
+
+    async generate(quoteData) {
+        window.updateStatus?.('Generating PDF...');
+        
+        const response = await fetch(this.endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quoteData })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`PDF generation failed: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            window.updateStatus?.('PDF generated successfully');
+            window.showNotification?.(`PDF created: ${result.filename}`, 'success');
+            
+            // Auto-download if URL provided
+            if (result.url) {
+                const link = document.createElement('a');
+                link.href = `${API_BASE}${result.url}`;
+                link.download = result.filename;
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            
+            return result;
+        } else {
+            throw new Error(result.error || 'PDF generation failed');
+        }
+    }
+}
+
+/**
+ * Zoho CRM Integration Module
+ * Handles CRM synchronization and customer management
+ */
+export class ZohoIntegration {
+    constructor() {
+        this.baseEndpoint = `${API_BASE}/api/zoho`;
+    }
+
+    async syncQuote(data) {
+        window.updateStatus?.('Syncing with Zoho CRM...');
+        
+        const response = await fetch(`${this.baseEndpoint}/create-quote`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Zoho sync failed: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            const syncTime = new Date().toLocaleTimeString();
+            const syncElement = document.getElementById('last-sync');
+            if (syncElement) {
+                syncElement.textContent = syncTime;
+            }
+            
+            window.updateStatus?.('Zoho sync complete');
+            window.showNotification?.('Quote synced to Zoho CRM', 'success');
+            
+            return result;
+        } else {
+            throw new Error(result.error || 'Zoho sync failed');
+        }
+    }
+
+    async searchCustomer(companyName) {
+        const response = await fetch(`${this.baseEndpoint}/search-customer`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ companyName })
+        });
+        
+        if (!response.ok) {
+            console.warn(`Customer search failed: ${response.status}`);
+            return null;
+        }
+        
+        const data = await response.json();
+        return data.success && data.customer ? data.customer : null;
+    }
+
+    async createContact(contactData) {
+        const response = await fetch(`${this.baseEndpoint}/contacts`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(contactData)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Contact creation failed: ${response.status}`);
+        }
+        
+        return await response.json();
+    }
+}
+
+/**
+ * Enrichment Module
+ * Handles data enrichment from various sources
+ */
+export class EnrichmentService {
+    constructor() {
+        this.baseEndpoint = `${API_BASE}/api/enrichment`;
+    }
+
+    async enrichCompany(query, address) {
+        const response = await fetch(`${this.baseEndpoint}/google-places`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query, address })
+        });
+        
+        if (!response.ok) {
+            console.warn(`Enrichment failed: ${response.status}`);
+            return null;
+        }
+        
+        const data = await response.json();
+        return data.success ? data.data : null;
+    }
+
+    async calculateDistance(origin, destination) {
+        const response = await fetch(`${this.baseEndpoint}/distance`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ origin, destination })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Distance calculation failed: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && typeof data.distance === 'number') {
+            return data.distance;
+        } else {
+            throw new Error('Invalid distance response');
+        }
+    }
+
+    async fetchLogo(domain, companyName) {
+        const response = await fetch(`${this.baseEndpoint}/logo`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ domain, companyName })
+        });
+        
+        if (!response.ok) {
+            console.warn(`Logo fetch failed: ${response.status}`);
+            return null;
+        }
+        
+        return await response.json();
+    }
+
+    async getTaxRate(zip) {
+        const response = await fetch(`${this.baseEndpoint}/tax-rate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ zip })
+        });
+        
+        if (!response.ok) {
+            console.warn(`Tax rate fetch failed: ${response.status}`);
+            return { taxRate: 10.25 }; // Default California rate
+        }
+        
+        return await response.json();
+    }
+}
+
+/**
+ * Module Factory
+ * Creates and manages all API modules
+ */
+export class ModuleFactory {
+    static createModules() {
+        return {
+            calc: new CalculationEngine(),
+            pdf: new PDFGenerator(),
+            zoho: new ZohoIntegration(),
+            enrichment: new EnrichmentService()
+        };
+    }
+
+    static async initializeModules() {
+        const modules = ModuleFactory.createModules();
+        
+        // Test connectivity
+        try {
+            const healthCheck = await fetch(`${API_BASE}/health`);
+            if (healthCheck.ok) {
+            } else {
+                console.warn('⚠️ API server may be unavailable');
+            }
+        } catch (error) {
+            console.error('❌ API connection failed:', error);
+        }
+        
+        return modules;
+    }
+}
+
+// Export for use in main application
+export default ModuleFactory;

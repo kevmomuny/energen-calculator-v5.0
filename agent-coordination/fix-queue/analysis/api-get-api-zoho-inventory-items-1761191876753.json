@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-get-api-zoho-inventory-items-1761191876753",
+  "workflow_id": "api-get-api-zoho-inventory-items",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-get-api-zoho-inventory-items",
+    "started_at": "2025-10-23T03:57:56.751Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T03:57:56.753Z",
+    "duration_ms": 2,
+    "error": "request to http://localhost:3002/api/zoho/inventory/items failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.429Z"
+}

@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-post-api-zoho-v5-create-agreement-1761191877234",
+  "workflow_id": "api-post-api-zoho-v5-create-agreement",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-post-api-zoho-v5-create-agreement",
+    "started_at": "2025-10-23T03:57:57.232Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T03:57:57.234Z",
+    "duration_ms": 2,
+    "error": "request to http://localhost:3002/api/zoho/v5/create-agreement failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.484Z"
+}

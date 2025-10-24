@@ -1,0 +1,53 @@
+{
+  "workflow_id": "multi-unit-quote-creation",
+  "description": "Create quote for multiple generator units",
+  "category": "ui",
+  "critical_path": true,
+  "assigned_agent": "ui-multi-unit",
+  "steps": [
+    {
+      "type": "ui",
+      "action": "open-multi-unit-modal",
+      "element": "#openMultiUnitModal",
+      "validation": "modal appears"
+    },
+    {
+      "type": "ui",
+      "action": "add-first-unit",
+      "element": "#addUnit",
+      "validation": "unit row added"
+    },
+    {
+      "type": "ui",
+      "action": "select-generator-for-unit",
+      "element": ".unit-generator-select",
+      "validation": "generator selected"
+    },
+    {
+      "type": "ui",
+      "action": "add-second-unit",
+      "element": "#addUnit",
+      "validation": "second unit row added"
+    },
+    {
+      "type": "ui",
+      "action": "assign-services",
+      "element": ".unit-service-checkbox",
+      "validation": "services assigned to units"
+    },
+    {
+      "type": "ui",
+      "action": "calculate-totals",
+      "element": "#calculateMultiUnit",
+      "validation": "totals aggregated"
+    },
+    {
+      "type": "ui",
+      "action": "generate-multi-unit-pdf",
+      "element": "#generateMultiUnitPDF",
+      "validation": "multi-unit PDF generated"
+    }
+  ],
+  "expected_duration_ms": 10000,
+  "dependencies": []
+}

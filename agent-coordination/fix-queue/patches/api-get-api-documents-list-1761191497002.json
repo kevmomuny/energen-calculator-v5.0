@@ -1,0 +1,16 @@
+{
+  "bug_id": "api-get-api-documents-list-1761191497002",
+  "workflow_id": "api-get-api-documents-list",
+  "category": "api_endpoint_error",
+  "confidence": 75,
+  "generated_at": "2025-10-23T15:58:59.114Z",
+  "patches": [
+    {
+      "file": "MANUAL_FIX_REQUIRED.txt",
+      "type": "note",
+      "old_string": "",
+      "new_string": "Manual fix required for api-get-api-documents-list-1761191497002: API endpoint returning error or not found"
+    }
+  ],
+  "ready_for_validation": false
+}

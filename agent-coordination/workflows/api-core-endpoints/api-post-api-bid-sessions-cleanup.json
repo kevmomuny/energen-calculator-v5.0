@@ -1,0 +1,18 @@
+{
+  "workflow_id": "api-post-api-bid-sessions-cleanup",
+  "description": "Test POST /api/bid/sessions/cleanup",
+  "category": "api",
+  "critical_path": false,
+  "assigned_agent": "api-core-endpoints",
+  "steps": [
+    {
+      "type": "api",
+      "action": "post-request",
+      "endpoint": "/api/bid/sessions/cleanup",
+      "method": "POST",
+      "validation": "response status 200 or expected status"
+    }
+  ],
+  "expected_duration_ms": 1000,
+  "dependencies": []
+}

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 5 Full Application Test</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        .test-section {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .test-section h2 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+        .status {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            margin: 0.5rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        .status.pass { background: #1b5e20; color: #a5d6a7; }
+        .status.fail { background: #b71c1c; color: #ef9a9a; }
+        .status.pending { background: #e65100; color: #ffcc80; }
+        .test-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover { background: #2563eb; }
+        button:disabled { background: #4b5563; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Phase 5: Full Application Test Suite</h1>
+    <p>Comprehensive testing of all features with Vite integration</p>
+
+    <div class="test-controls">
+        <button onclick="runAllTests()">Run All Tests</button>
+        <button onclick="runCoreTests()">Core Features Only</button>
+        <button onclick="clearResults()">Clear Results</button>
+    </div>
+
+    <div class="test-section">
+        <h2>1. Module Loading & Window Exposure</h2>
+        <div id="module-tests"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. State Management</h2>
+        <div id="state-tests"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Settings Initialization</h2>
+        <div id="settings-tests"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Utility Functions</h2>
+        <div id="utility-tests"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. API Connectors</h2>
+        <div id="api-tests"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>6. Unit Management (Simulated)</h2>
+        <div id="unit-tests"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>7. Service Pricing (Mock Data)</h2>
+        <div id="pricing-tests"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Summary</h2>
+        <div id="summary"></div>
+    </div>
+
+    <script type="module">
+        let totalTests = 0;
+        let passedTests = 0;
+        let failedTests = 0;
+
+        function addStatus(container, message, type = 'pending') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.textContent = message;
+            document.getElementById(container).appendChild(div);
+            totalTests++;
+            if (type === 'pass') passedTests++;
+            if (type === 'fail') failedTests++;
+            return div;
+        }
+
+        function updateSummary() {
+            const summary = document.getElementById('summary');
+            summary.innerHTML = `
+                <div class="status ${failedTests === 0 ? 'pass' : 'fail'}">
+                    Total: ${totalTests} | Passed: ${passedTests} | Failed: ${failedTests}
+                    ${failedTests === 0 ? ' ✅ ALL TESTS PASSED' : ' ❌ SOME TESTS FAILED'}
+                </div>
+            `;
+        }
+
+        window.clearResults = function() {
+            document.querySelectorAll('.test-section > div').forEach(div => div.innerHTML = '');
+            totalTests = 0;
+            passedTests = 0;
+            failedTests = 0;
+            updateSummary();
+        };
+
+        // Test 1: Module Loading
+        async function testModuleLoading() {
+            const modules = [
+                'state', 'updateStatus', 'formatMoney', 'initializeSettings',
+                'calculationAPI', 'pdfAPI', 'zohoAPI', 'enrichmentAPI',
+                'addNewUnit', 'toggleService', 'getFluidAnalysisPrices',
+                'updateMetrics', 'generatePDF'
+            ];
+
+            for (const mod of modules) {
+                const exists = typeof window[mod] !== 'undefined';
+                addStatus('module-tests',
+                    exists ? `✅ window.${mod} available` : `❌ window.${mod} missing`,
+                    exists ? 'pass' : 'fail'
+                );
+            }
+        }
+
+        // Test 2: State Management
+        async function testState() {
+            try {
+                const stateExists = window.state && typeof window.state === 'object';
+                addStatus('state-tests',
+                    stateExists ? '✅ State object exists' : '❌ State object missing',
+                    stateExists ? 'pass' : 'fail'
+                );
+
+                if (stateExists) {
+                    const hasUnits = Array.isArray(window.state.units);
+                    addStatus('state-tests',
+                        hasUnits ? '✅ state.units is array' : '❌ state.units not array',
+                        hasUnits ? 'pass' : 'fail'
+                    );
+
+                    const hasSettings = window.state.activeSettings !== undefined;
+                    addStatus('state-tests',
+                        hasSettings ? '✅ state.activeSettings exists' : '❌ state.activeSettings missing',
+                        hasSettings ? 'pass' : 'fail'
+                    );
+                }
+            } catch (error) {
+                addStatus('state-tests', `❌ State test error: ${error.message}`, 'fail');
+            }
+        }
+
+        // Test 3: Settings
+        async function testSettings() {
+            try {
+                await window.initializeSettings();
+                const loaded = window.state.settingsLoaded;
+                addStatus('settings-tests',
+                    loaded ? `✅ Settings loaded from ${window.state.settingsSource}` : '❌ Settings not loaded',
+                    loaded ? 'pass' : 'fail'
+                );
+
+                const hasLaborRate = window.state.activeSettings?.laborRate > 0;
+                addStatus('settings-tests',
+                    hasLaborRate ? `✅ Labor rate: $${window.state.activeSettings.laborRate}/hr` : '❌ Labor rate missing',
+                    hasLaborRate ? 'pass' : 'fail'
+                );
+            } catch (error) {
+                addStatus('settings-tests', `❌ Settings error: ${error.message}`, 'fail');
+            }
+        }
+
+        // Test 4: Utilities
+        async function testUtilities() {
+            try {
+                const money = window.formatMoney(1234.56);
+                const moneyOk = money === '$1,235';
+                addStatus('utility-tests',
+                    moneyOk ? `✅ formatMoney works: ${money}` : `❌ formatMoney failed: ${money}`,
+                    moneyOk ? 'pass' : 'fail'
+                );
+
+                const kw = window.getKwRange(100);
+                const kwOk = kw === '35-150';
+                addStatus('utility-tests',
+                    kwOk ? `✅ getKwRange(100) = ${kw}` : `❌ getKwRange failed: ${kw}`,
+                    kwOk ? 'pass' : 'fail'
+                );
+
+                const debounced = window.debounce(() => {}, 100);
+                const debounceOk = typeof debounced === 'function';
+                addStatus('utility-tests',
+                    debounceOk ? '✅ debounce returns function' : '❌ debounce failed',
+                    debounceOk ? 'pass' : 'fail'
+                );
+            } catch (error) {
+                addStatus('utility-tests', `❌ Utility error: ${error.message}`, 'fail');
+            }
+        }
+
+        // Test 5: API Connectors
+        async function testAPIs() {
+            try {
+                const apis = ['calculationAPI', 'pdfAPI', 'zohoAPI', 'enrichmentAPI'];
+                for (const api of apis) {
+                    const exists = window[api] && typeof window[api] === 'object';
+                    addStatus('api-tests',
+                        exists ? `✅ ${api} connector initialized` : `❌ ${api} missing`,
+                        exists ? 'pass' : 'fail'
+                    );
+                }
+            } catch (error) {
+                addStatus('api-tests', `❌ API test error: ${error.message}`, 'fail');
+            }
+        }
+
+        // Test 6: Unit Management (simulated)
+        async function testUnitManagement() {
+            try {
+                const functions = ['addNewUnit', 'renderUnit', 'toggleUnit', 'updateUnit', 'removeUnit'];
+                for (const func of functions) {
+                    const exists = typeof window[func] === 'function';
+                    addStatus('unit-tests',
+                        exists ? `✅ ${func}() available` : `❌ ${func}() missing`,
+                        exists ? 'pass' : 'fail'
+                    );
+                }
+            } catch (error) {
+                addStatus('unit-tests', `❌ Unit management error: ${error.message}`, 'fail');
+            }
+        }
+
+        // Test 7: Service Pricing
+        async function testPricing() {
+            try {
+                const functions = ['updateServicePrices', 'debouncedUpdateServicePrices', 'calculateServicePrice'];
+                for (const func of functions) {
+                    const exists = typeof window[func] === 'function';
+                    addStatus('pricing-tests',
+                        exists ? `✅ ${func}() available` : `❌ ${func}() missing`,
+                        exists ? 'pass' : 'fail'
+                    );
+                }
+            } catch (error) {
+                addStatus('pricing-tests', `❌ Pricing error: ${error.message}`, 'fail');
+            }
+        }
+
+        window.runAllTests = async function() {
+            clearResults();
+            console.log('🧪 Running full test suite...');
+            await testModuleLoading();
+            await testState();
+            await testSettings();
+            await testUtilities();
+            await testAPIs();
+            await testUnitManagement();
+            await testPricing();
+            updateSummary();
+            console.log('✅ Test suite complete');
+        };
+
+        window.runCoreTests = async function() {
+            clearResults();
+            console.log('🧪 Running core tests...');
+            await testModuleLoading();
+            await testState();
+            await testSettings();
+            updateSummary();
+            console.log('✅ Core tests complete');
+        };
+
+        // Auto-run on load
+        setTimeout(() => {
+            console.log('🚀 Auto-running tests in 1 second...');
+            runAllTests();
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 3 Integration Test</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        .test-section {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .test-section h2 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+        .status {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            margin: 0.5rem 0;
+            font-family: 'Courier New', monospace;
+        }
+        .status.pass { background: #1b5e20; color: #a5d6a7; }
+        .status.fail { background: #b71c1c; color: #ef9a9a; }
+        .status.pending { background: #e65100; color: #ffcc80; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Phase 3 Integration Test</h1>
+    <p>Testing all Phase 3 modules and templates with Vite</p>
+
+    <div class="test-section">
+        <h2>Module Loading Status</h2>
+        <div id="module-status"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Window Exposure Verification</h2>
+        <div id="window-status"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Template Loading Status</h2>
+        <div id="template-status"></div>
+    </div>
+
+    <script type="module">
+        const moduleStatus = document.getElementById('module-status');
+        const windowStatus = document.getElementById('window-status');
+        const templateStatus = document.getElementById('template-status');
+
+        function addStatus(container, message, type = 'pending') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.textContent = message;
+            container.appendChild(div);
+            return div;
+        }
+
+        // Test 1: Load all Phase 1-3 modules
+        async function testModules() {
+            const modules = [
+                // Phase 1
+                { path: './js/state.js', name: 'State' },
+                { path: './js/utilities.js', name: 'Utilities' },
+                { path: './js/initialization.js', name: 'Initialization' },
+
+                // Phase 3
+                { path: './modules/unit-management.js', name: 'Unit Management' },
+                { path: './modules/service-pricing.js', name: 'Service Pricing' },
+                { path: './modules/service-selection.js', name: 'Service Selection' },
+                { path: './modules/service-d-fluids.js', name: 'Service D Fluids' },
+                { path: './modules/mobilization.js', name: 'Mobilization' },
+                { path: './modules/customer-enrichment.js', name: 'Customer Enrichment' },
+                { path: './modules/summary-calculator.js', name: 'Summary Calculator' },
+                { path: './modules/pdf-generator.js', name: 'PDF Generator' }
+            ];
+
+            for (const mod of modules) {
+                const statusDiv = addStatus(moduleStatus, `Loading ${mod.name}...`, 'pending');
+                try {
+                    await import(mod.path);
+                    statusDiv.textContent = `✅ ${mod.name} loaded successfully`;
+                    statusDiv.className = 'status pass';
+                } catch (error) {
+                    statusDiv.textContent = `❌ ${mod.name} failed: ${error.message}`;
+                    statusDiv.className = 'status fail';
+                    console.error(`Module ${mod.name} error:`, error);
+                }
+            }
+        }
+
+        // Test 2: Verify window exposure
+        async function testWindowExposure() {
+            await new Promise(resolve => setTimeout(resolve, 500)); // Wait for modules to expose
+
+            const expectedGlobals = [
+                // Phase 1
+                'state', 'updateStatus', 'formatMoney', 'initializeSettings',
+
+                // Phase 3 - Unit Management
+                'addNewUnit', 'renderUnit', 'toggleUnit', 'updateUnit', 'removeUnit',
+
+                // Phase 3 - Service Selection
+                'toggleService', 'setFrequency', 'toggleServiceH', 'recalculateUnit',
+
+                // Phase 3 - Service D
+                'getFluidAnalysisPrices', 'updateServiceDFluids',
+
+                // Phase 3 - Mobilization
+                'toggleMobilizationStacking',
+
+                // Phase 3 - Summary
+                'summaryCalculator',
+
+                // Phase 3 - PDF
+                'pdfGenerator'
+            ];
+
+            for (const global of expectedGlobals) {
+                const exists = typeof window[global] !== 'undefined';
+                addStatus(
+                    windowStatus,
+                    exists ? `✅ window.${global} available` : `❌ window.${global} missing`,
+                    exists ? 'pass' : 'fail'
+                );
+            }
+        }
+
+        // Test 3: Load HTML templates
+        async function testTemplates() {
+            const templates = [
+                { path: './templates/unit-card.html?raw', name: 'Unit Card' },
+                { path: './templates/service-card-default.html?raw', name: 'Service Card Default' },
+                { path: './templates/service-card-d.html?raw', name: 'Service Card D' },
+                { path: './templates/service-card-h.html?raw', name: 'Service Card H' },
+                { path: './templates/service-card-fg.html?raw', name: 'Service Card F/G' },
+                { path: './templates/service-card-custom.html?raw', name: 'Service Card Custom' },
+                { path: './templates/service-card-k.html?raw', name: 'Service Card K' }
+            ];
+
+            for (const template of templates) {
+                const statusDiv = addStatus(templateStatus, `Loading ${template.name}...`, 'pending');
+                try {
+                    const module = await import(template.path);
+                    const html = module.default;
+                    if (html && html.includes('<div')) {
+                        statusDiv.textContent = `✅ ${template.name} loaded (${html.length} chars)`;
+                        statusDiv.className = 'status pass';
+                    } else {
+                        throw new Error('Invalid HTML content');
+                    }
+                } catch (error) {
+                    statusDiv.textContent = `❌ ${template.name} failed: ${error.message}`;
+                    statusDiv.className = 'status fail';
+                    console.error(`Template ${template.name} error:`, error);
+                }
+            }
+        }
+
+        // Run all tests
+        (async () => {
+            console.log('🧪 Starting Phase 3 Integration Tests...');
+            await testModules();
+            await testWindowExposure();
+            await testTemplates();
+            console.log('✅ Phase 3 Integration Tests Complete');
+        })();
+    </script>
+</body>
+</html>

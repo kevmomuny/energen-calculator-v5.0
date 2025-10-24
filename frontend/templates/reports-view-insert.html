@@ -1,0 +1,155 @@
+            <!-- Documents View (Hidden by default) -->
+            <div id="documentsView" style="display: none;">
+                <div style="padding: 40px; text-align: center;">
+                    <span class="material-symbols-outlined" style="font-size: 64px; color: var(--text-tertiary);">folder</span>
+                    <h2 style="color: var(--text-primary); margin-top: 20px;">Documents</h2>
+                    <p style="color: var(--text-secondary);">Document management coming soon</p>
+                </div>
+            </div>
+
+            <!-- Reports View (Hidden by default) -->
+            <div id="reportsView" style="display: none;">
+                <div class="reports-container">
+                    <!-- Reports Header -->
+                    <div class="reports-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 20px; background: var(--bg-elevated); border-radius: 12px;">
+                        <h2 style="color: var(--text-primary); margin: 0; display: flex; align-items: center; gap: 12px;">
+                            <span class="material-symbols-outlined" style="font-size: 32px;">insights</span>
+                            Reports & Analytics
+                        </h2>
+                        <div class="reports-controls" style="display: flex; gap: 12px; align-items: center;">
+                            <select id="reportsDateRange" class="input-field" style="width: 200px;">
+                                <option value="7">Last 7 Days</option>
+                                <option value="30" selected>Last 30 Days</option>
+                                <option value="90">Last 90 Days</option>
+                                <option value="365">Last Year</option>
+                                <option value="all">All Time</option>
+                            </select>
+                            <button class="btn btn-secondary" onclick="window.reportsView?.refreshReports()">
+                                <span class="material-symbols-outlined">refresh</span>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Summary KPI Cards -->
+                    <div class="reports-kpi-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                        <div class="kpi-card" style="background: var(--bg-elevated); padding: 20px; border-radius: 12px; display: flex; gap: 16px; align-items: flex-start;">
+                            <div class="kpi-icon" style="background: rgba(96, 165, 250, 0.1); padding: 12px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <span class="material-symbols-outlined" style="color: var(--accent-blue); font-size: 24px;">description</span>
+                            </div>
+                            <div class="kpi-content">
+                                <div class="kpi-label" style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Total Quotes</div>
+                                <div class="kpi-value" id="kpi-total-quotes" style="font-size: 28px; font-weight: 700; color: var(--text-primary); margin-top: 4px;">0</div>
+                                <div class="kpi-change" id="kpi-quotes-change" style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Loading...</div>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card" style="background: var(--bg-elevated); padding: 20px; border-radius: 12px; display: flex; gap: 16px; align-items: flex-start;">
+                            <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.1); padding: 12px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <span class="material-symbols-outlined" style="color: var(--accent-success); font-size: 24px;">payments</span>
+                            </div>
+                            <div class="kpi-content">
+                                <div class="kpi-label" style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Total Revenue</div>
+                                <div class="kpi-value" id="kpi-total-revenue" style="font-size: 28px; font-weight: 700; color: var(--text-primary); margin-top: 4px;">$0</div>
+                                <div class="kpi-change" id="kpi-revenue-change" style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Loading...</div>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card" style="background: var(--bg-elevated); padding: 20px; border-radius: 12px; display: flex; gap: 16px; align-items: flex-start;">
+                            <div class="kpi-icon" style="background: rgba(245, 158, 11, 0.1); padding: 12px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <span class="material-symbols-outlined" style="color: var(--accent-gold); font-size: 24px;">trending_up</span>
+                            </div>
+                            <div class="kpi-content">
+                                <div class="kpi-label" style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Avg Quote Value</div>
+                                <div class="kpi-value" id="kpi-avg-quote" style="font-size: 28px; font-weight: 700; color: var(--text-primary); margin-top: 4px;">$0</div>
+                                <div class="kpi-change" id="kpi-avg-change" style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Loading...</div>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card" style="background: var(--bg-elevated); padding: 20px; border-radius: 12px; display: flex; gap: 16px; align-items: flex-start;">
+                            <div class="kpi-icon" style="background: rgba(139, 92, 246, 0.1); padding: 12px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <span class="material-symbols-outlined" style="color: var(--accent-purple); font-size: 24px;">business</span>
+                            </div>
+                            <div class="kpi-content">
+                                <div class="kpi-label" style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Total Customers</div>
+                                <div class="kpi-value" id="kpi-total-customers" style="font-size: 28px; font-weight: 700; color: var(--text-primary); margin-top: 4px;">0</div>
+                                <div class="kpi-change" id="kpi-customers-change" style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="reports-charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 24px;">
+                        <!-- Service Revenue Breakdown -->
+                        <div class="chart-card" style="background: var(--bg-elevated); padding: 24px; border-radius: 12px;">
+                            <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h3 style="margin: 0; font-size: 16px; color: var(--text-primary);">Service Revenue Breakdown</h3>
+                                <button class="btn-icon" onclick="window.reportsView?.exportChart('service-breakdown')" title="Export" style="background: none; border: none; cursor: pointer; color: var(--text-secondary);">
+                                    <span class="material-symbols-outlined">download</span>
+                                </button>
+                            </div>
+                            <div class="chart-body" style="position: relative; height: 300px;">
+                                <canvas id="serviceBreakdownChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Quotes Over Time -->
+                        <div class="chart-card" style="background: var(--bg-elevated); padding: 24px; border-radius: 12px;">
+                            <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h3 style="margin: 0; font-size: 16px; color: var(--text-primary);">Quotes Over Time</h3>
+                                <button class="btn-icon" onclick="window.reportsView?.exportChart('quotes-timeline')" title="Export" style="background: none; border: none; cursor: pointer; color: var(--text-secondary);">
+                                    <span class="material-symbols-outlined">download</span>
+                                </button>
+                            </div>
+                            <div class="chart-body" style="position: relative; height: 300px;">
+                                <canvas id="quotesTimelineChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Top Customers -->
+                        <div class="chart-card" style="background: var(--bg-elevated); padding: 24px; border-radius: 12px;">
+                            <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h3 style="margin: 0; font-size: 16px; color: var(--text-primary);">Top 10 Customers</h3>
+                                <button class="btn-icon" onclick="window.reportsView?.exportTable('top-customers')" title="Export CSV" style="background: none; border: none; cursor: pointer; color: var(--text-secondary);">
+                                    <span class="material-symbols-outlined">download</span>
+                                </button>
+                            </div>
+                            <div class="chart-body">
+                                <div id="topCustomersTable" class="data-table" style="max-height: 300px; overflow-y: auto;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Generator Analytics -->
+                        <div class="chart-card" style="background: var(--bg-elevated); padding: 24px; border-radius: 12px;">
+                            <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h3 style="margin: 0; font-size: 16px; color: var(--text-primary);">Generator kW Distribution</h3>
+                                <button class="btn-icon" onclick="window.reportsView?.exportChart('kw-distribution')" title="Export" style="background: none; border: none; cursor: pointer; color: var(--text-secondary);">
+                                    <span class="material-symbols-outlined">download</span>
+                                </button>
+                            </div>
+                            <div class="chart-body" style="position: relative; height: 300px;">
+                                <canvas id="kwDistributionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Export Section -->
+                    <div class="reports-export-section" style="background: var(--bg-elevated); padding: 24px; border-radius: 12px;">
+                        <h3 style="margin: 0 0 16px 0; font-size: 16px; color: var(--text-primary);">Export Reports</h3>
+                        <div class="export-buttons" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button class="btn btn-secondary" onclick="window.reportsView?.exportToCSV()">
+                                <span class="material-symbols-outlined">table_chart</span>
+                                Export to CSV
+                            </button>
+                            <button class="btn btn-secondary" onclick="window.reportsView?.exportToPDF()">
+                                <span class="material-symbols-outlined">picture_as_pdf</span>
+                                Export to PDF
+                            </button>
+                            <a href="https://crm.zoho.com/crm/org60030835913/tab/CustomModule7" target="_blank" class="btn btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                                <span class="material-symbols-outlined">open_in_new</span>
+                                View in Zoho CRM
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>

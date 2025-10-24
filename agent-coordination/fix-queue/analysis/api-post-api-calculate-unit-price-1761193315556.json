@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-post-api-calculate-unit-price-1761193315556",
+  "workflow_id": "api-post-api-calculate-unit-price",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-post-api-calculate-unit-price",
+    "started_at": "2025-10-23T04:21:55.552Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T04:21:55.556Z",
+    "duration_ms": 4,
+    "error": "request to http://localhost:3002/api/calculate-unit-price failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.447Z"
+}

@@ -1,0 +1,57 @@
+{
+  "name": "@energen/calc-engine",
+  "version": "5.0.0",
+  "description": "Pure calculation engine for Energen generator service pricing - Excel parity guaranteed",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./adapters/commonjs.cjs"
+    },
+    "./core": "./core/index.js",
+    "./legacy": "./adapters/legacy.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "scripts": {
+    "test": "node tests/run-all.js",
+    "test:parity": "node tests/excel-parity.js",
+    "test:unit": "node tests/unit.js",
+    "validate": "node tests/validate-excel.js",
+    "build:types": "npx tsc --declaration --emitDeclarationOnly",
+    "lint": "eslint . --ext .js"
+  },
+  "keywords": [
+    "energen",
+    "generator",
+    "calculation",
+    "pricing",
+    "service",
+    "excel-parity"
+  ],
+  "author": "Energen Systems Inc.",
+  "license": "PROPRIETARY",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "internal"
+  },
+  "files": [
+    "index.js",
+    "core/",
+    "adapters/",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "dependencies": {},
+  "devDependencies": {},
+  "peerDependencies": {},
+  "sideEffects": false,
+  "metadata": {
+    "excelParityDate": "2024-08-13",
+    "excelFile": "ServiceCalculator.xlsx",
+    "verifiedAgainst": "complete-calculation-engine.cjs (2024-08-21)"
+  }
+}

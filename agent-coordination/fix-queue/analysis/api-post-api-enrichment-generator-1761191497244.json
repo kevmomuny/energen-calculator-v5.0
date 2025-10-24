@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-post-api-enrichment-generator-1761191497244",
+  "workflow_id": "api-post-api-enrichment-generator",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-post-api-enrichment-generator",
+    "started_at": "2025-10-23T03:51:37.243Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T03:51:37.244Z",
+    "duration_ms": 1,
+    "error": "request to http://localhost:3002/api/enrichment/generator failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.452Z"
+}

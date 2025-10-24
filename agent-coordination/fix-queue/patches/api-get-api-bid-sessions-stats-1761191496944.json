@@ -1,0 +1,16 @@
+{
+  "bug_id": "api-get-api-bid-sessions-stats-1761191496944",
+  "workflow_id": "api-get-api-bid-sessions-stats",
+  "category": "api_endpoint_error",
+  "confidence": 75,
+  "generated_at": "2025-10-23T15:57:13.847Z",
+  "patches": [
+    {
+      "file": "MANUAL_FIX_REQUIRED.txt",
+      "type": "note",
+      "old_string": "",
+      "new_string": "Manual fix required for api-get-api-bid-sessions-stats-1761191496944: API endpoint returning error or not found"
+    }
+  ],
+  "ready_for_validation": false
+}

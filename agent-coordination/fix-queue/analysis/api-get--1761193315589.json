@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-get--1761193315589",
+  "workflow_id": "api-get-",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-get-",
+    "started_at": "2025-10-23T04:21:55.586Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T04:21:55.589Z",
+    "duration_ms": 3,
+    "error": "request to http://localhost:3002/ failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.407Z"
+}

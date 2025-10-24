@@ -1,0 +1,15 @@
+<!-- Default Service Card Template -->
+<!-- Used for: Services A, B, C, E, I, J -->
+<div class="service-card" id="${unitId}-service-${code}" data-fuel-type="${fuelType}">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div class="service-name">${serviceName}</div>
+        ${aiEnrichedBadge}
+    </div>
+    <div style="font-size: 9px; color: var(--text-secondary); margin-bottom: 8px;">${serviceDescription}</div>
+    <div class="service-price" id="${unitId}-service-${code}-price">
+        ${priceText}
+    </div>
+    <div class="service-breakdown" id="${unitId}-service-${code}-breakdown" style="font-size: 9px; color: var(--text-secondary); margin-top: 4px;"></div>
+
+    ${frequencyButtons}
+</div>

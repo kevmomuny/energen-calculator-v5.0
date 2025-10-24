@@ -1,0 +1,16 @@
+{
+  "bug_id": "api-get-api-health-comprehensive-1761193315709",
+  "workflow_id": "api-get-api-health-comprehensive",
+  "category": "api_endpoint_error",
+  "confidence": 75,
+  "generated_at": "2025-10-23T15:59:55.219Z",
+  "patches": [
+    {
+      "file": "MANUAL_FIX_REQUIRED.txt",
+      "type": "note",
+      "old_string": "",
+      "new_string": "Manual fix required for api-get-api-health-comprehensive-1761193315709: API endpoint returning error or not found"
+    }
+  ],
+  "ready_for_validation": false
+}

@@ -1,0 +1,12 @@
+{
+  "bug_id": "api-post-api-zoho-v5-sync-customer-1761191497503",
+  "workflow_id": "api-post-api-zoho-v5-sync-customer",
+  "timestamp": "2025-10-23T16:56:02.680Z",
+  "status": "failed",
+  "patches_applied": 0,
+  "test_results": {},
+  "ready_for_merge": false,
+  "confidence": 90,
+  "validated_at": "2025-10-23T16:56:02.680Z",
+  "error": "Command failed: git reset --hard HEAD\nCommand failed: git reset --hard HEAD\nfatal: Unable to create 'C:/ECalc/.git/index.lock': File exists.\n\nAnother git process seems to be running in this repository, e.g.\nan editor opened by 'git commit'. Please make sure all processes\nare terminated then try again. If it still fails, a git process\nmay have crashed in this repository earlier:\nremove the file manually to continue.\n"
+}

@@ -1,0 +1,55 @@
+{
+  "success": true,
+  "laborHours": 5,
+  "laborCost": 2483,
+  "labor": 2483,
+  "materialsCost": 261.95,
+  "parts": 261.95,
+  "travelCost": 180,
+  "travel": 180,
+  "mobilization": 0,
+  "subtotal": 3071.2,
+  "tax": 26.85,
+  "total": 3098.05,
+  "annual": 3098.05,
+  "breakdown": {
+    "A - Comprehensive Inspection": {
+      "laborCost": 1910,
+      "partsCost": 0,
+      "totalCost": 1910,
+      "laborHours": 1,
+      "travelHours": 1.5,
+      "details": []
+    },
+    "B - Oil & Filter Service": {
+      "laborCost": 573,
+      "partsCost": 261.954,
+      "totalCost": 834.954,
+      "laborHours": 1,
+      "travelHours": 2,
+      "details": [
+        {
+          "generator": "  14kW",
+          "oilGallons": 1.5,
+          "filterCost": 171.9
+        }
+      ]
+    },
+    "Load Bank - undefined": {
+      "laborCost": 0,
+      "partsCost": 0,
+      "totalCost": 0,
+      "laborHours": 0,
+      "travelHours": 0,
+      "details": []
+    },
+    "Fluid Analysis - undefined": {
+      "laborCost": 0,
+      "partsCost": 0,
+      "totalCost": 0,
+      "laborHours": 0,
+      "travelHours": 0,
+      "details": []
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "bug_id": "multi-unit-quote-creation-1761191882339",
+  "workflow_id": "multi-unit-quote-creation",
+  "category": "missing_ui_element",
+  "confidence": 75,
+  "generated_at": "2025-10-23T16:36:01.482Z",
+  "patches": [
+    {
+      "file": "MANUAL_FIX_REQUIRED.txt",
+      "type": "note",
+      "old_string": "",
+      "new_string": "Manual fix required for multi-unit-quote-creation-1761191882339: Service selection UI element not visible or accessible"
+    }
+  ],
+  "ready_for_validation": false
+}

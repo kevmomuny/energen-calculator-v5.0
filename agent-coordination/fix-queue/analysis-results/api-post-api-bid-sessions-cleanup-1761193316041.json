@@ -1,0 +1,19 @@
+{
+  "bug_id": "api-post-api-bid-sessions-cleanup-1761193316041",
+  "workflow_id": "api-post-api-bid-sessions-cleanup",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "analyzed_at": "2025-10-23T16:15:55.175Z",
+  "root_cause": "API endpoint returning error or not found",
+  "confidence": 50,
+  "recommended_fix": "Debug existing endpoint error handling",
+  "files_affected": [
+    "src/api/server-secure.cjs"
+  ],
+  "requires_human_review": true,
+  "verification_details": [
+    "✓ Parsed endpoint: POST /api/bid/sessions/cleanup",
+    "✓ Server file exists",
+    "⚠️ Endpoint /api/bid/sessions/cleanup EXISTS but returns error - needs debugging"
+  ]
+}

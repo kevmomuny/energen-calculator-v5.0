@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-post-api-zoho-v5-sync-quote-1761191877261",
+  "workflow_id": "api-post-api-zoho-v5-sync-quote",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-post-api-zoho-v5-sync-quote",
+    "started_at": "2025-10-23T03:57:57.259Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T03:57:57.261Z",
+    "duration_ms": 2,
+    "error": "request to http://localhost:3002/api/zoho/v5/sync-quote failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.486Z"
+}

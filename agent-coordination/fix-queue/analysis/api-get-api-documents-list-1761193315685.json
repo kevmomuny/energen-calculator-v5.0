@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-get-api-documents-list-1761193315685",
+  "workflow_id": "api-get-api-documents-list",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-get-api-documents-list",
+    "started_at": "2025-10-23T04:21:55.683Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T04:21:55.685Z",
+    "duration_ms": 2,
+    "error": "request to http://localhost:3002/api/documents/list failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.417Z"
+}

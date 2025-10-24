@@ -1,0 +1,144 @@
+<div class="unit-container" data-unit-id="" id="">
+    <div class="unit-header" onclick="toggleUnit(this.closest('.unit-container').dataset.unitId)">
+        <div class="unit-header-left">
+            <span class="expand-toggle">▼</span>
+            <span class="unit-badge" data-badge-id="">UNIT <span data-unit-number></span></span>
+            <div class="unit-info">
+                <div class="unit-title">
+                    <span data-unit-title>Unconfigured Generator</span>
+                </div>
+                <div class="unit-details">
+                    <span>
+                        <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">location_on</span> 
+                        <span data-unit-location>Not specified</span>
+                    </span>
+                    <span>
+                        <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">local_gas_station</span> 
+                        <span data-unit-fuel>Not specified</span>
+                    </span>
+                    <span>
+                        <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">calendar_today</span> 
+                        <span data-unit-frequency>Not configured</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="unit-header-right">
+            <div class="unit-services-count">
+                <span class="service-indicator"></span>
+                <span data-service-count>0 services selected</span>
+            </div>
+            <div class="unit-subtotal" data-unit-subtotal>$0</div>
+        </div>
+    </div>
+    
+    <div class="unit-content">
+        <div class="unit-content-inner">
+            <!-- Unit Metrics -->
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-label">Labor Hours</div>
+                    <div class="metric-value" data-metric-hours>0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Materials</div>
+                    <div class="metric-value" data-metric-materials>$0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Mobilization</div>
+                    <div class="metric-value" data-metric-mobilization>$0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Frequency</div>
+                    <div class="metric-value" data-metric-frequency></div>
+                </div>
+            </div>
+
+            <!-- Generator Specifications -->
+            <div class="generator-specs-section">
+                <div class="specs-grid">
+                    <div class="spec-group">
+                        <label class="spec-label">kW Rating</label>
+                        <input type="number" class="spec-value" data-spec-kw value="" placeholder="Enter kW" min="2" max="2050">
+                    </div>
+                    <div class="spec-group">
+                        <label class="spec-label">Brand</label>
+                        <select class="spec-value" data-spec-brand>
+                            <option value="">Select Brand</option>
+                            <option>Generac</option>
+                            <option>Cummins</option>
+                            <option>Kohler</option>
+                            <option>CAT</option>
+                        </select>
+                    </div>
+                    <div class="spec-group">
+                        <label class="spec-label">Model</label>
+                        <input type="text" class="spec-value" data-spec-model placeholder="Enter model">
+                    </div>
+                    <div class="spec-group">
+                        <label class="spec-label">Serial</label>
+                        <input type="text" class="spec-value" data-spec-serial placeholder="Enter serial">
+                    </div>
+                    <div class="spec-group">
+                        <label class="spec-label">Fuel Type</label>
+                        <select class="spec-value" data-spec-fueltype>
+                            <option value="">Select Fuel</option>
+                            <option>Diesel</option>
+                            <option>Natural Gas</option>
+                            <option>Propane</option>
+                        </select>
+                    </div>
+                    <div class="spec-group">
+                        <label class="spec-label">Location</label>
+                        <input type="text" class="spec-value" data-spec-location placeholder="Building/Area">
+                    </div>
+                    <div class="spec-group">
+                        <label class="spec-label">Install Year</label>
+                        <input type="number" class="spec-value" data-spec-year value="" placeholder="Year" min="1980" max="2025">
+                    </div>
+                    <div class="spec-group">
+                        <label class="spec-label">Cylinders</label>
+                        <select class="spec-value" data-spec-cylinders>
+                            <option value="">Select Cylinders</option>
+                            <option value="2">2 Cylinder</option>
+                            <option value="3">3 Cylinder</option>
+                            <option value="4">4 Cylinder</option>
+                            <option value="6">6 Cylinder</option>
+                            <option value="8">8 Cylinder</option>
+                            <option value="10">10 Cylinder</option>
+                            <option value="12">12 Cylinder</option>
+                            <option value="16">16 Cylinder</option>
+                            <option value="18">18 Cylinder</option>
+                            <option value="20">20 Cylinder</option>
+                            <option value="24">24 Cylinder</option>
+                        </select>
+                    </div>
+                    <div class="spec-group" data-injector-group style="display: none;">
+                        <label class="spec-label">Injector Type</label>
+                        <select class="spec-value" data-spec-injector-type>
+                            <option value="">Select Type</option>
+                            <option value="pop">Pop Nozzle</option>
+                            <option value="unit">Unit Injector</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Section - Placeholder for Dynamic Content -->
+            <div class="services-section">
+                <div class="section-title">
+                    <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">build</span>
+                    Service Selection
+                </div>
+                <div class="services-grid" data-services-container>
+                    <!-- Services will be dynamically generated here -->
+                    <!-- See separate service-card templates for individual service structures -->
+                </div>
+            </div>
+            
+            <div style="margin-top: 12px; text-align: right;">
+                <button class="btn btn-danger" data-remove-unit>Remove Unit</button>
+            </div>
+        </div>
+    </div>
+</div>

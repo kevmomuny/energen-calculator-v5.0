@@ -1,0 +1,181 @@
+{
+  "allResults": {
+    "assetIdentification": [
+      {
+        "success": false,
+        "field": "Customer_Account",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "Asset_Status",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "System_Type",
+        "error": "undefined: undefined"
+      }
+    ],
+    "alternator": [
+      {
+        "success": false,
+        "field": "Alternator_Manufacturer",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "Power_Factor",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "Voltage_Configuration",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "Phase",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "Frequency",
+        "error": "undefined: undefined"
+      }
+    ],
+    "engineDetails": [
+      {
+        "success": false,
+        "field": "Engine_Manufacturer",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "Engine_Displacement",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "Engine_Aspiration",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "Cooling_Type",
+        "error": "undefined: undefined"
+      }
+    ],
+    "ats": [
+      {
+        "success": false,
+        "field": "ATS_Manufacturer",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "ATS_Control_Type",
+        "error": "undefined: undefined"
+      }
+    ],
+    "fuelSystem": [
+      {
+        "success": false,
+        "field": "Fuel_Tank_Type",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "Fuel_Consumption_Rate",
+        "error": "undefined: undefined"
+      }
+    ],
+    "exhaustSystem": [
+      {
+        "success": false,
+        "field": "Exhaust_Type",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "Emission_Tier",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "DPF_Installed",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "DPF_Regeneration_Type",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "DPF_Soot_Load_Percent",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "Catalyst_Type",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "DEF_System_Installed",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "DEF_Tank_Capacity",
+        "error": "undefined: undefined"
+      }
+    ],
+    "controlPanel": [
+      {
+        "success": false,
+        "field": "Enclosure_Type",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "DC_System_Voltage",
+        "error": "undefined: undefined"
+      }
+    ],
+    "maintenanceTracking": [
+      {
+        "success": false,
+        "field": "Service_Interval_Type",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "PM_Schedule",
+        "error": "undefined: undefined"
+      }
+    ],
+    "performanceMonitoring": [
+      {
+        "success": false,
+        "field": "Average_Monthly_Runtime",
+        "error": "undefined: undefined"
+      },
+      {
+        "success": false,
+        "field": "Load_Capacity_Percent",
+        "error": "undefined: undefined"
+      }
+    ],
+    "compliance": [
+      {
+        "success": false,
+        "field": "NFPA_110_Level",
+        "error": "undefined: undefined"
+      }
+    ]
+  },
+  "totalSuccess": 0,
+  "totalFail": 31
+}

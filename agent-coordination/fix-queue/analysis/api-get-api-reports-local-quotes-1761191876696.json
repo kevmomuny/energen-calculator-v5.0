@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-get-api-reports-local-quotes-1761191876696",
+  "workflow_id": "api-get-api-reports-local-quotes",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-get-api-reports-local-quotes",
+    "started_at": "2025-10-23T03:57:56.694Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T03:57:56.696Z",
+    "duration_ms": 2,
+    "error": "request to http://localhost:3002/api/reports/local-quotes failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.421Z"
+}

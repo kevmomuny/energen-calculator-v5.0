@@ -1,0 +1,16 @@
+{
+  "bug_id": "api-get-api-zoho-oauth-status-1761193315967",
+  "workflow_id": "api-get-api-zoho-oauth-status",
+  "category": "api_endpoint_error",
+  "confidence": 75,
+  "generated_at": "2025-10-23T16:04:28.736Z",
+  "patches": [
+    {
+      "file": "MANUAL_FIX_REQUIRED.txt",
+      "type": "note",
+      "old_string": "",
+      "new_string": "Manual fix required for api-get-api-zoho-oauth-status-1761193315967: API endpoint returning error or not found"
+    }
+  ],
+  "ready_for_validation": false
+}

@@ -1,0 +1,17 @@
+
+// ============================================
+// REPORTS & ANALYTICS ENDPOINTS
+// ============================================
+
+// Get all local quotes for reports
+app.get('/api/reports/local-quotes', async (req, res) => {
+    await reportsEndpoints.getLocalQuotes(req, res, logger);
+});
+
+// Get reports summary with aggregated metrics
+app.get('/api/reports/summary', async (req, res) => {
+    await reportsEndpoints.getReportsSummary(req, res, logger);
+});
+
+logger.info('Reports endpoints registered');
+

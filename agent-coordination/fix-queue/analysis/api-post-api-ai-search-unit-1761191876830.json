@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-post-api-ai-search-unit-1761191876830",
+  "workflow_id": "api-post-api-ai-search-unit",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-post-api-ai-search-unit",
+    "started_at": "2025-10-23T03:57:56.828Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T03:57:56.830Z",
+    "duration_ms": 2,
+    "error": "request to http://localhost:3002/api/ai-search-unit failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.438Z"
+}

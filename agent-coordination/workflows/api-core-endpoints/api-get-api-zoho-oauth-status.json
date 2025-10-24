@@ -1,0 +1,18 @@
+{
+  "workflow_id": "api-get-api-zoho-oauth-status",
+  "description": "Test GET /api/zoho/oauth/status",
+  "category": "api",
+  "critical_path": false,
+  "assigned_agent": "api-core-endpoints",
+  "steps": [
+    {
+      "type": "api",
+      "action": "get-request",
+      "endpoint": "/api/zoho/oauth/status",
+      "method": "GET",
+      "validation": "response status 200 or expected status"
+    }
+  ],
+  "expected_duration_ms": 1000,
+  "dependencies": []
+}

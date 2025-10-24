@@ -1,0 +1,237 @@
+{
+  "$schema": "company-data-schema",
+  "version": "1.0.0",
+  "lastUpdated": "2025-10-23",
+
+  "companyInfo": {
+    "legalName": "Energen Systems, Inc.",
+    "dbaName": "Energen Systems",
+    "address": {
+      "street": "[COMPANY STREET ADDRESS]",
+      "city": "[CITY]",
+      "state": "CA",
+      "zip": "[ZIP]",
+      "country": "USA"
+    },
+    "phone": "[PHONE]",
+    "fax": "[FAX]",
+    "email": "[EMAIL]",
+    "website": "www.energensystems.com",
+    "ein": "[EIN]",
+    "dunsNumber": "[DUNS]",
+    "cageCode": "[CAGE]",
+    "businessType": "Corporation",
+    "yearsInBusiness": 15,
+    "numberOfEmployees": 25
+  },
+
+  "licenses": {
+    "california": {
+      "c10Electrical": {
+        "number": "[C-10 LICENSE NUMBER]",
+        "expirationDate": "2026-12-31",
+        "holderName": "[LICENSE HOLDER NAME]"
+      },
+      "c38Refrigeration": {
+        "number": "[C-38 LICENSE NUMBER]",
+        "expirationDate": "2026-12-31",
+        "holderName": "[LICENSE HOLDER NAME]"
+      }
+    },
+    "otherStates": []
+  },
+
+  "certifications": {
+    "nfpa70e": {
+      "certified": true,
+      "certificationDate": "2024-01-01",
+      "expirationDate": "2027-01-01",
+      "certifiedTechnicians": ["[TECHNICIAN 1]", "[TECHNICIAN 2]"]
+    },
+    "manufacturerAuthorizations": {
+      "cummins": {
+        "authorized": true,
+        "authorizationNumber": "[CUMMINS AUTH #]",
+        "serviceLevel": "Authorized Service Dealer"
+      },
+      "caterpillar": {
+        "authorized": true,
+        "authorizationNumber": "[CAT AUTH #]",
+        "serviceLevel": "Authorized Service Dealer"
+      },
+      "kohler": {
+        "authorized": true,
+        "authorizationNumber": "[KOHLER AUTH #]",
+        "serviceLevel": "Authorized Service Dealer"
+      },
+      "generac": {
+        "authorized": true,
+        "authorizationNumber": "[GENERAC AUTH #]",
+        "serviceLevel": "Authorized Service Dealer"
+      }
+    }
+  },
+
+  "insurance": {
+    "generalLiability": {
+      "carrier": "[INSURANCE CARRIER]",
+      "policyNumber": "[GL POLICY #]",
+      "expirationDate": "2026-12-31",
+      "coveragePerOccurrence": 1000000,
+      "coverageAggregate": 2000000
+    },
+    "automobileLiability": {
+      "carrier": "[INSURANCE CARRIER]",
+      "policyNumber": "[AUTO POLICY #]",
+      "expirationDate": "2026-12-31",
+      "combinedSingleLimit": 1000000
+    },
+    "workersCompensation": {
+      "carrier": "[INSURANCE CARRIER]",
+      "policyNumber": "[WC POLICY #]",
+      "expirationDate": "2026-12-31",
+      "employersLiability": 1000000
+    },
+    "excessLiability": {
+      "carrier": "[INSURANCE CARRIER]",
+      "policyNumber": "[EXCESS POLICY #]",
+      "expirationDate": "2026-12-31",
+      "umbrellaLimit": 5000000
+    }
+  },
+
+  "projectReferences": [
+    {
+      "clientName": "[CLIENT 1 NAME]",
+      "contactName": "[CONTACT NAME]",
+      "contactTitle": "Facilities Manager",
+      "contactPhone": "[PHONE]",
+      "contactEmail": "[EMAIL]",
+      "projectDescription": "Annual preventative maintenance for emergency generators",
+      "contractValue": 150000,
+      "startDate": "2022-01-01",
+      "endDate": "2024-12-31",
+      "servicesProvided": ["Annual PM", "Emergency Service", "Load Bank Testing"],
+      "numberOfGenerators": 25,
+      "kwRange": "100-500 kW"
+    },
+    {
+      "clientName": "[CLIENT 2 NAME]",
+      "contactName": "[CONTACT NAME]",
+      "contactTitle": "Building Engineer",
+      "contactPhone": "[PHONE]",
+      "contactEmail": "[EMAIL]",
+      "projectDescription": "Bi-annual generator maintenance and 24/7 emergency service",
+      "contractValue": 95000,
+      "startDate": "2021-06-01",
+      "endDate": "2024-06-01",
+      "servicesProvided": ["Bi-Annual PM", "Emergency Service", "Fuel System Maintenance"],
+      "numberOfGenerators": 15,
+      "kwRange": "200-800 kW"
+    },
+    {
+      "clientName": "[CLIENT 3 NAME]",
+      "contactName": "[CONTACT NAME]",
+      "contactTitle": "Operations Manager",
+      "contactPhone": "[PHONE]",
+      "contactEmail": "[EMAIL]",
+      "projectDescription": "Quarterly generator service and load bank testing",
+      "contractValue": 75000,
+      "startDate": "2023-01-01",
+      "endDate": "2025-12-31",
+      "servicesProvided": ["Quarterly PM", "Load Bank Testing", "DPF Regeneration"],
+      "numberOfGenerators": 10,
+      "kwRange": "500-1500 kW"
+    }
+  ],
+
+  "keyPersonnel": {
+    "projectManager": {
+      "name": "[PROJECT MANAGER NAME]",
+      "title": "Project Manager",
+      "email": "[EMAIL]",
+      "phone": "[PHONE]",
+      "yearsExperience": 12,
+      "certifications": ["PMP", "NFPA 70E"]
+    },
+    "leadTechnician": {
+      "name": "[LEAD TECH NAME]",
+      "title": "Lead Service Technician",
+      "email": "[EMAIL]",
+      "phone": "[PHONE]",
+      "yearsExperience": 18,
+      "certifications": ["Master Electrician", "EGSA Certified", "NFPA 70E"]
+    },
+    "accountManager": {
+      "name": "[ACCOUNT MANAGER NAME]",
+      "title": "Account Manager",
+      "email": "[EMAIL]",
+      "phone": "[PHONE]",
+      "yearsExperience": 10
+    }
+  },
+
+  "signatures": {
+    "authorizedRepresentative": {
+      "name": "[AUTHORIZED REP NAME]",
+      "title": "President / CEO",
+      "signatureImagePath": "",
+      "email": "[EMAIL]",
+      "phone": "[PHONE]"
+    },
+    "technicalRepresentative": {
+      "name": "[TECH REP NAME]",
+      "title": "VP of Operations",
+      "signatureImagePath": "",
+      "email": "[EMAIL]",
+      "phone": "[PHONE]"
+    }
+  },
+
+  "capabilities": {
+    "serviceRadius": 100,
+    "emergencyResponse": true,
+    "emergencyResponseTime": "2 hours",
+    "twentyFourSevenCoverage": true,
+    "technicianCount": 12,
+    "serviceVehicles": 8,
+    "loadBanks": {
+      "portable": true,
+      "maxCapacity": 1500,
+      "quantities": [
+        {"capacity": 500, "count": 2},
+        {"capacity": 1000, "count": 2},
+        {"capacity": 1500, "count": 1}
+      ]
+    },
+    "specialEquipment": [
+      "Load Banks (up to 1500 kW)",
+      "DPF Regeneration Equipment",
+      "Fuel Polishing Systems",
+      "Coolant Analysis Equipment",
+      "Infrared Thermography"
+    ]
+  },
+
+  "pricing": {
+    "laborRates": {
+      "regularTime": {
+        "journeymanElectrician": 125.00,
+        "masterElectrician": 145.00,
+        "apprentice": 85.00,
+        "projectManager": 165.00
+      },
+      "overtime": {
+        "multiplier": 1.5
+      },
+      "emergency": {
+        "multiplier": 2.0
+      }
+    },
+    "materialsMarkup": 15,
+    "travelRates": {
+      "perMile": 0.655,
+      "perDiem": 75.00
+    }
+  }
+}

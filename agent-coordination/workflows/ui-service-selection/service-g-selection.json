@@ -1,0 +1,23 @@
+{
+  "workflow_id": "service-g-selection",
+  "description": "Test Service G selection and calculation",
+  "category": "ui",
+  "critical_path": false,
+  "assigned_agent": "ui-service-selection",
+  "steps": [
+    {
+      "type": "ui",
+      "action": "select-service-G",
+      "element": "#serviceG",
+      "validation": "Service G checkbox checked"
+    },
+    {
+      "type": "api",
+      "action": "calculate",
+      "endpoint": "/api/calculate",
+      "validation": "response includes Service G in breakdown"
+    }
+  ],
+  "expected_duration_ms": 2000,
+  "dependencies": []
+}

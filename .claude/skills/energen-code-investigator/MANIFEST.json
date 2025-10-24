@@ -1,0 +1,252 @@
+{
+  "skill": {
+    "name": "energen-code-investigator",
+    "version": "1.0.0",
+    "description": "Anti-hallucination code investigation enforcing complete verification, evidence-based claims, and accurate metrics tracking",
+    "category": "analysis",
+    "author": "Energen Team",
+    "created": "2025-10-17",
+    "license": "MIT",
+    "status": "production-ready"
+  },
+  "files": {
+    "SKILL.md": {
+      "description": "Main skill definition with YAML frontmatter, instructions, protocols, and templates",
+      "lines": 619,
+      "type": "definition"
+    },
+    "README.md": {
+      "description": "User-facing documentation with quick start, examples, and integration guides",
+      "lines": 385,
+      "type": "documentation"
+    },
+    "USAGE_EXAMPLES.md": {
+      "description": "Practical examples demonstrating skill usage across investigation types",
+      "lines": 578,
+      "type": "documentation"
+    },
+    "scripts/track-metrics.js": {
+      "description": "Node.js script to track verification metrics and calculate confidence scores",
+      "lines": 258,
+      "type": "executable",
+      "executable": true,
+      "usage": "node track-metrics.js --lines N --files 'f1,f2' --functions 'fn1,fn2' --queries 'q1,q2' --type TYPE"
+    },
+    "scripts/update-session-memory.js": {
+      "description": "Node.js script to update SESSION_MEMORY.json with verified facts",
+      "lines": 180,
+      "type": "executable",
+      "executable": true,
+      "usage": "node update-session-memory.js --fact 'text' --verified true --source 'file' --evidence 'text'"
+    },
+    "resources/verification-template.md": {
+      "description": "Markdown template for generating investigation reports",
+      "lines": 258,
+      "type": "template"
+    },
+    "resources/metrics-tracker.json": {
+      "description": "JSON schema defining metrics structure and validation rules",
+      "lines": 398,
+      "type": "schema"
+    },
+    "resources/example-metrics-output.json": {
+      "description": "Example metrics output demonstrating the expected format",
+      "lines": 110,
+      "type": "example"
+    }
+  },
+  "capabilities": {
+    "investigation_types": [
+      {
+        "name": "assessment",
+        "minimums": {
+          "lines": 1000,
+          "files": 5,
+          "functions": 5
+        },
+        "triggers": ["assess", "analyze", "evaluate", "review", "complete status"]
+      },
+      {
+        "name": "bug_fix",
+        "minimums": {
+          "lines": 200,
+          "files": 2,
+          "functions": 2
+        },
+        "triggers": ["bug", "error", "broken", "not working", "issue"]
+      },
+      {
+        "name": "feature_verification",
+        "minimums": {
+          "lines": 500,
+          "files": 3,
+          "functions": 3
+        },
+        "triggers": ["verify", "check if", "does it have", "is there", "working"]
+      },
+      {
+        "name": "completion_claim",
+        "minimums": {
+          "lines": 2000,
+          "files": 10,
+          "functions": 10
+        },
+        "triggers": ["complete", "done", "finished", "implemented"],
+        "requires_tests": true
+      }
+    ],
+    "protocols": [
+      "Anti-hallucination enforcement",
+      "Complete code verification",
+      "Evidence-based claims only",
+      "Contradiction reconciliation (code wins)",
+      "Prevention of premature completion",
+      "Prevention of documentation bloat",
+      "Permission to say 'I don't know'",
+      "Parallel tool calling optimization",
+      "Dynamic complete file reading",
+      "Comprehensive search protocol"
+    ],
+    "auto_loaded_files": [
+      ".claude/CLAUDE.md",
+      "SYSTEM_CORE.md",
+      "SESSION_MEMORY.json",
+      "CONTEXT_INDEX.md"
+    ],
+    "banned_phrases_without_evidence": [
+      "No backend implementation",
+      "Based on documentation",
+      "Service X has no backend",
+      "It appears that...",
+      "Should work",
+      "Probably implements",
+      "Port X is correct",
+      "Missing functionality",
+      "Task complete!",
+      "Successfully implemented!"
+    ]
+  },
+  "scripts": {
+    "track-metrics": {
+      "file": "scripts/track-metrics.js",
+      "purpose": "Calculate verification metrics and confidence scores",
+      "inputs": {
+        "lines": "Number of lines examined",
+        "files": "Comma-separated list of files read",
+        "functions": "Comma-separated list of functions analyzed",
+        "queries": "Comma-separated list of search queries",
+        "type": "Investigation type (assessment|bug_fix|feature_verification|completion_claim)",
+        "output": "Optional output file path for JSON results"
+      },
+      "outputs": {
+        "console": "Markdown-formatted metrics report",
+        "file": "JSON metrics object (if --output specified)",
+        "exit_code": "0 if all minimums met, 1 otherwise"
+      }
+    },
+    "update-session-memory": {
+      "file": "scripts/update-session-memory.js",
+      "purpose": "Update SESSION_MEMORY.json with verified facts",
+      "modes": [
+        {
+          "name": "add-fact",
+          "inputs": {
+            "fact": "Verified fact text",
+            "verified": "true|false",
+            "source": "Source file path",
+            "evidence": "Evidence supporting fact"
+          }
+        },
+        {
+          "name": "add-code-change",
+          "inputs": {
+            "code-change": "Description of code change",
+            "file": "File path",
+            "lines": "Line numbers (e.g., '100-150')",
+            "commit": "Git commit hash"
+          }
+        },
+        {
+          "name": "add-architecture-note",
+          "inputs": {
+            "architecture-note": "Note key",
+            "value": "Note value"
+          }
+        }
+      ]
+    }
+  },
+  "requirements": {
+    "runtime": "Node.js (any recent version)",
+    "dependencies": ["fs", "path"],
+    "project_files": [
+      ".claude/CLAUDE.md",
+      "SYSTEM_CORE.md",
+      "SESSION_MEMORY.json",
+      "CONTEXT_INDEX.md"
+    ]
+  },
+  "integration": {
+    "claude_ai": {
+      "activation": "Use the energen-code-investigator skill to [task]",
+      "auto_context_load": true
+    },
+    "claude_code": {
+      "activation": "Use energen-code-investigator skill",
+      "auto_context_load": true
+    },
+    "api": {
+      "method": "claude.useSkill('energen-code-investigator', { task, type })",
+      "returns": "Investigation report with metrics"
+    },
+    "ci_cd": {
+      "pre_commit": "Run track-metrics.js to verify minimum standards",
+      "post_investigation": "Run update-session-memory.js to persist findings"
+    }
+  },
+  "statistics": {
+    "total_lines": 2786,
+    "total_files": 8,
+    "documentation_lines": 1240,
+    "code_lines": 438,
+    "schema_lines": 508,
+    "example_lines": 110,
+    "total_size": "100KB"
+  },
+  "testing": {
+    "manual_tests": [
+      "Run track-metrics.js with sample data",
+      "Run update-session-memory.js with test fact",
+      "Verify output format matches schema",
+      "Check all minimums enforced correctly"
+    ],
+    "validation": {
+      "metrics_schema": "resources/metrics-tracker.json",
+      "example_output": "resources/example-metrics-output.json"
+    }
+  },
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2025-10-17",
+      "changes": [
+        "Initial release",
+        "Anti-hallucination protocol enforcement",
+        "Investigation type classification with minimums",
+        "Automatic context loading",
+        "Banned phrases enforcement",
+        "Search protocol requirements",
+        "Dynamic complete file reading",
+        "Contradiction reconciliation protocol",
+        "Metrics tracking scripts",
+        "Session memory integration",
+        "Evidence-based reporting templates",
+        "Anti-documentation-bloat protocol",
+        "Anti-premature-completion protocol",
+        "Permission to say 'I don't know'",
+        "Parallel tool calling optimization",
+        "Comprehensive usage examples"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "workflow_id": "api-post-api-zoho-search-customer",
+  "description": "Test POST /api/zoho/search-customer",
+  "category": "api",
+  "critical_path": false,
+  "assigned_agent": "api-core-endpoints",
+  "steps": [
+    {
+      "type": "api",
+      "action": "post-request",
+      "endpoint": "/api/zoho/search-customer",
+      "method": "POST",
+      "validation": "response status 200 or expected status"
+    }
+  ],
+  "expected_duration_ms": 1000,
+  "dependencies": []
+}

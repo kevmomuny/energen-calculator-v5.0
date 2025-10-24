@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-get-api-bid-sessions-stats-1761191876611",
+  "workflow_id": "api-get-api-bid-sessions-stats",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-get-api-bid-sessions-stats",
+    "started_at": "2025-10-23T03:57:56.609Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T03:57:56.611Z",
+    "duration_ms": 2,
+    "error": "request to http://localhost:3002/api/bid/sessions/stats failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.408Z"
+}

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 2: API Connectors Test</title>
+    <style>
+        :root {
+            --bg-primary: #0a0b0d;
+            --bg-secondary: #12141a;
+            --text-primary: #e4e6eb;
+            --text-secondary: #9ca3af;
+            --accent-success: #10b981;
+            --accent-danger: #ef4444;
+        }
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 40px;
+            margin: 0;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 8px;
+        }
+        h1 {
+            color: #60a5fa;
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            background: #1a1d26;
+        }
+        #status-message {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .test-info {
+            background: #1a1d26;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border-left: 4px solid #60a5fa;
+        }
+        .success { color: var(--accent-success); }
+        .error { color: var(--accent-danger); }
+        pre {
+            background: #000;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Phase 2: API Connectors Test</h1>
+
+        <div class="test-info">
+            <h3>Test Objective</h3>
+            <p>Verify that Phase 1 modules work correctly with Phase 2 API connectors.</p>
+            <p><strong>Phase 2 Modules:</strong></p>
+            <ul>
+                <li>✅ api-calculation.js - Calculation API connector</li>
+                <li>✅ api-pdf.js - PDF generation connector</li>
+                <li>✅ api-zoho.js - Zoho CRM connector</li>
+                <li>✅ api-enrichment.js - Customer enrichment connector</li>
+            </ul>
+            <p><strong>Integration:</strong></p>
+            <ul>
+                <li>✅ API modules depend on Phase 1 (state, utilities, initialization)</li>
+                <li>✅ No circular dependencies</li>
+                <li>✅ All modules initialized via state.modules</li>
+            </ul>
+        </div>
+
+        <div class="status">
+            <strong>Status:</strong> <span id="status-message">Initializing...</span>
+        </div>
+
+        <div class="test-info">
+            <h3>Console Output</h3>
+            <p>Open DevTools Console to see detailed logs</p>
+            <p>Expected output:</p>
+            <ul>
+                <li>"Phase 2: API CONNECTORS TEST"</li>
+                <li>"Settings initialized successfully"</li>
+                <li>"API modules initialized: calc, pdf, zoho, enrichment"</li>
+                <li>"Phase 2: API connectors loaded successfully"</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Import Phase 2 app-main.js which includes all modules -->
+    <script type="module" src="./js/app-main.js"></script>
+</body>
+</html>

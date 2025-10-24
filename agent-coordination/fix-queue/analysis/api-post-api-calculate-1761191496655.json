@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-post-api-calculate-1761191496655",
+  "workflow_id": "api-post-api-calculate",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-post-api-calculate",
+    "started_at": "2025-10-23T03:51:36.593Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T03:51:36.655Z",
+    "duration_ms": 62,
+    "error": "HTTP 400: {\"success\":false,\"error\":\"\\\"services\\\" is required\"}"
+  },
+  "discovered_at": "2025-10-23T05:46:27.442Z"
+}

@@ -1,0 +1,428 @@
+<!-- Parts Tracking Modal for Work Order Completion -->
+<!-- Usage: Include in integrated-ui.html and show when completing work orders -->
+
+<div id="partsTrackingModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-header">
+            <h2>Track Parts Used</h2>
+            <button class="close-btn" onclick="closePartsModal()">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="work-order-info">
+                <p><strong>Work Order:</strong> <span id="woNumber"></span></p>
+                <p><strong>Service Type:</strong> <span id="serviceType"></span></p>
+                <p><strong>Generator:</strong> <span id="generatorInfo"></span></p>
+            </div>
+
+            <hr>
+
+            <div class="parts-section">
+                <h3>Recommended Parts for This Service</h3>
+                <div id="recommendedParts" class="parts-list">
+                    <!-- Populated via JavaScript -->
+                </div>
+
+                <h3>Parts Used</h3>
+                <div id="partsUsedList" class="parts-list">
+                    <!-- Dynamic parts list -->
+                </div>
+
+                <button class="btn-secondary" onclick="addCustomPart()">
+                    <i class="icon-plus"></i> Add Custom Part
+                </button>
+            </div>
+
+            <div class="availability-warning" id="lowStockWarning" style="display: none;">
+                <i class="icon-warning"></i>
+                <strong>Low Stock Warning:</strong>
+                <span id="lowStockMessage"></span>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closePartsModal()">Cancel</button>
+            <button class="btn-primary" onclick="submitWorkOrderWithParts()">
+                Complete Work Order & Track Parts
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
+.work-order-info {
+    background: #f5f5f5;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.work-order-info p {
+    margin: 0.5rem 0;
+}
+
+.parts-section h3 {
+    margin: 1.5rem 0 1rem 0;
+    font-size: 1.1rem;
+}
+
+.parts-list {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    min-height: 100px;
+}
+
+.part-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #f9f9f9;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+}
+
+.part-item-info {
+    flex: 1;
+}
+
+.part-item-name {
+    font-weight: bold;
+}
+
+.part-item-sku {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.part-item-quantity {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.part-item-quantity input {
+    width: 60px;
+    padding: 0.25rem;
+    text-align: center;
+}
+
+.part-item-actions button {
+    padding: 0.25rem 0.5rem;
+    margin-left: 0.5rem;
+}
+
+.availability-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.availability-badge.in-stock {
+    background: #d4edda;
+    color: #155724;
+}
+
+.availability-badge.low-stock {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.availability-badge.out-of-stock {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.availability-warning {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ddd;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #545b62;
+}
+</style>
+
+<script>
+// Parts tracking modal JavaScript functions
+let currentWorkOrder = null;
+let partsUsed = [];
+
+/**
+ * Open parts tracking modal for work order completion
+ */
+async function openPartsModal(workOrderId, serviceCode, generatorInfo) {
+    currentWorkOrder = workOrderId;
+
+    // Update modal info
+    document.getElementById('woNumber').textContent = workOrderId;
+    document.getElementById('serviceType').textContent = serviceCode;
+    document.getElementById('generatorInfo').textContent = generatorInfo;
+
+    // Fetch recommended parts for this service
+    try {
+        const response = await fetch(`/api/zoho/inventory/service-parts/${serviceCode}`);
+        const data = await response.json();
+
+        if (data.success && data.parts) {
+            displayRecommendedParts(data.parts);
+        }
+    } catch (error) {
+        console.error('Failed to fetch recommended parts:', error);
+    }
+
+    // Show modal
+    document.getElementById('partsTrackingModal').style.display = 'flex';
+}
+
+/**
+ * Display recommended parts for the service
+ */
+function displayRecommendedParts(parts) {
+    const container = document.getElementById('recommendedParts');
+    const availability = parts.availability || {};
+
+    let html = '';
+    parts.partsRequired.forEach(partNum => {
+        const partInfo = availability[partNum] || {};
+        const stockStatus = partInfo.available ? 'in-stock' : 'out-of-stock';
+        const stockBadge = partInfo.available
+            ? `<span class="availability-badge ${stockStatus}">In Stock: ${partInfo.quantity}</span>`
+            : `<span class="availability-badge ${stockStatus}">Out of Stock</span>`;
+
+        html += `
+            <div class="part-item">
+                <div class="part-item-info">
+                    <div class="part-item-name">${partInfo.itemName || partNum}</div>
+                    <div class="part-item-sku">SKU: ${partNum}</div>
+                    ${stockBadge}
+                </div>
+                <div class="part-item-quantity">
+                    <label>Qty:</label>
+                    <input type="number" min="0" value="1" id="qty-${partNum}">
+                </div>
+                <div class="part-item-actions">
+                    <button class="btn-secondary" onclick="addPartToUsed('${partNum}', '${partInfo.itemId}', '${partInfo.itemName}')">
+                        Add to Used
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html || '<p>No recommended parts for this service</p>';
+}
+
+/**
+ * Add part to the "parts used" list
+ */
+function addPartToUsed(partNum, itemId, itemName) {
+    const qty = parseInt(document.getElementById(`qty-${partNum}`).value) || 1;
+
+    partsUsed.push({
+        partNumber: partNum,
+        itemId: itemId,
+        itemName: itemName,
+        quantityUsed: qty
+    });
+
+    updatePartsUsedDisplay();
+}
+
+/**
+ * Update the parts used display
+ */
+function updatePartsUsedDisplay() {
+    const container = document.getElementById('partsUsedList');
+
+    if (partsUsed.length === 0) {
+        container.innerHTML = '<p>No parts added yet</p>';
+        return;
+    }
+
+    let html = '';
+    partsUsed.forEach((part, index) => {
+        html += `
+            <div class="part-item">
+                <div class="part-item-info">
+                    <div class="part-item-name">${part.itemName}</div>
+                    <div class="part-item-sku">SKU: ${part.partNumber}</div>
+                </div>
+                <div class="part-item-quantity">
+                    <label>Qty:</label>
+                    <span>${part.quantityUsed}</span>
+                </div>
+                <div class="part-item-actions">
+                    <button class="btn-secondary" onclick="removePartFromUsed(${index})">
+                        Remove
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+/**
+ * Remove part from used list
+ */
+function removePartFromUsed(index) {
+    partsUsed.splice(index, 1);
+    updatePartsUsedDisplay();
+}
+
+/**
+ * Add custom part (not in recommended list)
+ */
+function addCustomPart() {
+    const partNum = prompt('Enter part number/SKU:');
+    if (!partNum) return;
+
+    const itemName = prompt('Enter part name:');
+    const qty = parseInt(prompt('Enter quantity used:', '1')) || 1;
+
+    partsUsed.push({
+        partNumber: partNum,
+        itemId: null, // Will need to be looked up or created
+        itemName: itemName || partNum,
+        quantityUsed: qty
+    });
+
+    updatePartsUsedDisplay();
+}
+
+/**
+ * Close the parts modal
+ */
+function closePartsModal() {
+    document.getElementById('partsTrackingModal').style.display = 'none';
+    partsUsed = [];
+    currentWorkOrder = null;
+}
+
+/**
+ * Submit work order with parts tracking
+ */
+async function submitWorkOrderWithParts() {
+    if (partsUsed.length === 0) {
+        if (!confirm('No parts tracked. Continue with work order completion?')) {
+            return;
+        }
+    }
+
+    try {
+        // Track parts usage in inventory
+        if (partsUsed.length > 0) {
+            const response = await fetch('/api/zoho/inventory/track-usage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    workOrderId: currentWorkOrder,
+                    partsUsed: partsUsed
+                })
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                alert('Warning: Parts tracking failed. Work order will still be completed.');
+                console.error('Parts tracking error:', data.error);
+            }
+        }
+
+        // Complete the work order (implement this in your work order module)
+        // await completeWorkOrder(currentWorkOrder);
+
+        alert('Work order completed successfully!');
+        closePartsModal();
+
+    } catch (error) {
+        console.error('Error submitting work order:', error);
+        alert('Error completing work order. Please try again.');
+    }
+}
+</script>

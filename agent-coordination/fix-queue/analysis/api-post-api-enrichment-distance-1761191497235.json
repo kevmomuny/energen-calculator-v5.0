@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-post-api-enrichment-distance-1761191497235",
+  "workflow_id": "api-post-api-enrichment-distance",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-post-api-enrichment-distance",
+    "started_at": "2025-10-23T03:51:37.231Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T03:51:37.235Z",
+    "duration_ms": 4,
+    "error": "request to http://localhost:3002/api/enrichment/distance failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.450Z"
+}

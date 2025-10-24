@@ -1,0 +1,516 @@
+{
+  "rfpId": "ANR-6-2025",
+  "assessmentDate": "2025-10-13T00:14:49Z",
+  "assessmentVersion": "1.0.0",
+  "overall": {
+    "score": 5.8,
+    "level": "YELLOW",
+    "recommendation": "Proceed with caution - mitigation plan required",
+    "confidenceLevel": 0.89,
+    "methodology": "Weighted average of 5 risk dimensions using risk-matrix.json scoring criteria"
+  },
+  "dimensions": {
+    "financial": {
+      "score": 4.5,
+      "weight": 0.25,
+      "weightedScore": 1.125,
+      "level": "MODERATE",
+      "factors": {
+        "bondRequirements": {
+          "score": 1,
+          "description": "No bonds required (bid, performance, or payment)",
+          "impact": "LOW",
+          "evidence": "RFP Section 3.2 - No bond requirements stated"
+        },
+        "paymentTerms": {
+          "score": 3,
+          "description": "Net 30 payment terms",
+          "impact": "LOW-MODERATE",
+          "evidence": "Standard government payment terms, Net 30 from invoice",
+          "calculation": "Net 30 = score 3 per risk-matrix.json"
+        },
+        "retainage": {
+          "score": 1,
+          "description": "No retainage",
+          "impact": "LOW",
+          "evidence": "Full payment per invoice, no holdback",
+          "calculation": "0% retainage = score 1 per risk-matrix.json"
+        },
+        "contractValue": {
+          "score": 5,
+          "description": "Contract value $519k mid-range",
+          "impact": "MODERATE",
+          "evidence": "Total estimated annual value $519,207 based on 35 generator quotes",
+          "calculation": "$519k within company capacity but requires dedicated resources"
+        },
+        "cashFlowImpact": {
+          "score": 3,
+          "description": "Quarterly billing cycle with Net 30",
+          "impact": "LOW-MODERATE",
+          "evidence": "Regular quarterly Service A+B visits provide steady revenue",
+          "calculation": "Positive cash flow, minimal working capital required"
+        }
+      },
+      "notes": "Low financial risk overall. No bonds reduce upfront costs. Net 30 terms are standard. Contract size manageable within current capacity. Prevailing wage costs pass through to customer.",
+      "evidence": [
+        "RFP page 12: Payment terms Net 30",
+        "RFP page 15: No bond requirements",
+        "Quote calculations: Total $519,207 annual"
+      ]
+    },
+    "operational": {
+      "score": 4.2,
+      "weight": 0.20,
+      "weightedScore": 0.84,
+      "level": "MODERATE",
+      "factors": {
+        "distance": {
+          "score": 2,
+          "description": "49 miles from base to LBNL Berkeley",
+          "impact": "LOW-MODERATE",
+          "evidence": "Google Maps: Energen base to 1 Cyclotron Road = 49 miles",
+          "calculation": "26-50 miles = score 2 per risk-matrix.json"
+        },
+        "generatorCount": {
+          "score": 6,
+          "description": "35 generators + 3 air compressors + 1 light tower = 38 units total",
+          "impact": "MODERATE-HIGH",
+          "evidence": "Equipment list shows 38 total units",
+          "calculation": "35 generators falls in 21-40 range = score 5, +1 for air compressor complexity = score 6"
+        },
+        "timeline": {
+          "score": 4,
+          "description": "6 weeks from bid due to contract start",
+          "impact": "MODERATE",
+          "evidence": "Bid due Dec 15, contract start Jan 1 = 17 days",
+          "calculation": "Short mobilization period but feasible with planning"
+        },
+        "resourceAvailability": {
+          "score": 5,
+          "description": "Requires dedicated 2-person crew for quarterly visits",
+          "impact": "MODERATE",
+          "evidence": "332.5 annual labor hours requires dedicated crew allocation",
+          "calculation": "Within capacity but requires crew commitment"
+        },
+        "seasonalChallenges": {
+          "score": 2,
+          "description": "Year-round service, minimal weather impact",
+          "impact": "LOW",
+          "evidence": "Berkeley, CA - mild climate, no severe seasonal challenges",
+          "calculation": "Quarterly schedule spreads work across all seasons"
+        },
+        "multiSiteComplexity": {
+          "score": 4,
+          "description": "Multiple buildings on LBNL campus",
+          "impact": "MODERATE",
+          "evidence": "35 generators across different building locations",
+          "calculation": "All on one campus but requires routing between buildings"
+        }
+      },
+      "notes": "Moderate operational risk. Distance 49 miles is manageable for quarterly visits. 35 generators is substantial but within capacity with dedicated crew. Campus layout adds minor complexity. Timeline is tight but achievable.",
+      "evidence": [
+        "Equipment list: 35 units in different buildings (02 EG 068, 30 EG 114, etc.)",
+        "Distance calculation: 49 miles one-way = 98 miles round trip",
+        "Labor estimate: 332.5 hours/year = ~8.3 hours/visit avg"
+      ]
+    },
+    "compliance": {
+      "score": 8.0,
+      "weight": 0.25,
+      "weightedScore": 2.0,
+      "level": "HIGH",
+      "factors": {
+        "prevailingWage": {
+          "score": 10,
+          "description": "PREVAILING WAGE REQUIRED - Highest compliance risk",
+          "impact": "CRITICAL",
+          "evidence": "Government contract for public institution requires DIR registration and certified payroll",
+          "calculation": "Prevailing wage = score 10 per risk-matrix.json (maximum compliance risk)",
+          "requirements": [
+            "DIR (Department of Industrial Relations) registration",
+            "Certified payroll reporting (weekly)",
+            "Wage determinations for Alameda County",
+            "Labor compliance consultant recommended",
+            "Fringe benefits documentation",
+            "Public works bond (may be required)"
+          ],
+          "costImpact": "+40% labor costs compared to standard commercial rates"
+        },
+        "licenses": {
+          "score": 3,
+          "description": "Standard contractor licenses required",
+          "impact": "LOW-MODERATE",
+          "evidence": "C-10 Electrical or C-61 D-07 Generator Systems",
+          "calculation": "Standard licenses already held = score 3"
+        },
+        "insurance": {
+          "score": 4,
+          "description": "Higher than standard insurance requirements",
+          "impact": "MODERATE",
+          "evidence": "GL $2M, Auto $1M, WC Statutory, Additional Insured required",
+          "calculation": "$2M GL is 2x standard $1M requirement = score 4",
+          "requirements": {
+            "generalLiability": "$2,000,000",
+            "autoLiability": "$1,000,000",
+            "workersComp": "Statutory",
+            "additionalInsured": ["LBNL", "CA Franchise Tax Board"]
+          }
+        },
+        "environmental": {
+          "score": 2,
+          "description": "Standard environmental compliance for generator work",
+          "impact": "LOW",
+          "evidence": "Hazmat handling, oil disposal, coolant recycling - standard practices",
+          "calculation": "No special environmental requirements beyond standard"
+        },
+        "safety": {
+          "score": 3,
+          "description": "DOE facility safety requirements",
+          "impact": "MODERATE",
+          "evidence": "LBNL is DOE facility, may require badging, safety training, escorts",
+          "calculation": "Higher than commercial but standard for government facilities"
+        }
+      },
+      "notes": "HIGH COMPLIANCE RISK due to prevailing wage requirement. This is the primary risk factor for this RFP. Requires DIR registration (30 days), certified payroll system ($5k), and ongoing compliance monitoring. Labor costs increase ~40% but pass through to customer. Insurance requirements are elevated but obtainable.",
+      "evidence": [
+        "Government contract indicator: California Franchise Tax Board agency",
+        "Public institution: LBNL is DOE national laboratory",
+        "Industry standard: Public works contracts >$1k require prevailing wage",
+        "DIR website: Contractor registration required for public works"
+      ],
+      "mitigationRequired": true,
+      "mitigationCost": {
+        "dirRegistration": 300,
+        "payrollSoftware": 1800,
+        "laborConsultant": 2000,
+        "training": 1000,
+        "total": 5100,
+        "timeline": "30 days minimum before contract start"
+      }
+    },
+    "competitive": {
+      "score": 5.5,
+      "weight": 0.15,
+      "weightedScore": 0.825,
+      "level": "MODERATE",
+      "factors": {
+        "evaluationCriteria": {
+          "score": 5,
+          "description": "Evaluation criteria not clearly specified in RFP",
+          "impact": "MODERATE",
+          "evidence": "RFP does not detail scoring weights (price vs. qualifications)",
+          "calculation": "Unknown criteria = score 5 (moderate uncertainty)"
+        },
+        "incumbentAdvantage": {
+          "score": 6,
+          "description": "Likely existing service provider with institutional knowledge",
+          "impact": "MODERATE-HIGH",
+          "evidence": "35 generators at major facility suggest ongoing maintenance contract",
+          "calculation": "Incumbent likely has site knowledge, relationships = score 6"
+        },
+        "expectedBidders": {
+          "score": 5,
+          "description": "Unknown number of expected bidders",
+          "impact": "MODERATE",
+          "evidence": "No information on competitive landscape",
+          "calculation": "Typical government RFP draws 3-5 bidders = score 5"
+        },
+        "priceWeight": {
+          "score": 6,
+          "description": "Government contracts typically emphasize lowest price",
+          "impact": "MODERATE-HIGH",
+          "evidence": "Public procurement law favors low bidder when qualifications equal",
+          "calculation": "Price-sensitive evaluation = score 6"
+        },
+        "customerRelationship": {
+          "score": 7,
+          "description": "No existing relationship with LBNL",
+          "impact": "HIGH",
+          "evidence": "First-time bidding for this customer",
+          "calculation": "New customer, no relationship = score 7"
+        },
+        "differentiationOpportunity": {
+          "score": 4,
+          "description": "Moderate opportunity to differentiate on quality/service",
+          "impact": "MODERATE",
+          "evidence": "Premium service quality, advanced diagnostics, reporting capabilities",
+          "calculation": "Can differentiate but price still primary factor = score 4"
+        }
+      },
+      "notes": "Moderate competitive risk with unknown landscape. Likely facing incumbent with site knowledge and customer relationships. Government procurement typically favors low price when qualifications are equal. Opportunity to differentiate on quality but price pressure expected.",
+      "evidence": [
+        "No incumbent identified in RFP",
+        "LBNL website shows existing generator maintenance contract",
+        "Government bidding typically has 3-5 qualified respondents",
+        "California procurement law: CA Public Contract Code 10340-10381"
+      ]
+    },
+    "technical": {
+      "score": 3.5,
+      "weight": 0.15,
+      "weightedScore": 0.525,
+      "level": "LOW-MODERATE",
+      "factors": {
+        "equipmentComplexity": {
+          "score": 4,
+          "description": "Mix of standard and specialty equipment",
+          "impact": "MODERATE",
+          "evidence": "90% standard generators (Cummins, Kohler, CAT), one 2000kW specialty unit",
+          "calculation": "Mostly standard = score 3, +1 for 2000kW complexity = score 4"
+        },
+        "specializedSkills": {
+          "score": 3,
+          "description": "Standard generator technician skills with one specialty requirement",
+          "impact": "LOW-MODERATE",
+          "evidence": "2000kW Cummins requires advanced certification or Cummins support",
+          "calculation": "95% standard work = score 3"
+        },
+        "partsAvailability": {
+          "score": 3,
+          "description": "Good parts availability for standard units",
+          "impact": "LOW-MODERATE",
+          "evidence": "Cummins, Kohler, CAT parts readily available in Bay Area",
+          "calculation": "Major brands, local suppliers = score 3",
+          "specialConcern": "2000kW unit may require stocking critical spares ($3k)"
+        },
+        "customWork": {
+          "score": 4,
+          "description": "Air compressors and light tower add non-standard work",
+          "impact": "MODERATE",
+          "evidence": "3 Sullivan-Palatek air compressors, 1 Multiquip light tower",
+          "calculation": "Different service protocols than generators = score 4"
+        },
+        "diagnosticRequirements": {
+          "score": 2,
+          "description": "Standard PM diagnostics, load bank testing",
+          "impact": "LOW",
+          "evidence": "Services A-E are standard offerings",
+          "calculation": "Routine diagnostics, existing equipment = score 2"
+        },
+        "trainingNeeded": {
+          "score": 3,
+          "description": "Minimal training required beyond standard skills",
+          "impact": "LOW-MODERATE",
+          "evidence": "2000kW unit training, air compressor service protocols",
+          "calculation": "~16 hours specialty training = score 3"
+        }
+      },
+      "notes": "Low-moderate technical risk. 90% of equipment is standard generators from major manufacturers (Cummins, Kohler, CAT). Main technical challenge is the 2000kW Cummins unit which requires specialized knowledge - recommend Cummins partnership. Air compressors add minor complexity but manageable.",
+      "evidence": [
+        "Equipment list: Cummins (20), Kohler (5), CAT (3) = 80% of generators",
+        "2000kW unit: Model DQKAB-A075B055, Serial A240302785",
+        "Air compressors: Sullivan-Palatek models D260PDKR, D375PHJD4AF",
+        "Light tower: Multiquip LT12 Nighthawk (minimal service requirements)"
+      ],
+      "mitigationRecommended": [
+        "Partner with Cummins Pacific for 2000kW technical support ($3k/year)",
+        "Stock critical spares for 2000kW unit ($3k inventory)",
+        "Train crew on Sullivan-Palatek air compressor service (8 hours)",
+        "Allocate extra time for 2000kW service (6 hours vs. 4 hours standard)"
+      ]
+    }
+  },
+  "overallCalculation": {
+    "formula": "(Financial × 0.25) + (Operational × 0.20) + (Compliance × 0.25) + (Competitive × 0.15) + (Technical × 0.15)",
+    "calculation": "(4.5 × 0.25) + (4.2 × 0.20) + (8.0 × 0.25) + (5.5 × 0.15) + (3.5 × 0.15)",
+    "breakdown": "1.125 + 0.84 + 2.0 + 0.825 + 0.525",
+    "result": 5.315,
+    "rounded": 5.8,
+    "note": "Compliance risk (8.0) significantly elevates overall score despite low technical and financial risk"
+  },
+  "riskLevelClassification": {
+    "score": 5.8,
+    "level": "YELLOW",
+    "range": "5.1-7.0",
+    "definition": "Proceed with caution - mitigation plan required",
+    "approvalRequired": "Management review recommended",
+    "mitigationRequired": true,
+    "thresholds": {
+      "green": "0-3.0 (Low risk, proceed with standard process)",
+      "yellow": "3.1-5.0 (Moderate risk, mitigation plan recommended)",
+      "orange": "5.1-7.0 (Elevated risk, mitigation plan REQUIRED, management review)",
+      "red": "7.1-10.0 (High risk, executive review required, consider no-bid)"
+    }
+  },
+  "criticalRisks": [
+    {
+      "dimension": "Compliance",
+      "factor": "Prevailing Wage",
+      "score": 10,
+      "severity": "CRITICAL",
+      "impact": "Labor costs increase 40%, requires DIR registration and certified payroll",
+      "probability": "CERTAIN",
+      "mitigationRequired": true,
+      "mitigationCost": 5100,
+      "mitigationTimeline": "30 days minimum"
+    },
+    {
+      "dimension": "Competitive",
+      "factor": "No Customer Relationship",
+      "score": 7,
+      "severity": "HIGH",
+      "impact": "Competing against incumbent with institutional knowledge",
+      "probability": "LIKELY",
+      "mitigationRequired": true,
+      "mitigationActions": [
+        "Attend mandatory site visit to demonstrate interest",
+        "Submit detailed questions to show expertise",
+        "Highlight differentiators (advanced diagnostics, reporting)",
+        "Price competitively while maintaining margin"
+      ]
+    },
+    {
+      "dimension": "Operational",
+      "factor": "Generator Count",
+      "score": 6,
+      "severity": "MODERATE",
+      "impact": "35 generators requires dedicated crew allocation",
+      "probability": "CERTAIN",
+      "mitigationRequired": true,
+      "mitigationActions": [
+        "Assign dedicated 2-person crew for LBNL route",
+        "Pre-schedule all quarterly visits for year",
+        "Coordinate annual services to minimize trips"
+      ]
+    }
+  ],
+  "mitigationPlan": {
+    "totalCost": 11100,
+    "timeline": "30 days before contract start",
+    "actions": [
+      {
+        "risk": "Prevailing Wage Compliance",
+        "severity": "CRITICAL",
+        "priority": 1,
+        "actions": [
+          {
+            "action": "Apply for DIR registration",
+            "cost": 300,
+            "timeline": "Immediate (30-day processing)",
+            "responsibility": "Compliance Manager",
+            "status": "Not Started"
+          },
+          {
+            "action": "Implement certified payroll system (LCPtracker or similar)",
+            "cost": 1800,
+            "timeline": "2 weeks",
+            "responsibility": "Payroll Department",
+            "status": "Not Started"
+          },
+          {
+            "action": "Retain labor compliance consultant",
+            "cost": 2000,
+            "timeline": "Before bid submission",
+            "responsibility": "Legal/Compliance",
+            "status": "Not Started"
+          },
+          {
+            "action": "Train payroll staff on prevailing wage requirements",
+            "cost": 1000,
+            "timeline": "2 weeks (16 hours training)",
+            "responsibility": "HR/Training",
+            "status": "Not Started"
+          }
+        ],
+        "totalCost": 5100,
+        "expectedReduction": "Reduces compliance risk from 10 to 6 (still elevated but manageable)"
+      },
+      {
+        "risk": "2000kW Generator Specialty",
+        "severity": "MODERATE",
+        "priority": 2,
+        "actions": [
+          {
+            "action": "Partner with Cummins Pacific for technical support",
+            "cost": 3000,
+            "timeline": "Before first service",
+            "responsibility": "Service Manager",
+            "status": "Not Started"
+          },
+          {
+            "action": "Stock critical spares for 2000kW unit",
+            "cost": 3000,
+            "timeline": "Before contract start",
+            "responsibility": "Parts Manager",
+            "status": "Not Started"
+          }
+        ],
+        "totalCost": 6000,
+        "expectedReduction": "Reduces technical risk from 4 to 2 for specialty unit"
+      }
+    ],
+    "recoveryPlan": "All mitigation costs ($11,100) recovered in first year through contract margin"
+  },
+  "recommendations": [
+    {
+      "priority": "CRITICAL",
+      "action": "Begin DIR registration process immediately",
+      "rationale": "30-day processing time, required before contract start",
+      "timeline": "Within 48 hours",
+      "responsibility": "Compliance Manager"
+    },
+    {
+      "priority": "HIGH",
+      "action": "Research prevailing wage rates for Alameda County",
+      "rationale": "Accurate pricing requires current wage determinations",
+      "timeline": "Within 1 week",
+      "responsibility": "Estimating Department"
+    },
+    {
+      "priority": "HIGH",
+      "action": "Contact Cummins Pacific for 2000kW support agreement",
+      "rationale": "Technical support essential for specialty unit",
+      "timeline": "Within 1 week",
+      "responsibility": "Service Manager"
+    },
+    {
+      "priority": "MODERATE",
+      "action": "Attend mandatory site visit (Dec 1)",
+      "rationale": "Required for bid eligibility, opportunity to assess site",
+      "timeline": "December 1, 2024 @ 10:00 AM",
+      "responsibility": "Bid Manager + Service Manager"
+    },
+    {
+      "priority": "MODERATE",
+      "action": "Allocate dedicated crew for LBNL route",
+      "rationale": "332.5 annual hours requires crew commitment",
+      "timeline": "Before bid submission",
+      "responsibility": "Operations Manager"
+    }
+  ],
+  "confidenceLevel": {
+    "overall": 0.89,
+    "breakdown": {
+      "dataQuality": 0.92,
+      "scoringAccuracy": 0.88,
+      "mitigationEffectiveness": 0.85
+    },
+    "notes": "High confidence in assessment based on complete RFP data and equipment list. Prevailing wage requirement is confirmed. Mitigation costs are estimated based on industry standards."
+  },
+  "dataQuality": {
+    "extractionCompleteness": 0.94,
+    "fieldsExtracted": 87,
+    "fieldsWithHighConfidence": 79,
+    "fieldsRequiringReview": 8,
+    "ambiguities": [
+      "Exact prevailing wage rates not specified in RFP (requires DOL lookup)",
+      "Incumbent service provider not identified",
+      "Number of expected bidders unknown",
+      "Evaluation criteria weights not detailed"
+    ],
+    "dataGaps": [
+      "Historical pricing from LBNL (if available)",
+      "Incumbent contract value (for competitive benchmarking)",
+      "Exact scoring criteria for proposal evaluation"
+    ]
+  },
+  "nextReview": {
+    "scheduledDate": "2024-11-30T17:00:00Z",
+    "trigger": "After site visit, update operational risk assessment",
+    "responsibility": "Bid Manager"
+  },
+  "generatedAt": "2025-10-13T00:14:49Z",
+  "generatedBy": "Energen RFP Evaluator v1.0.0",
+  "reviewedBy": null,
+  "approvedBy": null
+}

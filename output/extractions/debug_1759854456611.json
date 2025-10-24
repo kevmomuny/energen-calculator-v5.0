@@ -1,0 +1,249 @@
+```json
+{
+  "extractionId": "ext_20231128145623",
+  "timestamp": "2023-11-28T14:56:23Z",
+  "confidence": 0.92,
+  "contactInformation": {
+    "primaryContact": {"name": "Colleen Schwartz", "title": "Acquisition Analyst", "email": "Colleen.Schwartz@dgs.ca.gov", "phone": "279-946-8492"},
+    "agency": {"name": "Department of General Services", "department": "Facilities Management Division", "address": "707 Third Street, MS 508", "city": "West Sacramento", "state": "CA", "zip": "95605"},
+    "alternateContacts": []
+  },
+  "projectDetails": {
+    "bidNumber": "CR 24-219053",
+    "projectTitle": "Generator Maintenance Services",
+    "location": "Franchise Tax Board (Building #084), 9645 Butterfield Way, Sacramento, CA 95827",
+    "description": "Generator maintenance and repair services for five diesel generators at the Franchise Tax Board facility, including preventive maintenance, repairs, and emergency services.",
+    "projectType": "Generator Maintenance Services"
+  },
+  "schedule": {
+    "bidDueDate": "2025-10-08T14:00:00",
+    "contractStartDate": null,
+    "contractEndDate": null,
+    "duration": "36 months",
+    "keyDates": [
+      {"date": "2025-09-09", "event": "IFB available to prospective bidders", "description": "Release of solicitation"},
+      {"date": "2025-09-16T10:00:00", "event": "Non-Mandatory Walk-Through", "description": "Site visit for bidders"},
+      {"date": "2025-09-23", "event": "Written Question Submission Deadline", "description": "Last day to submit questions"},
+      {"date": "2025-09-30", "event": "Questions and Answers to be Posted", "description": "Responses to bidder questions"},
+      {"date": "2025-10-08T14:00:00", "event": "Deadline for Final Bid Submission", "description": "Bids due"},
+      {"date": "2025-10-09T09:00:00", "event": "Bid Opening", "description": "Public opening of submitted bids"}
+    ]
+  },
+  "services": [
+    {
+      "description": "Annual Generator Maintenance",
+      "frequency": "Annual",
+      "details": "Comprehensive maintenance including air induction and exhaust system inspection, cooling system maintenance, fuel system service, lube oil system service, engine starting system service, monitor and safety controls inspection, generator AC power unit service, generator mechanical inspection, and control panel inspection.",
+      "quantity": "5 generators",
+      "rawText": "Annual Generator Maintenance"
+    },
+    {
+      "description": "Annual Two-Hour Load Bank Testing",
+      "frequency": "Annual",
+      "details": "25% of nameplate rating for 30 minutes, 50% for 30 minutes, 75% for 60 minutes, for a total of two continuous hours",
+      "quantity": "5 generators",
+      "rawText": "Annual Two (2) Hour Load Bank Testing"
+    },
+    {
+      "description": "One-time Coolant Replacement",
+      "frequency": "Once per 36 months",
+      "details": "Complete coolant replacement according to manufacturer specifications",
+      "quantity": "5 generators",
+      "rawText": "Change coolant one-time per 36 months with reference to the manufacturer's specifications"
+    },
+    {
+      "description": "Diesel Fuel Replacement",
+      "frequency": "As needed",
+      "details": "Fill diesel tanks after load bank test or upon request",
+      "quantity": "5 generators",
+      "rawText": "Fill diesel tanks after load bank test or upon request from the FMD Contract Administrator or FMD Designated Representative"
+    },
+    {
+      "description": "Generator Rental Service",
+      "frequency": "As needed",
+      "details": "Installation of temporary rental generator and cabling for one week",
+      "quantity": "As needed",
+      "rawText": "Contractor shall install a temporary rental generator and its cablings upon the request of the FMD Contract Administrator or FMD Designated Representative. Temporary rental generator shall be utilized for one (1) week."
+    },
+    {
+      "description": "Repair Services",
+      "frequency": "As needed",
+      "details": "Foreseeable and unforeseeable repairs with response within one business day and onsite within two business days",
+      "quantity": "As needed",
+      "rawText": "Contractor shall provide repair services required to keep the equipment fully operational in accordance with manufacturer's standards."
+    },
+    {
+      "description": "Emergency Repair Services",
+      "frequency": "As needed",
+      "details": "Response within two hours of notification and onsite within four hours",
+      "quantity": "As needed",
+      "rawText": "Contractor shall provide any necessary emergency repair services upon request from the FMD Contract Administrator or FMD Designated Representative."
+    }
+  ],
+  "stipulations": [
+    {
+      "type": "certification",
+      "required": true,
+      "details": "Services on equipment shall be performed by Cummins Trained and Certified Service Technicians.",
+      "impact": "Requires specialized technicians with specific manufacturer training",
+      "confidence": 1.0
+    },
+    {
+      "type": "prevailing_wage",
+      "required": true,
+      "details": "This contract is subject to Prevailing Wage. Contractor and Sub-contractor(s) must be registered with DIR, if required by law to do so, in order to submit a bid.",
+      "impact": "Increases labor costs, requires certified payroll and DIR registration",
+      "confidence": 1.0
+    },
+    {
+      "type": "timing",
+      "required": true,
+      "details": "Normal business hours are Monday through Friday, 6:00 a.m. to 6:00 p.m. (PT), excluding observed State holidays.",
+      "impact": "Defines when standard services should be performed; work outside these hours requires approval",
+      "confidence": 1.0
+    },
+    {
+      "type": "certification",
+      "required": true,
+      "details": "DVBE participation goal of 3% required",
+      "impact": "Requires use of Disabled Veteran Business Enterprise subcontractors or certification",
+      "confidence": 1.0
+    },
+    {
+      "type": "security",
+      "required": true,
+      "details": "The State shall perform a background check (LIVE SCAN) on any of the Contractor's employees that will enter the building(s). The Contractor shall incur all costs associated with obtaining LIVE SCAN clearance.",
+      "impact": "Additional cost and time for security clearance of personnel",
+      "confidence": 1.0
+    }
+  ],
+  "paymentTerms": {
+    "invoicing": "Itemized invoices submitted in arrears of service performed",
+    "paymentNet": "Net 45",
+    "retainage": "10,000 or full final payment if less than $10,000 for DVBE compliance",
+    "depositRequired": false,
+    "depositAmount": null
+  },
+  "bondRequirements": {
+    "bidBond": {"required": false, "amount": null, "percentage": 0},
+    "performanceBond": {"required": false, "amount": null, "percentage": 0},
+    "paymentBond": {"required": false, "amount": null, "percentage": 0}
+  },
+  "requiredDocuments": [
+    {
+      "name": "Bid Submission Attachment Checklist",
+      "type": "form",
+      "fillable": true,
+      "required": true,
+      "pages": 18,
+      "description": "Checklist of all required bid documents"
+    },
+    {
+      "name": "Bid/Bidder Certification Sheet",
+      "type": "form",
+      "fillable": true,
+      "required": true,
+      "pages": 19-20,
+      "description": "Certification of bid and bidder information"
+    },
+    {
+      "name": "Bidder Declaration",
+      "type": "form",
+      "fillable": true,
+      "required": true,
+      "pages": 21,
+      "description": "Declaration of bidder information including subcontractors"
+    },
+    {
+      "name": "Payee Data Record",
+      "type": "form",
+      "fillable": true,
+      "required": true,
+      "pages": 22,
+      "description": "State tax reporting information"
+    },
+    {
+      "name": "Bidder References",
+      "type": "form",
+      "fillable": true,
+      "required": true,
+      "pages": 23,
+      "description": "Three or more references for similar work in last five years"
+    },
+    {
+      "name": "Darfur Contracting Act",
+      "type": "certification",
+      "fillable": true,
+      "required": true,
+      "pages": 24-25,
+      "description": "Certification regarding business activities in Sudan"
+    },
+    {
+      "name": "California Civil Rights Laws Attachment",
+      "type": "certification",
+      "fillable": true,
+      "required": true,
+      "pages": 26,
+      "description": "Certification of compliance with civil rights laws"
+    },
+    {
+      "name": "Iran Contracting Act Certification",
+      "type": "certification",
+      "fillable": true,
+      "required": true,
+      "pages": 27,
+      "description": "Certification regarding business activities in Iran"
+    },
+    {
+      "name": "Proof of Insurance",
+      "type": "certificate",
+      "fillable": false,
+      "required": true,
+      "pages": 28,
+      "description": "Current proof of required insurance coverage"
+    },
+    {
+      "name": "Cost Sheet",
+      "type": "form",
+      "fillable": true,
+      "required": true,
+      "pages": 29-39,
+      "description": "Detailed pricing for all services"
+    }
+  ],
+  "insuranceRequirements": [
+    {
+      "type": "General Liability",
+      "coverage": "$1,000,000 per occurrence",
+      "required": true
+    },
+    {
+      "type": "Automobile Liability",
+      "coverage": "$1,000,000 combined single limit per accident",
+      "required": true
+    },
+    {
+      "type": "Workers Compensation",
+      "coverage": "Statutory with $1,000,000 employer's liability",
+      "required": true
+    },
+    {
+      "type": "Errors and Omissions/Professional Liability",
+      "coverage": "$1,000,000 each incident and $2,000,000 aggregate",
+      "required": true
+    }
+  ],
+  "qualityReport": {
+    "fieldsExtracted": 42,
+    "fieldsRequiringReview": [
+      "contractStartDate",
+      "contractEndDate"
+    ],
+    "ambiguities": [
+      "Exact contract start and end dates not specified, only duration of 36 months mentioned",
+      "Payment terms Net 45 inferred from Government Code Chapter 4.5, section 927 reference"
+    ],
+    "extractionQuality": "high"
+  }
+}
+```

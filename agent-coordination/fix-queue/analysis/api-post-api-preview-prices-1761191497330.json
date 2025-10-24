@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-post-api-preview-prices-1761191497330",
+  "workflow_id": "api-post-api-preview-prices",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-post-api-preview-prices",
+    "started_at": "2025-10-23T03:51:37.327Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T03:51:37.330Z",
+    "duration_ms": 3,
+    "error": "request to http://localhost:3002/api/preview-prices failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.464Z"
+}

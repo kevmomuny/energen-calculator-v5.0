@@ -1,0 +1,150 @@
+/**
+ * API Service Module
+ * Handles all API communications
+ */
+
+const API_BASE = 'http://localhost:3002';
+
+class APIService {
+    constructor() {
+        this.baseUrl = API_BASE;
+    }
+
+    /**
+     * Make API request
+     * @param {string} endpoint - API endpoint
+     * @param {object} options - Fetch options
+     * @returns {Promise} Response data
+     */
+    async request(endpoint, options = {}) {
+        const url = `${this.baseUrl}${endpoint}`;
+        
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                },
+                ...options
+            });
+
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error(`API Request failed for ${endpoint}:`, error);
+            throw error;
+        }
+    }
+
+    /**
+     * GET request
+     */
+    async get(endpoint) {
+        return this.request(endpoint, { method: 'GET' });
+    }
+
+    /**
+     * POST request
+     */
+    async post(endpoint, data) {
+        return this.request(endpoint, {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    }
+
+    /**
+     * PUT request
+     */
+    async put(endpoint, data) {
+        return this.request(endpoint, {
+            method: 'PUT',
+            body: JSON.stringify(data)
+        });
+    }
+
+    /**
+     * DELETE request
+     */
+    async delete(endpoint) {
+        return this.request(endpoint, { method: 'DELETE' });
+    }
+
+    // Specific API methods
+
+    /**
+     * Calculate service pricing
+     */
+    async calculate(data) {
+        return this.post('/api/calculate', data);
+    }
+
+    /**
+     * Generate PDF
+     */
+    async generatePDF(data) {
+        return this.post('/api/generate-pdf', data);
+    }
+
+    /**
+     * Search Google Places
+     */
+    async searchPlaces(query) {
+        return this.post('/api/enrichment/google-places', {
+            query: query,
+            companyName: query
+        });
+    }
+
+    /**
+     * Get customer enrichment
+     */
+    async enrichCustomer(data) {
+        return this.post('/api/enrichment/google-places', data);
+    }
+
+    /**
+     * Calculate distance
+     */
+    async calculateDistance(origin, destination) {
+        return this.post('/api/enrichment/distance', { origin, destination });
+    }
+
+    /**
+     * Get settings
+     */
+    async getSettings() {
+        return this.get('/api/settings');
+    }
+
+    /**
+     * Save settings
+     */
+    async saveSettings(settings) {
+        return this.post('/api/settings', settings);
+    }
+
+    /**
+     * Save quote
+     */
+    async saveQuote(quoteData) {
+        return this.post('/api/save-quote', quoteData);
+    }
+
+    /**
+     * Health check
+     */
+    async healthCheck() {
+        return this.get('/health');
+    }
+}
+
+// Create singleton instance
+const apiService = new APIService();
+
+// Export for ES6 modules
+export default apiService;
+export { APIService };

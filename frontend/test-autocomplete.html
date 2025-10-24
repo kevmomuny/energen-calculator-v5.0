@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Google Places Autocomplete</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    .input-wrapper {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .autocomplete-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #ddd;
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      max-height: 300px;
+      overflow-y: auto;
+      display: none;
+      z-index: 1000;
+    }
+    .autocomplete-dropdown.active {
+      display: block;
+    }
+    .autocomplete-item {
+      padding: 10px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .autocomplete-item:hover {
+      background: #f5f5f5;
+    }
+    .autocomplete-main {
+      font-weight: bold;
+      color: #333;
+    }
+    .autocomplete-secondary {
+      font-size: 14px;
+      color: #666;
+      margin-top: 2px;
+    }
+    .results {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+    }
+    .status {
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 4px;
+    }
+    .status.loading { background: #fff3cd; }
+    .status.success { background: #d4edda; }
+    .status.error { background: #f8d7da; }
+  </style>
+</head>
+<body>
+  <h1>Google Places Autocomplete Test</h1>
+
+  <div class="input-wrapper">
+    <input
+      type="text"
+      id="companyName"
+      placeholder="Start typing a company name..."
+      autocomplete="off"
+    >
+    <div id="dropdown" class="autocomplete-dropdown"></div>
+  </div>
+
+  <div id="status" class="status">Ready to test autocomplete</div>
+
+  <div class="results" id="results">Results will appear here...</div>
+
+  <script>
+    const API_BASE = 'http://localhost:3002';
+    const input = document.getElementById('companyName');
+    const dropdown = document.getElementById('dropdown');
+    const status = document.getElementById('status');
+    const results = document.getElementById('results');
+    let debounceTimer;
+
+    // Log function
+    function log(message, data) {
+      results.textContent += `\n${new Date().toLocaleTimeString()} - ${message}\n`;
+      if (data) {
+        results.textContent += JSON.stringify(data, null, 2) + '\n';
+      }
+    }
+
+    // Update status
+    function setStatus(message, type = 'loading') {
+      status.textContent = message;
+      status.className = `status ${type}`;
+    }
+
+    // Handle input changes
+    input.addEventListener('input', (e) => {
+      const value = e.target.value;
+
+      clearTimeout(debounceTimer);
+
+      if (value.length < 3) {
+        dropdown.classList.remove('active');
+        dropdown.innerHTML = '';
+        setStatus('Type at least 3 characters', 'loading');
+        return;
+      }
+
+      debounceTimer = setTimeout(() => {
+        fetchPredictions(value);
+      }, 300);
+    });
+
+    // Fetch predictions from API
+    async function fetchPredictions(query) {
+      setStatus(`Searching for "${query}"...`, 'loading');
+      log(`Fetching predictions for: ${query}`);
+
+      try {
+        const response = await fetch(`${API_BASE}/api/google-places`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ input: query })
+        });
+
+        log(`Response status: ${response.status}`);
+
+        const data = await response.json();
+        log('Response data:', data);
+
+        if (data.predictions && data.predictions.length > 0) {
+          setStatus(`Found ${data.predictions.length} suggestions`, 'success');
+          showDropdown(data.predictions);
+        } else {
+          setStatus('No suggestions found', 'error');
+          dropdown.classList.remove('active');
+        }
+      } catch (error) {
+        log('Error:', error);
+        setStatus(`Error: ${error.message}`, 'error');
+        dropdown.classList.remove('active');
+      }
+    }
+
+    // Show dropdown with predictions
+    function showDropdown(predictions) {
+      dropdown.innerHTML = '';
+
+      predictions.forEach(prediction => {
+        const item = document.createElement('div');
+        item.className = 'autocomplete-item';
+
+        const main = prediction.structured_formatting?.main_text ||
+                     prediction.description?.split(',')[0] ||
+                     prediction.description;
+
+        const secondary = prediction.structured_formatting?.secondary_text ||
+                         prediction.description?.split(',').slice(1).join(',') ||
+                         '';
+
+        item.innerHTML = `
+          <div class="autocomplete-main">${main}</div>
+          ${secondary ? `<div class="autocomplete-secondary">${secondary}</div>` : ''}
+        `;
+
+        item.addEventListener('click', () => {
+          input.value = main;
+          dropdown.classList.remove('active');
+          log('Selected:', prediction);
+          setStatus(`Selected: ${main}`, 'success');
+        });
+
+        dropdown.appendChild(item);
+      });
+
+      dropdown.classList.add('active');
+    }
+
+    // Hide dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.input-wrapper')) {
+        dropdown.classList.remove('active');
+      }
+    });
+
+    // Test the endpoint directly on load
+    window.addEventListener('load', async () => {
+      log('Testing direct API call...');
+
+      try {
+        const response = await fetch(`${API_BASE}/api/google-places`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ input: 'Test Company' })
+        });
+
+        const data = await response.json();
+        log('Direct API test result:', data);
+
+        if (data.predictions && data.predictions.length > 0) {
+          setStatus('API is working! Try typing in the input field.', 'success');
+        } else {
+          setStatus('API returned no predictions', 'error');
+        }
+      } catch (error) {
+        log('Direct API test failed:', error);
+        setStatus('API connection failed', 'error');
+      }
+    });
+  </script>
+</body>
+</html>

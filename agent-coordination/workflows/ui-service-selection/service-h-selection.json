@@ -1,0 +1,23 @@
+{
+  "workflow_id": "service-h-selection",
+  "description": "Test Service H selection and calculation",
+  "category": "ui",
+  "critical_path": false,
+  "assigned_agent": "ui-service-selection",
+  "steps": [
+    {
+      "type": "ui",
+      "action": "select-service-H",
+      "element": "#serviceH",
+      "validation": "Service H checkbox checked"
+    },
+    {
+      "type": "api",
+      "action": "calculate",
+      "endpoint": "/api/calculate",
+      "validation": "response includes Service H in breakdown"
+    }
+  ],
+  "expected_duration_ms": 2000,
+  "dependencies": []
+}

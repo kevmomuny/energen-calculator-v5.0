@@ -1,0 +1,4679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>Energen Calculator v5.0 - Integrated</title>
+    <!-- Error Handler - Must load first to prevent console auto-opening -->
+    <script type="module" src="js/error-handler.js"></script>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Material Symbols Outlined with Rounded/Soft style -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
+
+    <!-- RFP Upload Module Styles -->
+    <link rel="stylesheet" href="styles/rfp-upload.css">
+    
+    <!-- Contact Modal Styles -->
+    <link rel="stylesheet" href="styles/contact-modal.css">
+
+    <!-- Enhanced Autocomplete Styles -->
+    <link rel="stylesheet" href="styles/enhanced-autocomplete.css">
+
+    <!-- Google Maps JavaScript API with Places Library -->
+    <!-- API key injected via backend endpoint to avoid exposure -->
+    <script>
+      // Load Google Maps API with key from backend
+      fetch('/api/config/google-maps-key')
+        .then(r => r.json())
+        .then(data => {
+          const script = document.createElement('script');
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&libraries=places`;
+          script.async = true;
+          script.defer = true;
+          document.head.appendChild(script);
+        })
+        .catch(err => console.error('Failed to load Google Maps API:', err));
+    </script>
+
+    <style>
+        :root {
+            /* Command Center Dark Theme - EXACT from energen_design_1 */
+            --bg-primary: #0a0b0d;
+            --bg-secondary: #12141a;
+            --bg-tertiary: #1a1d26;
+            --bg-elevated: #22252f;
+            --text-primary: #e4e6eb;
+            --text-secondary: #9ca3af;
+            --text-tertiary: #6b7280;
+            --accent-blue: #3b82f6;
+            --accent-electric: #60a5fa;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --border-subtle: #1f2937;
+            --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* Fix for webpack dev server scaling differences */
+        html {
+            zoom: 1;
+            -moz-transform: scale(1);
+            -moz-transform-origin: 0 0;
+        }
+
+        /* Prevent WebKit text inflation without breaking zoom */
+        html {
+            -webkit-text-size-adjust: 100%;
+            -moz-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+        
+        body {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 11px;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            /* Workaround for Chrome Android font boosting */
+            max-height: 999999px;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 60px 320px 1fr 280px;
+            grid-template-rows: 48px 1fr 32px;
+            height: 100vh;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            grid-column: 1 / -1;
+            background: rgba(18, 20, 26, 0.9);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .logo svg .cls-1 {
+            fill: #ffffff;
+        }
+        
+        .logo svg .cls-2 {
+            fill: #60a5fa;
+        }
+
+
+        /* Activity Bar */
+        .activity-bar {
+            grid-row: 2;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-subtle);
+            padding: 8px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .activity-item {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+
+        .activity-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .activity-item.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        /* Left Sidebar - Customer Enrichment */
+        .sidebar-left {
+            grid-row: 2;
+            background: var(--bg-tertiary);
+            border-right: 1px solid var(--border-subtle);
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .section-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+            margin-bottom: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 6px 8px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            color: var(--text-primary); /* Use theme text color */
+            font-size: 11px;
+            font-family: inherit;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Override browser autofill styles */
+        .input-field:-webkit-autofill,
+        .input-field:-webkit-autofill:hover,
+        .input-field:-webkit-autofill:focus,
+        .input-field:-webkit-autofill:active {
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: var(--text-primary) !important;
+            background-color: var(--bg-secondary) !important;
+            transition: background-color 5000s ease-in-out 0s;
+            box-shadow: inset 0 0 20px 20px var(--bg-secondary) !important;
+        }
+        
+        /* Firefox autofill override */
+        .input-field:autofill {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        /* Ensure selects also have proper text color */
+        select.input-field {
+            color: var(--text-primary);
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        /* Customer sections */
+        .customer-section {
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            padding: 12px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .enrichment-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+
+        .status-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Logo Container Styles */
+        .logo-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid var(--border-subtle);
+            transition: all 0.3s ease;
+        }
+        
+        .logo-container:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+        
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: white;
+        }
+        
+        .logo-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(102, 126, 234, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .logo-container:hover .logo-overlay {
+            opacity: 1;
+        }
+        
+        .logo-overlay span {
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        /* Logo Picker Modal */
+        .logo-picker-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-picker-modal.active {
+            display: flex;
+        }
+        
+        .logo-picker-content {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .logo-picker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo-picker-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .logo-picker-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        
+        .logo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 16px;
+        }
+        
+        .logo-option {
+            border: 2px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .logo-option:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+        
+        .logo-option.selected {
+            border-color: var(--accent-success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .logo-option img {
+            width: 100%;
+            height: 100px;
+            object-fit: contain;
+        }
+        
+        .logo-option-info {
+            margin-top: 8px;
+            text-align: center;
+        }
+        
+        .logo-provider {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        
+        .logo-type {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Unit Details Modal Specific Styles */
+        .modal-section {
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+
+        .confidence-indicator {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 2px 6px;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-success);
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+
+        .confidence-indicator::before {
+            content: "✓ AI";
+        }
+
+        .spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--border-subtle);
+            border-top-color: var(--accent-electric);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .enrichment-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .enrichment-item:last-child {
+            border-bottom: none;
+        }
+
+        .enrichment-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .enrichment-value {
+            font-size: 10px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Contacts */
+        .contact-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .contact-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateX(2px);
+        }
+
+        .contact-primary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .contact-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .contact-badge {
+            font-size: 9px;
+            padding: 2px 6px;
+            background: var(--accent-blue);
+            color: white;
+            border-radius: 3px;
+        }
+
+        /* Main Content */
+        .main-content {
+            grid-row: 2;
+            background: var(--bg-primary);
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        /* Metrics Row */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .metric-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-blue);
+        }
+
+        .metric-label {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--accent-electric);
+        }
+
+        .metric-change {
+            font-size: 10px;
+            color: var(--accent-success);
+            margin-top: 4px;
+        }
+
+        /* Unit Container */
+        .unit-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .unit-container.collapsed {
+            background: var(--bg-tertiary);
+        }
+
+        .unit-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .unit-header:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .unit-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .expand-toggle {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: transform 0.3s;
+        }
+
+        .unit-container.collapsed .expand-toggle {
+            transform: rotate(-90deg);
+        }
+
+        .unit-badge {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-electric));
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .unit-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .unit-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .unit-details {
+            font-size: 10px;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 12px;
+        }
+
+        .unit-header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .unit-services-count {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 8px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .service-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-success);
+        }
+
+        .unit-subtotal {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent-electric);
+            min-width: 80px;
+            text-align: right;
+        }
+
+        /* Unit Content */
+        .unit-content {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .unit-container.collapsed .unit-content {
+            max-height: 0;
+            border-top: none;
+        }
+
+        .unit-content-inner {
+            padding: 16px;
+        }
+
+        /* Generator Specs */
+        .generator-specs-section {
+            background: var(--bg-primary);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .spec-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .spec-label {
+            font-size: 9px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .spec-value {
+            padding: 5px 8px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 3px;
+            color: var(--text-primary);
+            font-size: 11px;
+            font-family: inherit;
+        }
+
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 8px;
+        }
+
+        .service-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .service-card:hover {
+            transform: translateY(-1px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+        }
+
+        .service-card.active {
+            border-color: var(--accent-blue);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0.1));
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+
+        .service-card.active::after {
+            content: '✓';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .service-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .service-price {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent-electric);
+            margin-bottom: 6px;
+        }
+
+        .frequency-selector {
+            display: flex;
+            gap: 3px;
+        }
+
+        .frequency-btn {
+            flex: 1;
+            padding: 3px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 2px;
+            font-size: 9px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+
+        .frequency-btn.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        /* Right Sidebar */
+        .sidebar-right {
+            grid-row: 2;
+            background: var(--bg-tertiary);
+            border-left: 1px solid var(--border-subtle);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .summary-label {
+            color: var(--text-secondary);
+            font-size: 11px;
+        }
+
+        .summary-value {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .total-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 2px solid var(--accent-blue);
+        }
+
+        .total-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .total-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent-electric);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: grid;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* Material Symbols styling */
+        .material-symbols-outlined {
+            font-size: 18px;
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 300,
+                'GRAD' 0,
+                'opsz' 20;
+            vertical-align: middle;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-electric));
+            color: white;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-primary);
+            border-color: var(--accent-blue);
+        }
+
+        .btn-success {
+            background: var(--accent-success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--accent-danger);
+            color: white;
+        }
+
+        /* Add Unit Button */
+        .add-unit-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border: 2px dashed var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .add-unit-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* Status Bar */
+        .status-bar {
+            grid-column: 1 / -1;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            font-size: 10px;
+            color: var(--text-tertiary);
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--border-subtle);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-subtle);
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+
+        ::-webkit-scrollbar-thumb:active {
+            background: var(--accent-blue);
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-subtle) var(--bg-secondary);
+        }
+        
+        /* Autocomplete dropdown */
+        .autocomplete-dropdown {
+            position: absolute;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            width: calc(100% - 2px);
+            margin-top: 4px;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .autocomplete-dropdown.show {
+            display: block;
+        }
+        
+        .autocomplete-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 11px;
+            border-bottom: 1px solid var(--bg-tertiary);
+            transition: background 0.2s;
+        }
+        
+        .autocomplete-item:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .autocomplete-item.selected {
+            background: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.2);
+        }
+        
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+        
+        .autocomplete-item.searching {
+            cursor: default;
+            color: var(--accent-blue);
+            font-style: italic;
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .autocomplete-item.no-results {
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+        
+        .autocomplete-item.no-results:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .autocomplete-item.error {
+            cursor: pointer;
+            color: var(--accent-warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+        
+        .autocomplete-item.error:hover {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--text-primary);
+        }
+        
+        .autocomplete-item-main {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .autocomplete-item-secondary {
+            color: var(--text-tertiary);
+            font-size: 10px;
+            margin-top: 2px;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+
+        /* =================================================================
+           MOBILE RESPONSIVENESS - MODERN TOUCH-FIRST DESIGN
+           ================================================================= */
+
+        @media (max-width: 1200px) {
+            .app-container {
+                grid-template-columns: 50px 300px 1fr 250px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 45px 280px 1fr 220px;
+            }
+            
+            .input-field, .select-field {
+                font-size: 14px;
+                padding: 12px;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                font-size: 14px;
+                min-height: 44px; /* Touch target */
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Mobile Layout - Stack vertically */
+            .app-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 60px auto auto auto 40px;
+                height: 100vh;
+                overflow-x: hidden;
+            }
+            
+            /* Hide sidebar and right panel on mobile */
+            .sidebar, .right-panel {
+                display: none;
+            }
+            
+            /* Make main content full width */
+            .main-content {
+                grid-column: 1;
+                padding: 16px;
+                overflow-y: auto;
+                max-height: calc(100vh - 100px);
+            }
+            
+            /* Mobile Navigation */
+            .nav-bar {
+                padding: 0 16px;
+                height: 60px;
+            }
+            
+            .logo {
+                width: 100px;
+                height: 32px;
+            }
+            
+            /* Mobile Forms */
+            .section {
+                margin-bottom: 24px;
+            }
+            
+            .input-row {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .input-group {
+                width: 100%;
+            }
+            
+            .input-field, .select-field {
+                font-size: 16px; /* Prevent zoom on iOS */
+                padding: 14px 16px;
+                min-height: 44px;
+                border-radius: 8px;
+            }
+            
+            /* Mobile Button Groups */
+            .button-group {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .btn {
+                width: 100%;
+                padding: 16px;
+                font-size: 16px;
+                min-height: 52px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+            }
+            
+            /* Mobile Cards */
+            .unit-card {
+                margin-bottom: 20px;
+                border-radius: 8px;
+            }
+            
+            .unit-header {
+                padding: 16px;
+            }
+            
+            /* Mobile Service Selection */
+            .services-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            
+            .service-item {
+                padding: 12px;
+                border-radius: 6px;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+            
+            .service-item input[type="checkbox"] {
+                width: 20px;
+                height: 20px;
+                margin-right: 10px;
+            }
+            
+            /* Mobile Modal Adjustments */
+            .contact-modal {
+                width: 95%;
+                margin: 20px;
+                max-height: 85vh;
+            }
+            
+            .contact-modal-body {
+                padding: 20px;
+            }
+            
+            .modal-actions {
+                flex-direction: column-reverse;
+                gap: 12px;
+            }
+            
+            .modal-actions .btn {
+                width: 100%;
+                margin: 0;
+            }
+            
+            /* Mobile Toast Notifications */
+            .toast {
+                left: 10px;
+                right: 10px;
+                width: auto;
+                min-width: auto;
+                max-width: none;
+            }
+            
+            /* Mobile Autocomplete */
+            .autocomplete-dropdown {
+                left: 0;
+                right: 0;
+                max-height: 200px;
+            }
+            
+            .autocomplete-item {
+                padding: 12px 16px;
+                min-height: 44px;
+            }
+            
+            /* Mobile Loading Overlays */
+            .loading-content {
+                padding: 20px;
+            }
+            
+            .loading-message {
+                font-size: 18px;
+                margin-top: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            /* Extra small devices */
+            body {
+                font-size: 14px;
+            }
+            
+            .main-content {
+                padding: 12px;
+            }
+            
+            .section-title {
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+            
+            .input-label {
+                font-size: 13px;
+                margin-bottom: 6px;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .service-item {
+                padding: 14px 12px;
+            }
+            
+            /* Smaller buttons for very small screens */
+            .btn {
+                padding: 14px 16px;
+                min-height: 48px;
+            }
+            
+            .contact-modal {
+                width: 98%;
+                margin: 10px;
+            }
+        }
+
+        /* Touch Improvements */
+        @media (hover: none) and (pointer: coarse) {
+            /* Touch devices - larger touch targets */
+            .btn, .input-field, .select-field, .autocomplete-item, .service-item {
+                min-height: 44px;
+            }
+            
+            .btn:hover {
+                /* Disable hover effects on touch devices */
+                background: var(--accent-blue);
+                transform: none;
+            }
+            
+            .autocomplete-item:hover {
+                background: transparent;
+            }
+            
+            /* Touch-friendly scrollbars */
+            ::-webkit-scrollbar {
+                width: 8px;
+                height: 8px;
+            }
+            
+            ::-webkit-scrollbar-thumb {
+                background: var(--text-tertiary);
+                border-radius: 4px;
+            }
+        }
+
+        /* Landscape Mobile Adjustments */
+        @media (max-width: 896px) and (orientation: landscape) and (max-height: 500px) {
+            .app-container {
+                grid-template-rows: 50px 1fr 30px;
+            }
+            
+            .main-content {
+                max-height: calc(100vh - 80px);
+                padding: 12px 16px;
+            }
+            
+            .nav-bar {
+                height: 50px;
+            }
+        }
+
+        /* Mobilization Stacking Styles */
+        .mobilization-stacking-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 12px;
+            transition: all 0.2s;
+        }
+
+        .mobilization-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .mobilization-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-primary);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .mobilization-title .material-symbols-outlined {
+            font-size: 14px;
+        }
+
+        .mobilization-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background-color: #374151;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .mobilization-toggle.active {
+            background-color: #3b82f6;
+        }
+
+        .mobilization-toggle::after {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background-color: white;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .mobilization-toggle.active::after {
+            transform: translateX(30px);
+        }
+
+        .mobilization-content {
+            transition: opacity 0.3s ease, max-height 0.3s ease;
+            max-height: 500px;
+            overflow: hidden;
+        }
+
+        .mobilization-content.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+            max-height: 0;
+        }
+
+        .slider-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 9px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .charge-display {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 4px;
+            font-size: 9px;
+        }
+        
+        .charge-percentage {
+            color: var(--accent-electric);
+            font-weight: 600;
+            font-size: 11px;
+        }
+        
+        .charge-label {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .mobilization-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right,
+                #ef4444 0%,
+                #f59e0b 35%,
+                #10b981 65%,
+                #3b82f6 100%);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .mobilization-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 0 0 2px #3b82f6;
+            transition: transform 0.2s ease;
+        }
+
+        .mobilization-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .mobilization-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 0 0 2px #3b82f6;
+            border: none;
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .preset-btn {
+            flex: 1;
+            padding: 6px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            font-size: 9px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .preset-btn:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .preset-btn.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+        
+        .preset-value {
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .preset-label {
+            font-size: 8px;
+            opacity: 0.8;
+        }
+
+        .mobilization-example {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .example-title {
+            color: #10b981;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .example-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .example-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+        }
+
+        .example-label {
+            color: #9ca3af;
+        }
+
+        .example-value {
+            color: #e5e7eb;
+            font-weight: 500;
+        }
+
+        .savings-amount {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        /* ================================================================
+           ZOHO INTEGRATION COMPONENTS
+           ================================================================ */
+
+        /* Zoho Sync Status Badge */
+        .zoho-sync-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .zoho-sync-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-warning);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .zoho-sync-badge.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .zoho-sync-badge.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--accent-danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Zoho Customer Search Enhancement */
+        .zoho-account-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+        }
+
+        .zoho-account-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            object-fit: contain;
+            background: white;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .zoho-account-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .zoho-account-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .zoho-account-details {
+            font-size: 9px;
+            color: var(--text-tertiary);
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .zoho-generator-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 6px;
+            background: var(--accent-success);
+            color: white;
+            border-radius: 3px;
+            font-size: 8px;
+            font-weight: 600;
+        }
+
+        /* Zoho Sync Confirmation Modal */
+        .zoho-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10001;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zoho-modal.active {
+            display: flex;
+        }
+
+        .zoho-modal-content {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .zoho-modal-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .zoho-modal-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-electric));
+        }
+
+        .zoho-modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .zoho-modal-body {
+            margin-bottom: 20px;
+        }
+
+        .zoho-record-info {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .zoho-record-label {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .zoho-record-value {
+            font-size: 13px;
+            color: var(--text-primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .zoho-link {
+            color: var(--accent-blue);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .zoho-link:hover {
+            text-decoration: underline;
+        }
+
+        .zoho-modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Generator Units Manager */
+        .generator-units-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .generator-units-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .generator-units-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .generator-units-count {
+            background: var(--accent-blue);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .generator-unit-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .generator-unit-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateX(2px);
+        }
+
+        .generator-unit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .generator-unit-model {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .generator-unit-specs {
+            font-size: 10px;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 12px;
+        }
+
+        .generator-unit-spec-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .generator-unit-badges {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .generator-unit-badge {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 8px;
+            font-weight: 600;
+        }
+
+        .generator-unit-badge.gps {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-success);
+        }
+
+        .generator-unit-badge.service {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-blue);
+        }
+
+        .generator-unit-photos {
+            display: flex;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .generator-unit-photo-thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            object-fit: cover;
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .generator-unit-photo-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .add-generator-unit-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-primary);
+            border: 2px dashed var(--border-subtle);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .add-generator-unit-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* Service History Timeline */
+        .service-history-timeline {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .service-history-item {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 9px;
+        }
+
+        .service-history-date {
+            color: var(--text-tertiary);
+            min-width: 60px;
+        }
+
+        .service-history-type {
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        .service-history-next-due {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 4px;
+            font-size: 9px;
+            color: var(--accent-warning);
+            margin-top: 8px;
+        }
+
+        /* Loading Spinner for Zoho Operations */
+        .zoho-loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent-blue);
+        }
+
+        .zoho-spinner {
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--border-subtle);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        /* Generator Enrichment Panel */
+        .enrichment-panel {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .confidence-container {
+            margin-bottom: 16px;
+        }
+
+        .confidence-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+            border-radius: 6px;
+            border: 1px solid #444;
+        }
+
+        .confidence-icon {
+            font-size: 32px;
+            color: #4CAF50;
+        }
+
+        .confidence-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .confidence-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .confidence-score {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .enrichment-tier {
+            font-size: 11px;
+            padding: 4px 8px;
+            background: #3a3a3a;
+            border-radius: 4px;
+            color: #ccc;
+        }
+
+        /* Confidence Colors */
+        .confidence-high { background: linear-gradient(135deg, #1e3a1e 0%, #2a4a2a 100%); border-color: #4CAF50; }
+        .confidence-high .confidence-icon { color: #4CAF50; }
+
+        .confidence-good { background: linear-gradient(135deg, #1e2a3a 0%, #2a3a4a 100%); border-color: #2196F3; }
+        .confidence-good .confidence-icon { color: #2196F3; }
+
+        .confidence-medium { background: linear-gradient(135deg, #3a3a1e 0%, #4a4a2a 100%); border-color: #FFC107; }
+        .confidence-medium .confidence-icon { color: #FFC107; }
+
+        .confidence-low { background: linear-gradient(135deg, #3a2a1e 0%, #4a3a2a 100%); border-color: #FF9800; }
+        .confidence-low .confidence-icon { color: #FF9800; }
+
+        /* Enriched Specs */
+        .enriched-specs h4 {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .spec-section {
+            margin-bottom: 16px;
+            padding: 12px;
+            background: #1e1e1e;
+            border-radius: 6px;
+        }
+
+        .spec-section h5 {
+            margin: 0 0 8px 0;
+            font-size: 12px;
+            color: #999;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .spec-section h5 .material-symbols-outlined {
+            font-size: 16px;
+        }
+
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 8px;
+        }
+
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .spec-item:last-child {
+            border-bottom: none;
+        }
+
+        .spec-label-enrichment {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .spec-value-enrichment {
+            font-size: 13px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        /* Enrichment Sources */
+        .enrichment-sources {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #333;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .sources-label {
+            font-weight: 500;
+            color: #888;
+        }
+
+        .sources-text {
+            margin-left: 6px;
+            font-style: italic;
+        }
+
+        /* Enrich Button */
+        .btn-enrich {
+            width: 100%;
+            padding: 10px;
+            margin-top: 12px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            border: 1px solid #3b82f6;
+            border-radius: 6px;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-enrich:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-enrich:disabled {
+            background: #3a3a3a;
+            border-color: #444;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-enrich .material-symbols-outlined {
+            font-size: 16px;
+        }
+
+        /* Loading spinner for enrichment */
+        .enrichment-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px;
+            color: #999;
+        }
+
+        .enrichment-loading .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #333;
+            border-top-color: #2196F3;
+            border-radius: 50%;
+            animation: spin-enrichment 0.8s linear infinite;
+        }
+
+        @keyframes spin-enrichment {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Customer View Styles */
+        .customer-card:hover {
+            background: var(--bg-tertiary) !important;
+            border-color: var(--accent-blue) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .customer-detail-panel {
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-subtle) var(--bg-secondary);
+        }
+
+        .customer-detail-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .customer-detail-panel::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        .customer-detail-panel::-webkit-scrollbar-thumb {
+            background: var(--border-subtle);
+            border-radius: 4px;
+        }
+
+        .customer-detail-panel::-webkit-scrollbar-thumb:hover {
+            background: var(--text-tertiary);
+        }
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--border-subtle);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Early function definitions to prevent errors -->
+    <script>
+        // Define stub functions that will be overridden later
+        // handleCompanyChange and handleCompanyInput are now in global-handlers.js
+
+        window.formatPhoneNumber = function(e) {
+            const input = e.target;
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                if (value.length <= 3) {
+                    value = value;
+                } else if (value.length <= 6) {
+                    value = `(${value.slice(0, 3)}) ${value.slice(3)}`;
+                } else {
+                    value = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6, 10)}`;
+                }
+            }
+            input.value = value;
+        };
+
+        // calculateDistance and fetchTaxRate are now in global-handlers.js
+        // Real implementations loaded via init.js -> global-handlers.js
+    </script>
+
+    <div class="app-container">
+        <!-- Navigation Bar -->
+        <nav class="nav-bar">
+            <div class="logo-section">
+                <div class="logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 434.6 128.31">
+                        <defs><style>.cls-1{fill:#fff;stroke-width:0px;}.cls-2{fill:#60a5fa;stroke-width:0px;}</style></defs>
+                        <g><g><g><path class="cls-1" d="M134.46,51.94v8.39h-40.18V22.68h39.59v8.39h-28.78v6.18h23.72v8.02h-23.72v6.67h29.37Z"/><path class="cls-1" d="M185.64,22.68v37.66h-9.63l-24.32-24.75v24.75h-10.6V22.68h11.62l22.33,23.02v-23.02h10.6Z"/><path class="cls-1" d="M234.68,51.94v8.39h-40.18V22.68h39.59v8.39h-28.78v6.18h23.72v8.02h-23.72v6.67h29.37Z"/><path class="cls-1" d="M273.28,60.34l-9.95-11.89h-11.08v11.89h-10.92V22.68h26.41c9.63,0,17.11,4.25,17.11,12.86,0,6.29-3.98,10.28-9.9,12l11.08,12.8h-12.75ZM266.93,40.48c3.92,0,6.78-1.08,6.78-4.74s-2.85-4.74-6.78-4.74h-14.74v9.47h14.74Z"/><path class="cls-1" d="M335.82,53.24c-4.03,5-11.46,8.34-21.52,8.34-15.44,0-25.02-7.32-25.02-20.07s9.58-20.07,25.02-20.07c9.3,0,16.03,3.29,19.96,6.94l-8.02,5.92c-3.23-2.91-6.62-4.2-11.67-4.2-9.15,0-14.15,4.03-14.15,11.4s5.16,11.46,14.31,11.46c4.63,0,8.28-.92,10.92-3.33v-3.39h-12.48v-7.69h22.65v14.69Z"/><path class="cls-1" d="M383.02,51.94v8.39h-40.18V22.68h39.59v8.39h-28.78v6.18h23.72v8.02h-23.72v6.67h29.37Z"/><path class="cls-1" d="M434.21,22.68v37.66h-9.63l-24.32-24.75v24.75h-10.6V22.68h11.62l22.33,23.02v-23.02h10.6Z"/></g><g><path class="cls-1" d="M130.29,96.43c0,6.09-6,10.43-16.89,10.43-7.51,0-14.14-2.2-19.13-6.5l3.43-3.89c4.35,3.89,9.47,5.63,15.93,5.63,7.14,0,11.08-1.88,11.08-5.22s-4.03-4.17-12.08-4.85c-8.84-.73-17.16-2.7-17.16-9.25s7.37-9.89,16.57-9.89c6.96,0,12.86,2.06,16.71,5.31l-3.48,3.75c-3.29-2.88-7.83-4.26-13.13-4.3-5.08-.04-11.12,1.19-11.12,4.76s5.36,3.98,12.36,4.53c9.98.78,16.93,2.79,16.93,9.47Z"/><path class="cls-1" d="M137.82,73.87l12.22,16.25,12.13-16.25h6.32l-15.74,20.96v11.08h-5.49v-11.08l-15.79-20.96h6.36Z"/><path class="cls-1" d="M205.53,96.43c0,6.09-6,10.43-16.89,10.43-7.51,0-14.14-2.2-19.13-6.5l3.43-3.89c4.35,3.89,9.47,5.63,15.93,5.63,7.14,0,11.08-1.88,11.08-5.22s-4.03-4.17-12.08-4.85c-8.84-.73-17.16-2.7-17.16-9.25s7.37-9.89,16.57-9.89c6.96,0,12.86,2.06,16.71,5.31l-3.48,3.75c-3.29-2.88-7.83-4.26-13.13-4.3-5.08-.04-11.12,1.19-11.12,4.76s5.36,3.98,12.36,4.53c9.98.78,16.93,2.79,16.93,9.47Z"/><path class="cls-1" d="M242.12,78.68h-14.6v27.23h-5.49v-27.23h-14.51v-4.81h34.6v4.81Z"/><path class="cls-1" d="M279.81,101.1v4.81h-31.9v-32.04h31.44v4.81h-26v8.56h21.88v4.81h-21.88v9.06h26.45Z"/><path class="cls-1" d="M328.61,73.87v32.04h-5.49v-24.58l-15.24,18.49h-.32l-15.24-18.49v24.58h-5.31v-32.04h5.95l14.88,18.35,14.87-18.35h5.9Z"/><path class="cls-1" d="M371.25,96.43c0,6.09-6,10.43-16.89,10.43-7.51,0-14.14-2.2-19.13-6.5l3.43-3.89c4.35,3.89,9.47,5.63,15.93,5.63,7.14,0,11.08-1.88,11.08-5.22s-4.03-4.17-12.08-4.85c-8.84-.73-17.16-2.7-17.16-9.25s7.37-9.89,16.57-9.89c6.96,0,12.86,2.06,16.71,5.31l-3.48,3.75c-3.29-2.88-7.83-4.26-13.13-4.3-5.08-.04-11.12,1.19-11.12,4.76s5.36,3.98,12.36,4.53c9.98.78,16.93,2.79,16.93,9.47Z"/></g><g><path class="cls-1" d="M381.82,106.39v-16.02h2.75v16.02h-2.75Z"/><path class="cls-1" d="M407,90.37v16.02h-2.43l-12.52-12.63v12.63h-2.65v-16.02h2.93l11.99,12.15v-12.15h2.68Z"/><path class="cls-1" d="M426.44,101.6l2.54,1.26c-1.51,2.33-4.44,4-8.49,4-6,0-9.77-3.23-9.77-8.49s3.77-8.49,9.89-8.49c3.94,0,6.86,1.69,8.35,3.98l-2.56,1.28c-1.19-1.97-3.23-2.84-5.84-2.84-4.23,0-7.05,2.06-7.05,6.06s2.82,6.06,7.05,6.06,4.67-.85,5.88-2.84Z"/><path class="cls-1" d="M431.09,105.08c0-.89.73-1.6,1.74-1.6s1.76.71,1.76,1.6-.73,1.56-1.76,1.56-1.74-.66-1.74-1.56Z"/></g></g><g><polygon class="cls-2" points="46.01 79.32 0 128.31 17.33 92.56 5.75 92.56 27.99 44 50.57 50.34 30.19 79.32 46.01 79.32"/><g><path class="cls-2" d="M78.49,21.12l-2.48,5.84c-7.25-5.19-15.18-9.67-23.73-13.3-8.55-3.63-17.29-6.21-26.06-7.82l2.48-5.84c8.77,1.61,17.51,4.19,26.06,7.82,8.55,3.63,16.48,8.11,23.73,13.3Z"/><path class="cls-2" d="M74.44,30.66l-2.48,5.84c-7.25-5.19-15.18-9.67-23.73-13.3-8.55-3.63-17.29-6.21-26.06-7.82l2.48-5.84c8.77,1.61,17.51,4.19,26.06,7.82,8.55,3.63,16.48,8.11,23.73,13.3Z"/><path class="cls-2" d="M46.65,26.92c-8.55-3.63-17.29-6.21-26.06-7.82l-11.45,27.01,49.79,21.12,11.45-27.01c-7.25-5.19-15.18-9.67-23.73-13.3ZM38.91,45.18c-3.53-1.5-5.18-5.57-3.68-9.10s5.57-5.18,9.10-3.68c3.53,1.5,5.18,5.57,3.68,9.10-1.50,3.53-5.57,5.18-9.10,3.68Z"/></g></g></g>
+                    </svg>
+                </div>
+                <span style="font-size: 13px; font-weight: 600;">CALCULATOR V5.0</span>
+                <span id="connection-status" style="margin-left: 20px; font-size: 10px; color: var(--text-tertiary);">
+                    <span class="status-indicator"></span> Connected
+                </span>
+            </div>
+        </nav>
+
+        <!-- Activity Bar -->
+        <aside class="activity-bar">
+            <div class="activity-item active" onclick="switchView('calculator', event)" title="Calculator"><span class="material-symbols-outlined">analytics</span></div>
+            <div class="activity-item" onclick="switchView('rfp-upload', event)" title="RFP Upload"><span class="material-symbols-outlined">upload_file</span></div>
+            <div class="activity-item" onclick="switchView('customers', event)" title="Customers"><span class="material-symbols-outlined">group</span></div>
+            <div class="activity-item" onclick="switchView('settings', event)" title="Settings"><span class="material-symbols-outlined">settings</span></div>
+            <div class="activity-item" onclick="switchView('documents', event)" title="Documents"><span class="material-symbols-outlined">folder</span></div>
+            <div class="activity-item" onclick="switchView('reports', event)" title="Reports"><span class="material-symbols-outlined">insights</span></div>
+        </aside>
+
+        <!-- Left Sidebar - Customer Enrichment -->
+        <aside class="sidebar-left">
+            <!-- Customer Information -->
+            <div class="customer-section">
+                <div class="section-title"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">business</span>Customer Information</div>
+                
+                <!-- Company Logo (Clickable for picker) -->
+                <div class="logo-container" id="logoContainer" onclick="showLogoPicker()" title="Click to choose logo">
+                    <img id="companyLogo" src="" alt="Company Logo" style="display: none;" onerror="this.style.display='none';document.getElementById('logoPlaceholder').style.display='flex';">
+                    <div id="logoPlaceholder" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--bg-elevated); border-radius: 8px;">
+                        <span class="material-symbols-outlined" style="font-size: 48px; color: var(--text-tertiary);">business</span>
+                    </div>
+                    <div class="logo-overlay">
+                        <span>Click to choose logo</span>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Company Name</label>
+                    <div class="input-wrapper">
+                        <input class="input-field" type="text" id="companyName" required oninput="handleCompanyInputZoho(event)" onblur="handleCompanyChange()" autocomplete="off">
+                        <div class="autocomplete-dropdown" id="companyDropdown"></div>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label class="input-label">Phone</label>
+                        <input class="input-field" type="tel" id="phone" oninput="formatPhoneNumber(event)">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Extension</label>
+                        <input class="input-field" type="text" id="extension" placeholder="Ext">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Email</label>
+                    <input class="input-field" type="email" id="email" placeholder="contact@company.com">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Website</label>
+                    <input class="input-field" type="url" id="website" onchange="handleWebsiteChange(event)">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Address</label>
+                    <input class="input-field" type="text" id="address" oninput="handleAddressInput()" onblur="calculateDistance()">
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label class="input-label">City</label>
+                        <input class="input-field" type="text" id="city" onblur="fetchTaxRate()">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">State</label>
+                        <input class="input-field" type="text" id="state" maxlength="2" onblur="fetchTaxRate()">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">ZIP Code</label>
+                    <input class="input-field" type="text" id="zip" pattern="\d{5}(-\d{4})?" title="ZIP must be 5 digits (e.g., 95123)" onblur="fetchTaxRate()">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Distance (miles)</label>
+                    <input class="input-field" type="number" id="distance" placeholder="Miles from shop" onchange="handleDistanceChange()" style="background: var(--bg-secondary);">
+                </div>
+                
+                <!-- Prevailing Wage Section -->
+                <div class="section-title" style="margin-top: 16px;">
+                    <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">account_balance</span>
+                    Prevailing Wage
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" style="display: flex; align-items: center;">
+                        <input type="checkbox" id="prevailingWageRequired" onchange="handlePrevailingWageChangeEnhanced()" style="margin-right: 8px;">
+                        Public Works Project
+                    </label>
+                </div>
+                
+                <div id="prevailingWageDetails" style="display: none; background: var(--bg-elevated); padding: 12px; border-radius: 8px; margin-top: 8px;">
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 8px;">
+                        <strong style="color: var(--accent-gold);">Auto-detected rates for ZIP <span id="pwZip"></span></strong>
+                        <div style="margin-top: 4px; color: var(--accent-cyan);">
+                            Craft: Operating Engineers - Stationary Power Plant (Group 8)
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px;">
+                        <div>
+                            <label style="color: var(--text-tertiary);">Operating Engineer:</label>
+                            <span id="pwJourneyman" style="color: var(--text-primary); font-weight: 500;">$85.50/hr</span>
+                        </div>
+                        <div>
+                            <label style="color: var(--text-tertiary);">With Fringe:</label>
+                            <span id="pwTotal" style="color: var(--text-primary); font-weight: 500;">$117.50/hr</span>
+                        </div>
+                        <div>
+                            <label style="color: var(--text-tertiary);">Per Diem:</label>
+                            <span id="pwPerDiem" style="color: var(--text-primary); font-weight: 500;">$269/day</span>
+                        </div>
+                        <div>
+                            <label style="color: var(--text-tertiary);">Zone:</label>
+                            <span id="pwZone" style="color: var(--text-primary); font-weight: 500;">Zone 1</span>
+                        </div>
+                    </div>
+                    <div style="font-size: 10px; color: var(--text-tertiary); margin-top: 8px;">
+                        Rates from California DIR / GSA Per Diem
+                    </div>
+                </div>
+                
+            </div>
+
+            <!-- Contacts -->
+            <div class="customer-section">
+                <div class="section-title"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">contacts</span>Contact Management</div>
+                
+                <!-- Primary Contact Display -->
+                <div id="primaryContactDisplay">
+                    <div class="contact-card" style="background: var(--bg-elevated); padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                        <div class="contact-primary" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                            <span class="contact-name" style="font-size: 11px; font-weight: 600; color: var(--text-primary);">Primary Contact</span>
+                            <span class="contact-badge" style="background: var(--accent-blue); color: white; padding: 2px 8px; border-radius: 4px; font-size: 9px;">PRIMARY</span>
+                        </div>
+                        <div style="font-size: 9px; color: var(--text-secondary);">
+                            <div style="margin-bottom: 4px;"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">mail</span> <input type="email" id="primaryEmail" class="input-field" style="margin-top: 4px; font-size: 10px;" placeholder="email@company.com"></div>
+                            <div><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">phone</span> <input type="tel" id="primaryPhone" class="input-field" style="margin-top: 4px; font-size: 10px;" placeholder="Phone"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manage Contacts Button -->
+                <button class="add-unit-btn" onclick="window.showContactPicker()" style="margin-top: 8px; width: 100%;">
+                    <span class="material-symbols-outlined">contacts</span>
+                    <span>Manage Contacts</span>
+                </button>
+            </div>
+
+            <!-- Generator Units Manager (Zoho Integration) -->
+            <div class="generator-units-section" id="generatorUnitsSection" style="display: none;">
+                <div class="generator-units-header">
+                    <div class="generator-units-title">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">electric_bolt</span>
+                        <span>Generator Units</span>
+                        <span class="generator-units-count" id="generatorUnitsCount">0</span>
+                    </div>
+                </div>
+
+                <div id="generatorUnitsList">
+                    <!-- Generator units will be dynamically populated here -->
+                    <div style="text-align: center; padding: 20px; color: var(--text-tertiary); font-size: 10px;">
+                        <span class="material-symbols-outlined" style="font-size: 32px; display: block; margin-bottom: 8px; opacity: 0.3;">electric_bolt</span>
+                        No generator units found
+                    </div>
+                </div>
+
+                <button class="add-generator-unit-btn" onclick="showAddGeneratorUnitModal()">
+                    <span class="material-symbols-outlined">add_circle</span>
+                    <span>Add Generator Unit</span>
+                </button>
+
+                <!-- Sync Status -->
+                <div id="zohoSyncStatus" style="display: none;"></div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- RFP Upload View (Hidden by default) -->
+            <div id="rfpUploadView" style="display: none;">
+                <div id="rfpUploadContainer"></div>
+            </div>
+
+            <!-- Customers View (Hidden by default) -->
+            <div id="customersView" style="display: none;">
+                <!-- Customer view content will be rendered by customer-view.js module -->
+            </div>
+            <!-- Documents View (Hidden by default) -->            <div id="documentsView" style="display: none;">                <!-- Document library will be rendered by documents-view.js module -->            </div>            <!-- Reports View (Hidden by default) -->            <div id="reportsView" style="display: none;">                <!-- Reports content will be rendered here -->                <div style="padding: 20px; text-align: center; color: var(--text-secondary);">                    <span class="material-symbols-outlined" style="font-size: 64px; opacity: 0.3;">insights</span>                    <h3 style="margin-top: 20px; color: var(--text-primary);">Reports Coming Soon</h3>                    <p>Analytics and performance reports will be available here.</p>                </div>            </div>
+
+            <!-- Calculator View (Default) -->
+            <div id="calculatorView">
+            <!-- Metrics Row -->
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-label">TOTAL QUOTE</div>
+                    <div class="metric-value" id="total-quote">$0</div>
+                    <div class="metric-change" id="quote-change">No previous</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">LABOR HOURS</div>
+                    <div class="metric-value" id="total-hours">0</div>
+                    <div class="metric-change">Standard rate</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">MATERIALS</div>
+                    <div class="metric-value" id="total-materials">$0</div>
+                    <div class="metric-change">20% markup</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">UNITS</div>
+                    <div class="metric-value" id="unit-count">0</div>
+                    <div class="metric-change">Generators</div>
+                </div>
+            </div>
+
+            <!-- Units Container -->
+            <div id="units-container" style="min-height: 200px; border: 2px dashed rgba(255,255,255,0.2); padding: 10px;">
+                <div style="color: var(--text-secondary); text-align: center;">Loading units...</div>
+            </div>
+
+            <!-- Mobilization Stacking Card -->
+            <div class="mobilization-stacking-card" id="mobilization-settings">
+                <div class="mobilization-header">
+                    <div class="mobilization-title">
+                        <span class="material-symbols-outlined">local_shipping</span>
+                        <span>Mobilization Stacking</span>
+                    </div>
+                    <div class="mobilization-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="mobilization-enabled" checked onchange="toggleMobilizationStacking()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mobilization-content" id="mobilization-content">
+                    <p class="mobilization-description" style="font-size: 9px; color: var(--text-secondary); margin-bottom: 8px;">
+                        When multiple units receive the same service on the same visit, the largest unit pays full mobilization. Secondary units receive a discount.
+                    </p>
+
+                    <div class="charge-slider-container">
+                        <label class="slider-label">Multi-Unit Mobilization Discount</label>
+                        <div class="slider-wrapper">
+                            <span class="slider-value-left" style="font-size: 8px; color: var(--text-tertiary);">Full Price</span>
+                            <input type="range"
+                                   id="mobilization-charge-slider"
+                                   min="0"
+                                   max="100"
+                                   value="65"
+                                   step="5"
+                                   oninput="updateMobilizationCharge(this.value)">
+                            <span class="slider-value-right" style="font-size: 8px; color: var(--text-tertiary);">Free</span>
+                        </div>
+                        <div class="charge-display">
+                            <span class="charge-percentage" id="charge-percentage">65%</span>
+                            <span class="charge-label">discount on secondary units</span>
+                        </div>
+                    </div>
+
+                    <div class="preset-buttons">
+                        <button class="preset-btn" onclick="setMobilizationCharge(0)">
+                            <span class="preset-value">0%</span>
+                            <span class="preset-label">Full Price</span>
+                        </button>
+                        <button class="preset-btn active" onclick="setMobilizationCharge(65)">
+                            <span class="preset-value">65%</span>
+                            <span class="preset-label">Standard</span>
+                        </button>
+                        <button class="preset-btn" onclick="setMobilizationCharge(100)">
+                            <span class="preset-value">100%</span>
+                            <span class="preset-label">Max Discount</span>
+                        </button>
+                    </div>
+
+                    <div class="mobilization-example" style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 8px; margin-top: 8px; font-size: 9px;">
+                        <div style="color: var(--text-secondary); margin-bottom: 4px; font-weight: 600;">Example: 3 units, Service A same day</div>
+                        <div style="color: var(--text-tertiary); line-height: 1.4;">
+                            <div>• Unit 1 (1000kW): 2 hrs × $150 = $300</div>
+                            <div>• Unit 2 (500kW): 2 hrs × <span id="example-discount">35%</span> × $150 = <span id="example-unit2">$105</span></div>
+                            <div>• Unit 3 (250kW): 2 hrs × <span id="example-discount-2">35%</span> × $150 = <span id="example-unit3">$105</span></div>
+                            <div style="margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--border-subtle); color: var(--accent-success); font-weight: 600;">
+                                Total: <span id="example-total">$510</span> (save <span id="example-savings">$390</span>)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add New Unit Button -->
+            <button class="add-unit-btn" onclick="addNewUnit()">
+                <span class="material-symbols-outlined">add_circle</span>
+                <span>Add New Generator Unit</span>
+            </button>
+            </div><!-- End calculatorView -->
+            <!-- Documents View (Hidden by default) -->
+            <div id="documentsView" style="display: none;">
+                <div style="padding: 40px; text-align: center;">
+                    <span class="material-symbols-outlined" style="font-size: 64px; color: var(--text-tertiary);">folder</span>
+                    <h2 style="color: var(--text-primary); margin-top: 20px;">Documents</h2>
+                    <p style="color: var(--text-secondary);">Document management coming soon</p>
+                </div>
+            </div>
+
+            <!-- Reports View (Hidden by default) -->
+            <div id="reportsView" style="display: none;">
+                <div class="reports-container">
+                    <!-- Reports Header -->
+                    <div class="reports-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 20px; background: var(--bg-elevated); border-radius: 12px;">
+                        <h2 style="color: var(--text-primary); margin: 0; display: flex; align-items: center; gap: 12px;">
+                            <span class="material-symbols-outlined" style="font-size: 32px;">insights</span>
+                            Reports & Analytics
+                        </h2>
+                        <div class="reports-controls" style="display: flex; gap: 12px; align-items: center;">
+                            <select id="reportsDateRange" class="input-field" style="width: 200px;">
+                                <option value="7">Last 7 Days</option>
+                                <option value="30" selected>Last 30 Days</option>
+                                <option value="90">Last 90 Days</option>
+                                <option value="365">Last Year</option>
+                                <option value="all">All Time</option>
+                            </select>
+                            <button class="btn btn-secondary" onclick="window.reportsView?.refreshReports()">
+                                <span class="material-symbols-outlined">refresh</span>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Summary KPI Cards -->
+                    <div class="reports-kpi-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                        <div class="kpi-card" style="background: var(--bg-elevated); padding: 20px; border-radius: 12px; display: flex; gap: 16px; align-items: flex-start;">
+                            <div class="kpi-icon" style="background: rgba(96, 165, 250, 0.1); padding: 12px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <span class="material-symbols-outlined" style="color: var(--accent-blue); font-size: 24px;">description</span>
+                            </div>
+                            <div class="kpi-content">
+                                <div class="kpi-label" style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Total Quotes</div>
+                                <div class="kpi-value" id="kpi-total-quotes" style="font-size: 28px; font-weight: 700; color: var(--text-primary); margin-top: 4px;">0</div>
+                                <div class="kpi-change" id="kpi-quotes-change" style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Loading...</div>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card" style="background: var(--bg-elevated); padding: 20px; border-radius: 12px; display: flex; gap: 16px; align-items: flex-start;">
+                            <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.1); padding: 12px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <span class="material-symbols-outlined" style="color: var(--accent-success); font-size: 24px;">payments</span>
+                            </div>
+                            <div class="kpi-content">
+                                <div class="kpi-label" style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Total Revenue</div>
+                                <div class="kpi-value" id="kpi-total-revenue" style="font-size: 28px; font-weight: 700; color: var(--text-primary); margin-top: 4px;">$0</div>
+                                <div class="kpi-change" id="kpi-revenue-change" style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Loading...</div>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card" style="background: var(--bg-elevated); padding: 20px; border-radius: 12px; display: flex; gap: 16px; align-items: flex-start;">
+                            <div class="kpi-icon" style="background: rgba(245, 158, 11, 0.1); padding: 12px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <span class="material-symbols-outlined" style="color: var(--accent-gold); font-size: 24px;">trending_up</span>
+                            </div>
+                            <div class="kpi-content">
+                                <div class="kpi-label" style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Avg Quote Value</div>
+                                <div class="kpi-value" id="kpi-avg-quote" style="font-size: 28px; font-weight: 700; color: var(--text-primary); margin-top: 4px;">$0</div>
+                                <div class="kpi-change" id="kpi-avg-change" style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Loading...</div>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card" style="background: var(--bg-elevated); padding: 20px; border-radius: 12px; display: flex; gap: 16px; align-items: flex-start;">
+                            <div class="kpi-icon" style="background: rgba(139, 92, 246, 0.1); padding: 12px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <span class="material-symbols-outlined" style="color: var(--accent-purple); font-size: 24px;">business</span>
+                            </div>
+                            <div class="kpi-content">
+                                <div class="kpi-label" style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Total Customers</div>
+                                <div class="kpi-value" id="kpi-total-customers" style="font-size: 28px; font-weight: 700; color: var(--text-primary); margin-top: 4px;">0</div>
+                                <div class="kpi-change" id="kpi-customers-change" style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="reports-charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 24px;">
+                        <!-- Service Revenue Breakdown -->
+                        <div class="chart-card" style="background: var(--bg-elevated); padding: 24px; border-radius: 12px;">
+                            <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h3 style="margin: 0; font-size: 16px; color: var(--text-primary);">Service Revenue Breakdown</h3>
+                                <button class="btn-icon" onclick="window.reportsView?.exportChart('service-breakdown')" title="Export" style="background: none; border: none; cursor: pointer; color: var(--text-secondary);">
+                                    <span class="material-symbols-outlined">download</span>
+                                </button>
+                            </div>
+                            <div class="chart-body" style="position: relative; height: 300px;">
+                                <canvas id="serviceBreakdownChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Quotes Over Time -->
+                        <div class="chart-card" style="background: var(--bg-elevated); padding: 24px; border-radius: 12px;">
+                            <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h3 style="margin: 0; font-size: 16px; color: var(--text-primary);">Quotes Over Time</h3>
+                                <button class="btn-icon" onclick="window.reportsView?.exportChart('quotes-timeline')" title="Export" style="background: none; border: none; cursor: pointer; color: var(--text-secondary);">
+                                    <span class="material-symbols-outlined">download</span>
+                                </button>
+                            </div>
+                            <div class="chart-body" style="position: relative; height: 300px;">
+                                <canvas id="quotesTimelineChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Top Customers -->
+                        <div class="chart-card" style="background: var(--bg-elevated); padding: 24px; border-radius: 12px;">
+                            <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h3 style="margin: 0; font-size: 16px; color: var(--text-primary);">Top 10 Customers</h3>
+                                <button class="btn-icon" onclick="window.reportsView?.exportTable('top-customers')" title="Export CSV" style="background: none; border: none; cursor: pointer; color: var(--text-secondary);">
+                                    <span class="material-symbols-outlined">download</span>
+                                </button>
+                            </div>
+                            <div class="chart-body">
+                                <div id="topCustomersTable" class="data-table" style="max-height: 300px; overflow-y: auto;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Generator Analytics -->
+                        <div class="chart-card" style="background: var(--bg-elevated); padding: 24px; border-radius: 12px;">
+                            <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h3 style="margin: 0; font-size: 16px; color: var(--text-primary);">Generator kW Distribution</h3>
+                                <button class="btn-icon" onclick="window.reportsView?.exportChart('kw-distribution')" title="Export" style="background: none; border: none; cursor: pointer; color: var(--text-secondary);">
+                                    <span class="material-symbols-outlined">download</span>
+                                </button>
+                            </div>
+                            <div class="chart-body" style="position: relative; height: 300px;">
+                                <canvas id="kwDistributionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Export Section -->
+                    <div class="reports-export-section" style="background: var(--bg-elevated); padding: 24px; border-radius: 12px;">
+                        <h3 style="margin: 0 0 16px 0; font-size: 16px; color: var(--text-primary);">Export Reports</h3>
+                        <div class="export-buttons" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button class="btn btn-secondary" onclick="window.reportsView?.exportToCSV()">
+                                <span class="material-symbols-outlined">table_chart</span>
+                                Export to CSV
+                            </button>
+                            <button class="btn btn-secondary" onclick="window.reportsView?.exportToPDF()">
+                                <span class="material-symbols-outlined">picture_as_pdf</span>
+                                Export to PDF
+                            </button>
+                            <a href="https://crm.zoho.com/crm/org60030835913/tab/CustomModule7" target="_blank" class="btn btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                                <span class="material-symbols-outlined">open_in_new</span>
+                                View in Zoho CRM
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar - Quote Summary -->
+        <aside class="sidebar-right">
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="calculateQuote()"><span class="material-symbols-outlined">calculate</span> Calculate Quote</button>
+                <button class="btn btn-success" onclick="createBid()" id="create-bid-btn"><span class="material-symbols-outlined">rocket_launch</span> Create Bid</button>
+                <span id="sync-status" style="display: none; font-size: 12px; color: #666; margin-left: 8px;"></span>
+            </div>
+
+            <div>
+                <div class="section-title"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">summarize</span>QUOTE SUMMARY</div>
+                <div id="quote-summary">
+                    <div class="summary-item">
+                        <span class="summary-label">Labor Hours</span>
+                        <span class="summary-value" id="summary-hours">0 hrs</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Labor Rate</span>
+                        <span class="summary-value" id="summary-labor-rate">$180/hr</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Labor Cost</span>
+                        <span class="summary-value" id="summary-labor">$0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Mobilization Hrs</span>
+                        <span class="summary-value" id="summary-mobilization-hours">0 hrs</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Mobilization Rate</span>
+                        <span class="summary-value" id="summary-mobilization-rate">$180/hr</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Mobilization Cost</span>
+                        <span class="summary-value" id="summary-mobilization">$0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Materials</span>
+                        <span class="summary-value" id="summary-materials">$0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Material Markup</span>
+                        <span class="summary-value" id="summary-markup">$0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Tax</span>
+                        <span class="summary-value" id="summary-tax">$0</span>
+                    </div>
+                </div>
+
+                <div class="total-section">
+                    <div class="total-label">ANNUAL TOTAL</div>
+                    <div class="total-value" id="annual-total">$0</div>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">flash_on</span>ACTIONS</div>
+                <div style="display: grid; gap: 6px;">
+                    <button class="btn btn-secondary" onclick="saveQuote()"><span class="material-symbols-outlined">save</span> Save Quote</button>
+                    <button class="btn btn-secondary" onclick="emailQuote()"><span class="material-symbols-outlined">send</span> Email Quote</button>
+                    <button class="btn btn-secondary" onclick="duplicateQuote()"><span class="material-symbols-outlined">content_copy</span> Duplicate</button>
+                    <button class="btn btn-secondary" onclick="createRevision()"><span class="material-symbols-outlined">edit_note</span> Create Revision</button>
+                    <button class="btn btn-danger" onclick="clearAll()"><span class="material-symbols-outlined">delete</span> Clear All</button>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">trending_up</span>YEAR PROJECTIONS</div>
+                <div class="summary-item">
+                    <span class="summary-label">Year 1</span>
+                    <span class="summary-value" id="year1">$0</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Year 2 (3%)</span>
+                    <span class="summary-value" id="year2">$0</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Year 3 (3%)</span>
+                    <span class="summary-value" id="year3">$0</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div style="display: flex; gap: 16px; align-items: center;">
+                <span><span class="status-indicator"></span>Connected</span>
+                <span>Calculator v5.0</span>
+                <span id="status-message">Ready</span>
+            </div>
+            <div style="display: flex; gap: 16px; align-items: center;">
+                <span>Auto-save: <span id="autosave-status">On</span></span>
+                <span>Last sync: <span id="last-sync">Never</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import modular services -->
+    <script type="module" src="init.js"></script>
+    <script type="module">
+        import { logoSelector } from './services/logo-selector.js'
+        import SettingsUI from './modules/settings-proper.js'
+        import ContactManager from './js/contact-manager.js'
+        import { ValidationService } from './services/validation-service.js'
+        import { generatorService } from './services/generator-service.js'
+        import { CustomerViewModule } from './modules/customer-view.js'
+        import { DocumentsViewModule } from './modules/documents-view.js'
+        import reportsView from './modules/reports-view.js'
+
+        // Initialize validation service
+        const validationService = new ValidationService();
+        window.validationService = validationService;
+
+        // Make generator service available globally
+        window.generatorService = generatorService;
+
+        // Make modules available globally
+        window.logoSelector = logoSelector;
+        window.SettingsUI = SettingsUI;
+
+        window.ContactManager = ContactManager;
+        window.settingsReady = false;
+
+        // Initialize Customer View Module
+        if (!window.customerView) {
+            window.customerView = new CustomerViewModule();
+        }
+n        // Initialize Documents View Module
+        if (!window.documentsView) {
+            window.documentsView = new DocumentsViewModule();
+        }
+
+        // Initialize Reports View Module
+        if (!window.reportsView) {
+            window.reportsView = reportsView;
+        }
+        
+        // Initialize SettingsUI immediately after import
+        try {
+            window.settingsUI = new SettingsUI(null);
+            window.settingsUI.init();
+            window.settingsReady = true;
+
+        } catch (error) {
+            console.error('[SETTINGS DEBUG] Failed to initialize SettingsUI on import:', error);
+        }
+        
+        // Create ContactManager instance for inline handlers
+        if (!window.contactManager && window.ContactManager) {
+            window.contactManager = new window.ContactManager();
+        }
+        
+        // Initialize settings module with robust error handling
+        window.initializeSettingsModule = function() {
+            if (!window.settingsUI && window.SettingsUI) {
+                try {
+                    const eventBus = window.state?.eventBus || null;
+                    window.settingsUI = new SettingsUI(eventBus);
+                    window.settingsUI.init();
+                    window.settingsReady = true;
+
+                    return true;
+                } catch (error) {
+                    console.error('Failed to initialize settings:', error);
+                    window.settingsReady = false;
+                    return false;
+                }
+            }
+            return window.settingsUI !== undefined;
+        };
+        
+        // Try to initialize immediately
+        setTimeout(() => window.initializeSettingsModule(), 0);
+        
+        // Module initialization with proper sequencing
+        let modulesInitialized = false;
+        let domReady = false;
+        
+        function initializeWhenReady() {
+            if (!modulesInitialized && domReady) {
+                modulesInitialized = true;
+                
+                // Initialize modules in proper order
+                Promise.resolve()
+                    .then(() => {
+                        // Initialize ContactManager first
+                        if (!window.contactManager && window.ContactManager) {
+                            window.contactManager = new window.ContactManager();
+                        }
+                    })
+                    .then(() => {
+                        // Initialize Settings
+                        if (window.initializeSettingsModule) {
+                            window.initializeSettingsModule();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Module initialization error:', error);
+                    });
+            }
+        }
+        
+        // Check DOM readiness
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                domReady = true;
+                setTimeout(initializeWhenReady, 100); // Small delay for module loading
+            });
+        } else {
+            domReady = true;
+            setTimeout(initializeWhenReady, 100);
+        }
+    </script>
+    
+    <script type="module">
+        // Global handlers and unit details now imported in init.js
+        console.log("✅ Energen Calculator v5.0 - Modular System Loaded");
+    </script>
+
+    <!-- SPRINT 7: Post-Creation Workflow Modules -->
+    <!-- quote-duplication and quote-revision imported via global-handlers.js -->
+    <script type="module" src="./modules/quote-versioning.js"></script>
+    <script type="module" src="./modules/calculation-hash.js"></script>
+    <script type="module" src="./modules/email-quote.js"></script>
+
+    <!-- RFP Upload Module -->
+    <script type="module" src="./modules/rfp-upload.js"></script>
+
+    <!-- AI Unit Search Service (required for verified units import) -->
+    <script type="module" src="./services/ai-unit-search.js"></script>
+
+    <!-- Verified Units Import -->
+    <script src="./services/import-verified-units.js"></script>
+
+    <!-- Contact Management Services -->
+    <script type="module" src="./services/contact-service.js"></script>
+    <script type="module" src="./services/contact-selector.js"></script>
+
+    <!-- Logo Picker Modal -->
+    <div class="logo-picker-modal" id="logoPickerModal">
+        <div class="logo-picker-content">
+            <div class="logo-picker-header">
+                <h3 class="logo-picker-title">Choose Company Logo</h3>
+                <button class="logo-picker-close" onclick="closeLogoPicker()">✕</button>
+            </div>
+            <div class="logo-grid" id="logoGrid">
+                <!-- Logo options will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ATS Details Modal -->
+    <div class="logo-picker-modal" id="atsDetailsModal" style="display: none;">
+        <div class="logo-picker-content" style="max-width: 800px; max-height: 80vh; overflow-y: auto;">
+            <div class="logo-picker-header">
+                <h3 class="logo-picker-title">ATS Unit Details</h3>
+                <button class="logo-picker-close" onclick="closeATSDetails()">✕</button>
+            </div>
+            <div id="atsDetailsContainer" style="padding: 16px;">
+                <!-- ATS unit detail cards will be populated here -->
+            </div>
+            <div style="display: flex; gap: 12px; padding: 16px; border-top: 1px solid var(--border-subtle);">
+                <button class="btn btn-primary" onclick="saveATSDetails()" style="flex: 1;">Save Details</button>
+                <button class="btn btn-secondary" onclick="closeATSDetails()" style="flex: 1;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unit Details Modal with AI Search -->
+    <div class="logo-picker-modal" id="unitDetailsModal" style="display: none;">
+        <div class="logo-picker-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <div class="logo-picker-header">
+                <h3 class="logo-picker-title">Unit Details & Maintenance Data</h3>
+                <button class="logo-picker-close" onclick="closeUnitDetails()">✕</button>
+            </div>
+            
+            <div id="unitDetailsContainer" style="padding: 24px;">
+                <!-- Unit identifier -->
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-subtle);">
+                    <span class="unit-badge" id="modalUnitBadge">#1</span>
+                    <div>
+                        <div style="font-size: 16px; font-weight: 600; color: var(--text-primary);" id="modalUnitTitle">Generator Unit</div>
+                        <div style="font-size: 11px; color: var(--text-secondary);" id="modalUnitSpecs">No specifications entered</div>
+                    </div>
+                </div>
+
+                <!-- AI Search Section -->
+                <div style="background: var(--bg-elevated); border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="material-symbols-outlined" style="font-size: 18px; color: var(--accent-electric);">psychology</span>
+                            <span style="font-size: 13px; font-weight: 600; color: var(--text-primary);">AI Web Search</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="performAISearch()" id="aiSearchBtn" style="padding: 8px 16px; font-size: 11px;">
+                            <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">search</span>
+                            Search Specs
+                        </button>
+                    </div>
+                    <div style="font-size: 10px; color: var(--text-secondary); line-height: 1.4;">
+                        AI will search manufacturer websites for maintenance specifications. Only 100% confident data will be auto-populated. Manual override available for all fields.
+                    </div>
+                    <div id="aiSearchStatus" style="margin-top: 12px; display: none;">
+                        <div style="font-size: 11px; color: var(--accent-electric); display: flex; align-items: center; gap: 8px;">
+                            <div class="spinner"></div>
+                            <span id="aiSearchStatusText">Searching...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Engine Specifications Section -->
+                <div class="modal-section">
+                    <div class="section-title" style="margin-bottom: 12px;">
+                        <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">settings</span>
+                        Engine Specifications
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                        <div class="input-group">
+                            <label class="input-label">Cylinder Count</label>
+                            <select class="input-field" id="modalCylinders">
+                                <option value="">Select Cylinders</option>
+                                <option value="4">4 Cylinder</option>
+                                <option value="6">6 Cylinder</option>
+                                <option value="8">8 Cylinder</option>
+                                <option value="12">12 Cylinder</option>
+                            </select>
+                        </div>
+                        <div class="input-group" id="modalInjectorGroup" style="display: none;">
+                            <label class="input-label">Injector Type</label>
+                            <select class="input-field" id="modalInjectorType">
+                                <option value="">Select Type</option>
+                                <option value="pop">Pop Nozzle</option>
+                                <option value="unit">Unit Injector (EUI)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fluids Section -->
+                <div class="modal-section" style="margin-top: 24px;">
+                    <div class="section-title" style="margin-bottom: 12px;">
+                        <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">water_drop</span>
+                        Fluids & Capacities
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                        <div class="input-group">
+                            <label class="input-label">
+                                Oil Type
+                                <span class="confidence-indicator" id="oilTypeConfidence" style="display: none;"></span>
+                            </label>
+                            <input type="text" class="input-field" id="modalOilType" placeholder="e.g., 15W-40">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">
+                                Oil Capacity
+                                <span class="confidence-indicator" id="oilCapacityConfidence" style="display: none;"></span>
+                            </label>
+                            <input type="text" class="input-field" id="modalOilCapacity" placeholder="e.g., 12 quarts">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">
+                                Coolant Type
+                                <span class="confidence-indicator" id="coolantTypeConfidence" style="display: none;"></span>
+                            </label>
+                            <input type="text" class="input-field" id="modalCoolantType" placeholder="e.g., 50/50 Ethylene Glycol">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">
+                                Coolant Capacity
+                                <span class="confidence-indicator" id="coolantCapacityConfidence" style="display: none;"></span>
+                            </label>
+                            <input type="text" class="input-field" id="modalCoolantCapacity" placeholder="e.g., 8 gallons">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Consumables Section -->
+                <div class="modal-section" style="margin-top: 24px;">
+                    <div class="section-title" style="margin-bottom: 12px;">
+                        <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">inventory_2</span>
+                        Consumable Parts
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                        <div class="input-group">
+                            <label class="input-label">
+                                Oil Filter Part #
+                                <span class="confidence-indicator" id="oilFilterConfidence" style="display: none;"></span>
+                            </label>
+                            <input type="text" class="input-field" id="modalOilFilter" placeholder="e.g., P550425">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">
+                                Air Filter Part #
+                                <span class="confidence-indicator" id="airFilterConfidence" style="display: none;"></span>
+                            </label>
+                            <input type="text" class="input-field" id="modalAirFilter" placeholder="e.g., P181050">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">
+                                Fuel Filter Part #
+                                <span class="confidence-indicator" id="fuelFilterConfidence" style="display: none;"></span>
+                            </label>
+                            <input type="text" class="input-field" id="modalFuelFilter" placeholder="e.g., P551329">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">
+                                Belt Part #s
+                                <span class="confidence-indicator" id="beltsConfidence" style="display: none;"></span>
+                            </label>
+                            <input type="text" class="input-field" id="modalBelts" placeholder="e.g., A47, B62">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Intervals Section -->
+                <div class="modal-section" style="margin-top: 24px;">
+                    <div class="section-title" style="margin-bottom: 12px;">
+                        <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">schedule</span>
+                        Service Intervals
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                        <div class="input-group">
+                            <label class="input-label">
+                                Oil Change Interval
+                                <span class="confidence-indicator" id="oilChangeConfidence" style="display: none;"></span>
+                            </label>
+                            <input type="text" class="input-field" id="modalOilChange" placeholder="e.g., 250 hours">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">
+                                Air Filter Interval
+                                <span class="confidence-indicator" id="airFilterIntervalConfidence" style="display: none;"></span>
+                            </label>
+                            <input type="text" class="input-field" id="modalAirFilterInterval" placeholder="e.g., 500 hours">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Source Info -->
+                <div id="dataSourceInfo" style="margin-top: 24px; padding: 12px; background: var(--bg-secondary); border-radius: 6px; display: none;">
+                    <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;">Data Source:</div>
+                    <div style="font-size: 11px; color: var(--text-primary);" id="dataSourceText"></div>
+                </div>
+            </div>
+
+            <!-- Modal Actions -->
+            <div style="display: flex; gap: 12px; padding: 24px; border-top: 1px solid var(--border-subtle);">
+                <button class="btn btn-primary" onclick="saveUnitDetails()" style="flex: 1;">
+                    <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">save</span>
+                    Save Details
+                </button>
+                <button class="btn btn-secondary" onclick="closeUnitDetails()" style="flex: 1;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Zoho Sync Confirmation Modal -->
+    <div class="zoho-modal" id="zohoSyncModal">
+        <div class="zoho-modal-content">
+            <div class="zoho-modal-header">
+                <div class="zoho-modal-icon">
+                    <span class="material-symbols-outlined" style="color: white; font-size: 24px;">sync</span>
+                </div>
+                <div>
+                    <div class="zoho-modal-title">Sync Quote to Zoho CRM</div>
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+                        Review and confirm sync details
+                    </div>
+                </div>
+            </div>
+
+            <div class="zoho-modal-body">
+                <div id="zohoSyncContent">
+                    <!-- Loading State -->
+                    <div id="zohoSyncLoading" class="zoho-loading" style="justify-content: center; padding: 20px;">
+                        <div class="zoho-spinner"></div>
+                        <span>Syncing to Zoho CRM...</span>
+                    </div>
+
+                    <!-- Success State -->
+                    <div id="zohoSyncSuccess" style="display: none;">
+                        <div style="text-align: center; padding: 16px; margin-bottom: 16px;">
+                            <span class="material-symbols-outlined" style="font-size: 48px; color: var(--accent-success);">check_circle</span>
+                            <div style="margin-top: 12px; font-size: 14px; font-weight: 600; color: var(--accent-success);">
+                                Successfully Synced to Zoho!
+                            </div>
+                        </div>
+
+                        <!-- Account Info -->
+                        <div class="zoho-record-info">
+                            <div class="zoho-record-label">Zoho Account</div>
+                            <div class="zoho-record-value">
+                                <span id="zohoAccountName"></span>
+                                <span class="zoho-sync-badge success">
+                                    <span class="material-symbols-outlined" style="font-size: 12px;">check_circle</span>
+                                    Synced
+                                </span>
+                            </div>
+                            <a href="#" id="zohoAccountLink" target="_blank" class="zoho-link">
+                                <span class="material-symbols-outlined" style="font-size: 14px;">open_in_new</span>
+                                View in Zoho CRM
+                            </a>
+                        </div>
+
+                        <!-- Quote Info -->
+                        <div class="zoho-record-info">
+                            <div class="zoho-record-label">Zoho Quote</div>
+                            <div class="zoho-record-value">
+                                <span id="zohoQuoteNumber"></span>
+                                <span class="zoho-sync-badge success">
+                                    <span class="material-symbols-outlined" style="font-size: 12px;">check_circle</span>
+                                    Created
+                                </span>
+                            </div>
+                            <a href="#" id="zohoQuoteLink" target="_blank" class="zoho-link">
+                                <span class="material-symbols-outlined" style="font-size: 14px;">open_in_new</span>
+                                View Quote in Zoho
+                            </a>
+                        </div>
+
+                        <!-- Generator Units Synced -->
+                        <div class="zoho-record-info" id="zohoGeneratorsInfo" style="display: none;">
+                            <div class="zoho-record-label">Generator Units Synced</div>
+                            <div class="zoho-record-value">
+                                <span id="zohoGeneratorCount">0</span> units
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 16px; padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; font-size: 10px; color: var(--text-secondary);">
+                            <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
+                            All quote data has been synchronized. You can now track this quote in Zoho CRM.
+                        </div>
+                    </div>
+
+                    <!-- Error State -->
+                    <div id="zohoSyncError" style="display: none;">
+                        <div style="text-align: center; padding: 16px;">
+                            <span class="material-symbols-outlined" style="font-size: 48px; color: var(--accent-danger);">error</span>
+                            <div style="margin-top: 12px; font-size: 14px; font-weight: 600; color: var(--accent-danger);">
+                                Sync Failed
+                            </div>
+                            <div id="zohoErrorMessage" style="margin-top: 8px; font-size: 11px; color: var(--text-secondary);"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="zoho-modal-actions">
+                <button class="btn btn-secondary" onclick="closeZohoSyncModal()" style="flex: 1;">Close</button>
+                <button class="btn btn-primary" id="zohoRetryBtn" onclick="retryZohoSync()" style="flex: 1; display: none;">
+                    <span class="material-symbols-outlined" style="font-size: 16px;">refresh</span>
+                    Retry Sync
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Generator Unit Modal -->
+    <div class="zoho-modal" id="addGeneratorUnitModal">
+        <div class="zoho-modal-content" style="max-width: 600px;">
+            <div class="zoho-modal-header">
+                <div class="zoho-modal-icon">
+                    <span class="material-symbols-outlined" style="color: white; font-size: 24px;">electric_bolt</span>
+                </div>
+                <div>
+                    <div class="zoho-modal-title">Add Generator Unit</div>
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+                        Link existing generator to customer account
+                    </div>
+                </div>
+            </div>
+
+            <div class="zoho-modal-body">
+                <div class="input-group">
+                    <label class="input-label">Generator Model</label>
+                    <input type="text" class="input-field" id="newGenModel" placeholder="e.g., CAT C18">
+                </div>
+
+                <div class="input-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="input-group">
+                        <label class="input-label">Serial Number</label>
+                        <input type="text" class="input-field" id="newGenSerial" placeholder="SN12345">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">kW Rating</label>
+                        <input type="number" class="input-field" id="newGenKw" placeholder="500">
+                    </div>
+                </div>
+
+                <div class="input-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="input-group">
+                        <label class="input-label">Fuel Type</label>
+                        <select class="input-field" id="newGenFuel">
+                            <option value="Diesel">Diesel</option>
+                            <option value="Natural Gas">Natural Gas</option>
+                            <option value="Propane">Propane</option>
+                            <option value="Bi-Fuel">Bi-Fuel</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Year</label>
+                        <input type="number" class="input-field" id="newGenYear" placeholder="2020">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Installation Address</label>
+                    <input type="text" class="input-field" id="newGenAddress" placeholder="Same as customer or different location">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Service Type</label>
+                    <select class="input-field" id="newGenService">
+                        <option value="">Select Service Type</option>
+                        <option value="A">Service A</option>
+                        <option value="B">Service B</option>
+                        <option value="C">Service C</option>
+                        <option value="D">Service D</option>
+                        <option value="E">Service E</option>
+                        <option value="F">Service F</option>
+                        <option value="G">Service G</option>
+                        <option value="H">Service H</option>
+                        <option value="I">Service I</option>
+                        <option value="J">Service J</option>
+                        <option value="K">Service K</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Upload Photos (optional)</label>
+                    <input type="file" class="input-field" id="newGenPhotos" multiple accept="image/*" onchange="handleGeneratorPhotos(event)">
+                    <div id="photoPreviewContainer" style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;"></div>
+                </div>
+
+                <div style="margin-top: 16px; padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; font-size: 10px; color: var(--text-secondary);">
+                    <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
+                    Photos with GPS metadata will automatically capture unit location. This unit will be created in Zoho CRM and linked to the customer account.
+                </div>
+            </div>
+
+            <div class="zoho-modal-actions">
+                <button class="btn btn-secondary" onclick="closeAddGeneratorUnitModal()" style="flex: 1;">Cancel</button>
+                <button class="btn btn-primary" onclick="saveGeneratorUnit()" style="flex: 1;">
+                    <span class="material-symbols-outlined" style="font-size: 16px;">save</span>
+                    Add Unit
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal Integration -->
+    <script type="module">
+        import { contactService } from './services/contact-service.js';
+        import { contactSelector } from './services/contact-selector.js';
+
+        // Make available globally
+        window.contactService = contactService;
+        window.contactSelector = contactSelector;
+
+        // Initialize contact modal when DOM is ready
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeContactModal();
+        });
+
+        function initializeContactModal() {
+            // Add new contact button handler
+            const addNewBtn = document.getElementById('addNewContactBtn');
+            if (addNewBtn) {
+                addNewBtn.addEventListener('click', showAddContactForm);
+            }
+            
+            // Add contact form submission
+            const addContactForm = document.getElementById('addContactForm');
+            if (addContactForm) {
+                addContactForm.addEventListener('submit', handleAddContact);
+            }
+        }
+
+        function showAddContactForm() {
+            document.getElementById('contactPickerModal').style.display = 'none';
+            document.getElementById('addContactFormModal').style.display = 'flex';
+            
+            // Pre-fill company name from state
+            const companyName = window.state?.customer?.name || 
+                               document.getElementById('companyName')?.value || '';
+            const contactCompanyInput = document.getElementById('contactCompany');
+            if (contactCompanyInput) {
+                contactCompanyInput.value = companyName;
+            }
+        }
+
+        window.closeAddContactForm = function() {
+            document.getElementById('addContactFormModal').style.display = 'none';
+            document.getElementById('contactPickerModal').style.display = 'flex';
+        };
+
+        async function handleAddContact(e) {
+            e.preventDefault();
+            
+            const contactData = {
+                name: document.getElementById('contactName').value,
+                title: document.getElementById('contactTitle').value,
+                email: document.getElementById('contactEmail').value,
+                phone: document.getElementById('contactPhone').value,
+                company: document.getElementById('contactCompany').value
+            };
+            
+            try {
+                // Enrich with photo
+                const enrichedContact = await contactService.enrichContact(contactData);
+                
+                // Add to contact manager
+                const contact = await window.contactManager.addContact({
+                    ...enrichedContact,
+                    zohoAccountId: window.state?.customer?.zohoAccountId || window.zohoState?.currentAccountId
+                });
+                
+                // Close form and refresh contact list
+                window.closeAddContactForm();
+                document.getElementById('addContactForm').reset();
+                
+                // Refresh contact selector
+                if (window.state?.customer || window.zohoState?.currentAccountId) {
+                    window.showContactPicker();
+                }
+                
+                showNotification('Contact added successfully!', 'success');
+            } catch (error) {
+                console.error('Error adding contact:', error);
+                alert('Failed to add contact: ' + error.message);
+            }
+        }
+
+        // Global function to show contact picker
+        window.showContactPicker = function() {
+            const companyName = window.state?.customer?.name || 
+                               document.getElementById('companyName')?.value || '';
+            const domain = window.state?.customer?.website?.replace(/^https?:\/\//, '') || '';
+            const placeId = window.state?.customer?.placeId || null;
+            
+            contactSelector.showSelector(
+                companyName,
+                domain,
+                placeId,
+                (selectedContact) => {
+                    // Callback when contact is selected
+                    if (window.contactManager) {
+                        window.contactManager.setPrimaryContact(selectedContact.id);
+                    }
+                    updateUIWithPrimaryContact(selectedContact);
+                    console.log('Primary contact selected:', selectedContact);
+                }
+            );
+        };
+
+        window.closeContactPicker = function() {
+            document.getElementById('contactPickerModal').style.display = 'none';
+        };
+
+        // C3 FIX: Alias addContact to showContactPicker for button onclick compatibility
+        window.addContact = window.showContactPicker;
+
+        function updateUIWithPrimaryContact(contact) {
+            // Update UI to show primary contact
+            const contactDisplay = document.getElementById('primaryContactDisplay');
+            if (contactDisplay) {
+                contactDisplay.innerHTML = `
+                    <div class="contact-card" style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-tertiary); border-radius: 8px;">
+                        ${contact.photoUrl ? 
+                          `<img src="${contact.photoUrl}" class="contact-photo" alt="${contact.name}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">` :
+                          `<div class="contact-avatar" style="width: 48px; height: 48px; border-radius: 50%; background: var(--accent-blue); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${window.contactManager?.getInitials(contact.name) || 'N/A'}</div>`
+                        }
+                        <div class="contact-info">
+                            <div class="contact-name" style="font-weight: 600; color: var(--text-primary);">${contact.name}</div>
+                            ${contact.title ? `<div class="contact-title" style="font-size: 10px; color: var(--text-secondary);">${contact.title}</div>` : ''}
+                            <div class="contact-details" style="font-size: 10px; color: var(--text-tertiary);">${contact.email} | ${contact.phone}</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function showNotification(message, type) {
+            // Use existing notification system if available
+            if (window.showToast) {
+                window.showToast(message, type);
+            } else {
+                console.log(`[${type}] ${message}`);
+            }
+        }
+    </script>
+
+    <!-- Zoho Integration JavaScript -->
+    <script>
+        // ================================================================
+        // ZOHO INTEGRATION FUNCTIONS
+        // ================================================================
+
+        // Global state for Zoho integration
+        window.zohoState = {
+            currentAccountId: null,
+            currentQuoteId: null,
+            generatorUnits: [],
+            syncInProgress: false
+        };
+
+        /**
+         * Component 1: Enhanced Customer Search with Zoho Autocomplete
+         */
+        let zohoSearchTimeout;
+        let selectedCustomerData = null; // Store full customer data for auto-population
+
+        async function searchZohoCustomers(query) {
+            if (query.length < 2) {
+                return [];
+            }
+
+            try {
+                // Use new customer search endpoint
+                const response = await fetch(`/api/customers/search?q=${encodeURIComponent(query)}&limit=10`);
+                const data = await response.json();
+
+                if (data.success && data.customers) {
+                    return data.customers;
+                }
+                return [];
+            } catch (error) {
+                console.error('Zoho customer search failed:', error);
+                return [];
+            }
+        }
+
+        // Track the current search request to prevent race conditions
+        let currentSearchRequestId = 0;
+
+        async function handleCompanyInputZoho(event) {
+            const query = event.target.value;
+            const dropdown = document.getElementById('companyDropdown');
+
+            clearTimeout(zohoSearchTimeout);
+
+            if (query.length < 2) {
+                dropdown.classList.remove('show');
+                return;
+            }
+
+            // Generate unique request ID for this search
+            const requestId = ++currentSearchRequestId;
+
+            // Show searching state with spinner
+            dropdown.innerHTML = `
+                <div class="autocomplete-item searching">
+                    <div class="zoho-loading">
+                        <div class="zoho-spinner"></div>
+                        <span>Searching Zoho CRM...</span>
+                    </div>
+                </div>
+            `;
+            dropdown.classList.add('show');
+
+            // Debounced dual-source search (300ms delay)
+            zohoSearchTimeout = setTimeout(async () => {
+                // PARALLEL SEARCH: Launch both Zoho and Google searches simultaneously
+                const [zohoResults, googleResults] = await Promise.all([
+                    searchZohoCustomers(query),
+                    searchGooglePlacesParallel(query)
+                ]);
+
+                // Ignore stale results from old requests
+                if (requestId !== currentSearchRequestId) {
+                    console.log(`Ignoring stale results for request ${requestId}`);
+                    return;
+                }
+
+                let dropdownHTML = '';
+
+                // SECTION 1: Zoho CRM Results (Existing Customers)
+                if (zohoResults && zohoResults.length > 0) {
+                    const zohoHeader = `
+                        <div class="autocomplete-section-header zoho-section">
+                            <span class="material-symbols-outlined">business</span>
+                            <span>EXISTING CUSTOMERS</span>
+                            <span class="source-badge zoho">ZOHO CRM</span>
+                        </div>
+                    `;
+                    
+                    dropdownHTML += zohoHeader + zohoResults.map(customer => {
+                        // Escape HTML to prevent XSS
+                        const safeName = escapeHtml(customer.name);
+                        const safeType = escapeHtml(customer.type || 'Customer');
+                        const safePhone = escapeHtml(customer.phone || 'No phone');
+                        const safeCity = escapeHtml(customer.city || 'No city');
+
+                        // Check if customer has missing critical data
+                        const hasMissingData = !customer.phone || !customer.city || !customer.address || !customer.zip;
+                        const enhanceButton = hasMissingData ? `
+                            <button class="enhance-button" 
+                                    onclick="event.stopPropagation(); enhanceZohoCustomer('${customer.id}', '${safeName.replace(/'/g, "\\'")}')">
+                                <span class="material-symbols-outlined">auto_fix_high</span>
+                                Enhance with Google
+                            </button>
+                        ` : '';
+
+                        return `
+                            <div class="autocomplete-item zoho-item zoho-account-item ${hasMissingData ? 'has-missing-data' : ''}"
+                                 onclick="selectZohoAccount('${customer.id}')">
+                                <div class="zoho-account-logo">
+                                    <span class="material-symbols-outlined" style="font-size: 20px; color: #FF6F00;">
+                                        business
+                                    </span>
+                                </div>
+                                <div class="zoho-account-info">
+                                    <div class="zoho-account-name">
+                                        ${safeName}
+                                        <span class="source-badge zoho">EXISTING</span>
+                                    </div>
+                                    <div class="zoho-account-details">
+                                        <span style="background: #FF6F00; color: white; padding: 2px 6px; border-radius: 3px; font-size: 8px; font-weight: 600;">
+                                            ${safeType}
+                                        </span>
+                                        <span>${safePhone}</span>
+                                        <span>${safeCity}</span>
+                                    </div>
+                                    ${enhanceButton}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // SECTION 2: Google Places Results (New Businesses)
+                if (googleResults && googleResults.length > 0) {
+                    const googleHeader = `
+                        <div class="autocomplete-section-header google-section">
+                            <span class="material-symbols-outlined">location_on</span>
+                            <span>NEW BUSINESSES</span>
+                            <span class="source-badge google">GOOGLE PLACES</span>
+                        </div>
+                    `;
+                    
+                    dropdownHTML += googleHeader + googleResults.map(prediction => {
+                        const safeName = escapeHtml(prediction.description);
+                        const placeId = prediction.place_id;
+
+                        return `
+                            <div class="autocomplete-item google-item zoho-account-item google-place-item"
+                                 onclick="selectGooglePlace('${placeId}', '${safeName.replace(/'/g, "\\'")}')">
+                                <div class="zoho-account-logo">
+                                    <span class="material-symbols-outlined" style="font-size: 20px; color: #4285F4;">
+                                        location_on
+                                    </span>
+                                </div>
+                                <div class="zoho-account-info">
+                                    <div class="zoho-account-name">
+                                        ${safeName}
+                                        <span class="source-badge google">NEW</span>
+                                    </div>
+                                    <div class="zoho-account-details">
+                                        <span style="background: #4285F4; color: white; padding: 2px 6px; border-radius: 3px; font-size: 8px; font-weight: 600;">
+                                            GOOGLE PLACES
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // No results from either source
+                if (!dropdownHTML) {
+                    dropdownHTML = `
+                        <div class="autocomplete-item no-results">
+                            <span class="material-symbols-outlined" style="font-size: 20px; margin-right: 8px; color: var(--text-tertiary);">
+                                search_off
+                            </span>
+                            No results found in Zoho CRM or Google Places
+                        </div>
+                    `;
+                }
+
+                dropdown.innerHTML = dropdownHTML;
+                dropdown.classList.add('show');
+            }, 300);
+        }
+
+        // Parallel Google Places search (doesn't block on request ID)
+        async function searchGooglePlacesParallel(query) {
+            try {
+                console.log(`🔍 Google Places API search for: "${query}"`);
+                const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3002' : window.location.origin;
+                const response = await fetch(`${API_BASE}/api/google-places`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ input: query })
+                });
+
+                if (!response.ok) {
+                    console.error('❌ Google Places search failed with status:', response.status);
+                    return [];
+                }
+
+                const result = await response.json();
+                console.log(`📍 Google Places API response:`, result);
+                console.log(`📊 Predictions count: ${result.predictions?.length || 0}`);
+                
+                if (result.predictions && result.predictions.length > 0) {
+                    console.log(`✅ First result:`, result.predictions[0]);
+                } else {
+                    console.warn(`⚠️ No Google Places results for "${query}"`, result);
+                }
+                
+                return result.predictions || [];
+            } catch (error) {
+                console.error('❌ Google Places parallel search error:', error);
+                return [];
+            }
+        }
+
+        // Enhance existing Zoho customer with Google Places data
+        async function enhanceZohoCustomer(customerId, customerName) {
+            console.log(`Enhancing Zoho customer ${customerId} with Google Places data...`);
+            
+            // Close dropdown
+            document.getElementById('companyDropdown').classList.remove('show');
+            
+            // Show loading state
+            const companyInput = document.getElementById('companyName');
+            const originalValue = companyInput.value;
+            companyInput.value = 'Searching Google for enhanced data...';
+            companyInput.disabled = true;
+
+            try {
+                // Progressive search strategy: Try multiple search variations
+                let predictions = [];
+                const searchStrategies = [
+                    customerName, // Try exact name first
+                    customerName.replace(/\b(Inc|LLC|Corp|Ltd|Co|Corporation|Company)\b\.?/gi, '').trim(), // Remove business suffixes
+                    customerName.split(' ').slice(0, 3).join(' '), // First 3 words
+                    customerName.split(' ').slice(-3).join(' '), // Last 3 words
+                ];
+
+                // Add location-specific searches if we have state info
+                const stateField = document.getElementById('state');
+                if (stateField && stateField.value) {
+                    searchStrategies.push(`${customerName} ${stateField.value}`);
+                }
+
+                console.log('🔍 Trying search strategies:', searchStrategies);
+
+                // Try each search strategy until we get results
+                for (const searchTerm of searchStrategies) {
+                    if (searchTerm.length < 3) continue; // Skip very short terms
+                    
+                    companyInput.value = `Searching: "${searchTerm}"...`;
+                    predictions = await searchGooglePlacesParallel(searchTerm);
+                    
+                    if (predictions.length > 0) {
+                        console.log(`✅ Found ${predictions.length} results with: "${searchTerm}"`);
+                        break;
+                    }
+                }
+                
+                if (predictions.length === 0) {
+                    // Show user-friendly modal with search options
+                    const retry = confirm(
+                        `No Google Places results found automatically.\n\n` +
+                        `Searched for: "${customerName}"\n\n` +
+                        `Would you like to manually search? Click OK to enter a custom search term.`
+                    );
+                    
+                    if (retry) {
+                        const customSearch = prompt('Enter a search term for this business:', customerName.split(' ').slice(0, 2).join(' '));
+                        if (customSearch && customSearch.trim()) {
+                            predictions = await searchGooglePlacesParallel(customSearch.trim());
+                            if (predictions.length === 0) {
+                                alert('Still no results found. Please try selecting from the dropdown when typing the company name.');
+                                companyInput.value = originalValue;
+                                companyInput.disabled = false;
+                                return;
+                            }
+                        } else {
+                            companyInput.value = originalValue;
+                            companyInput.disabled = false;
+                            return;
+                        }
+                    } else {
+                        companyInput.value = originalValue;
+                        companyInput.disabled = false;
+                        return;
+                    }
+                }
+
+                // Get details for the first match
+                const placeId = predictions[0].place_id;
+                const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3002' : window.location.origin;
+                
+                const detailsResponse = await fetch(`${API_BASE}/api/enrichment/google-place-details`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ placeId })
+                });
+
+                if (!detailsResponse.ok) {
+                    throw new Error('Failed to fetch place details');
+                }
+
+                const details = await detailsResponse.json();
+                
+                // Populate form fields with Google data
+                if (details.phoneNumber && !document.getElementById('phone').value) {
+                    document.getElementById('phone').value = details.phoneNumber;
+                }
+                if (details.website && !document.getElementById('website').value) {
+                    document.getElementById('website').value = details.website;
+                }
+                if (details.address && !document.getElementById('address').value) {
+                    document.getElementById('address').value = details.address;
+                }
+                if (details.city && !document.getElementById('city').value) {
+                    document.getElementById('city').value = details.city;
+                }
+                if (details.state && !document.getElementById('state').value) {
+                    document.getElementById('state').value = details.state;
+                }
+                if (details.zip && !document.getElementById('zip').value) {
+                    document.getElementById('zip').value = details.zip;
+                }
+
+                // Restore company name and select the Zoho account
+                companyInput.value = originalValue;
+                companyInput.disabled = false;
+                
+                // Select the Zoho account to load all its data
+                await selectZohoAccount(customerId);
+                
+                console.log('✅ Customer enhanced with Google Places data');
+                
+                // Show success message
+                alert('Customer data enhanced with information from Google Places!');
+                
+            } catch (error) {
+                console.error('Error enhancing customer:', error);
+                alert('Failed to enhance customer data. Please try again.');
+                companyInput.value = originalValue;
+                companyInput.disabled = false;
+            }
+        }
+
+        async function searchGooglePlacesFallback(query, dropdown, requestId) {
+            try {
+                // Use Google Places Autocomplete API via backend
+                const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3002' : window.location.origin;
+                const response = await fetch(`${API_BASE}/api/google-places`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ input: query })
+                });
+
+                // Ignore stale results from old requests
+                if (requestId !== currentSearchRequestId) {
+                    console.log(`Ignoring stale Google Places results for request ${requestId}`);
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error('Google Places search failed');
+                }
+
+                const result = await response.json();
+                const predictions = result.predictions || [];
+
+                // Check again after async operation
+                if (requestId !== currentSearchRequestId) {
+                    console.log(`Ignoring stale Google Places results for request ${requestId} (after fetch)`);
+                    return;
+                }
+
+                if (predictions.length > 0) {
+                    // Add section header for new businesses
+                    const header = `
+                        <div class="autocomplete-section-header google-section">
+                            <span class="material-symbols-outlined">location_on</span>
+                            <span>NEW BUSINESSES</span>
+                            <span class="source-badge google">GOOGLE PLACES</span>
+                        </div>
+                    `;
+                    
+                    dropdown.innerHTML = header + predictions.map(prediction => {
+                        const safeName = escapeHtml(prediction.description);
+                        const placeId = prediction.place_id;
+
+                        return `
+                            <div class="autocomplete-item google-item zoho-account-item google-place-item"
+                                 onclick="selectGooglePlace('${placeId}', '${safeName.replace(/'/g, "\\'")}')">
+                                <div class="zoho-account-logo">
+                                    <span class="material-symbols-outlined" style="font-size: 20px; color: #4285F4;">
+                                        location_on
+                                    </span>
+                                </div>
+                                <div class="zoho-account-info">
+                                    <div class="zoho-account-name">
+                                        ${safeName}
+                                        <span class="source-badge google">NEW</span>
+                                    </div>
+                                    <div class="zoho-account-details">
+                                        <span style="background: #4285F4; color: white; padding: 2px 6px; border-radius: 3px; font-size: 8px; font-weight: 600;">
+                                            GOOGLE PLACES
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    dropdown.innerHTML = `
+                        <div class="autocomplete-item no-results">
+                            <span class="material-symbols-outlined" style="font-size: 20px; margin-right: 8px; color: var(--text-tertiary);">
+                                search_off
+                            </span>
+                            No results found in Zoho CRM or Google Places
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                // Check if this is still the current request before showing error
+                if (requestId !== currentSearchRequestId) {
+                    console.log(`Ignoring error from stale request ${requestId}`);
+                    return;
+                }
+                
+                console.error('Google Places fallback error:', error);
+                dropdown.innerHTML = `
+                    <div class="autocomplete-item no-results">
+                        <span class="material-symbols-outlined" style="font-size: 20px; margin-right: 8px; color: var(--text-tertiary);">
+                            error
+                        </span>
+                        No Zoho CRM results found
+                    </div>
+                `;
+            }
+        }
+
+        async function selectGooglePlace(placeId, placeName) {
+            // Store the selected place ID for enrichment
+            window.state.selectedPlaceId = placeId;
+            window.state.selectedPrediction = placeName;
+
+            // Set company name
+            document.getElementById('companyName').value = placeName;
+
+            // Close dropdown
+            document.getElementById('companyDropdown').classList.remove('show');
+
+            // Trigger enrichment using the place ID
+            if (window.customerEnrichment && window.customerEnrichment.enrichCustomer) {
+                await window.customerEnrichment.enrichCustomer(window.state);
+            }
+
+            console.log('✅ Selected Google Place:', placeName, 'PlaceID:', placeId);
+
+            // Auto-open contact picker after place selection and enrichment
+            setTimeout(() => {
+                if (window.showContactPicker) {
+                    window.showContactPicker();
+                }
+            }, 1000);
+        }
+
+        async function selectZohoAccount(customerId) {
+            // Fetch full customer data
+            const customers = await searchZohoCustomers(document.getElementById('companyName').value);
+            const customer = customers.find(c => c.id === customerId);
+
+            if (!customer) {
+                console.error('Customer not found:', customerId);
+                return;
+            }
+
+            // Store for later use
+            selectedCustomerData = customer;
+            window.zohoState.currentAccountId = customerId;
+
+            // Close dropdown
+            document.getElementById('companyDropdown').classList.remove('show');
+
+            // Auto-populate all customer fields from search results
+            document.getElementById('companyName').value = customer.name || '';
+
+            // Populate contact information
+            if (customer.phone) {
+                document.getElementById('phone').value = customer.phone;
+            }
+            if (customer.email) {
+                document.getElementById('email').value = customer.email;
+            }
+            if (customer.website) {
+                document.getElementById('website').value = customer.website;
+            }
+
+            // Populate address fields
+            // Parse address if it's a combined string, or use individual fields
+            if (customer.address) {
+                // Try to extract street from full address
+                const addressParts = customer.address.split(',').map(p => p.trim());
+                if (addressParts.length > 0) {
+                    document.getElementById('address').value = addressParts[0];
+                }
+            }
+
+            if (customer.city) {
+                document.getElementById('city').value = customer.city;
+            }
+            if (customer.state) {
+                document.getElementById('state').value = customer.state;
+            }
+            if (customer.zip) {
+                document.getElementById('zip').value = customer.zip;
+            }
+
+            // Show success indicator
+            console.log('✅ Customer data auto-populated:', customer.name);
+
+            // Trigger address enrichment if available
+            if (customer.city && customer.state && customer.zip) {
+                // Trigger tax rate lookup
+                const zipInput = document.getElementById('zip');
+                if (zipInput && zipInput.onblur) {
+                    zipInput.onblur();
+                }
+            }
+
+            // Optionally trigger distance calculation
+            // This would require the handleCompanyChange function to be updated
+
+            // Load contacts from Zoho CRM for this account
+            if (window.contactManager && typeof window.contactManager.loadContactsFromZoho === 'function') {
+                await window.contactManager.loadContactsFromZoho(customerId);
+            }
+
+            // Auto-open contact picker after customer selection
+            setTimeout(() => {
+                if (window.showContactPicker) {
+                    window.showContactPicker();
+                }
+            }, 500);
+        }
+
+        /**
+         * Component 2: Quote to Zoho Sync
+         */
+        async function syncWithZoho() {
+            if (window.zohoState.syncInProgress) {
+                return;
+            }
+
+            // Show modal in loading state
+            const modal = document.getElementById('zohoSyncModal');
+            const loading = document.getElementById('zohoSyncLoading');
+            const success = document.getElementById('zohoSyncSuccess');
+            const error = document.getElementById('zohoSyncError');
+            const retryBtn = document.getElementById('zohoRetryBtn');
+
+            loading.style.display = 'flex';
+            success.style.display = 'none';
+            error.style.display = 'none';
+            retryBtn.style.display = 'none';
+            modal.classList.add('active');
+
+            window.zohoState.syncInProgress = true;
+
+            try {
+                // Gather quote data
+                const quoteData = {
+                    customer: {
+                        name: document.getElementById('companyName').value,
+                        phone: document.getElementById('phone').value,
+                        email: document.getElementById('email').value,
+                        website: document.getElementById('website').value,
+                        address: document.getElementById('address').value,
+                        city: document.getElementById('city').value,
+                        state: document.getElementById('state').value,
+                        zip: document.getElementById('zip').value,
+                        distance: document.getElementById('distance').value
+                    },
+                    quote: {
+                        total: document.getElementById('total-quote')?.textContent || '$0',
+                        laborHours: document.getElementById('summary-hours')?.textContent || '0 hrs',
+                        materials: document.getElementById('summary-materials')?.textContent || '$0',
+                        // Add more quote details as needed
+                    },
+                    units: window.state?.units || []
+                };
+
+                // Sync to Zoho
+                const response = await fetch('/api/zoho/sync-quote', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(quoteData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update state
+                    window.zohoState.currentAccountId = data.accountId;
+                    window.zohoState.currentQuoteId = data.quoteId;
+
+                    // Show success
+                    loading.style.display = 'none';
+                    success.style.display = 'block';
+
+                    // Populate success details
+                    document.getElementById('zohoAccountName').textContent = quoteData.customer.name;
+                    document.getElementById('zohoQuoteNumber').textContent = data.quoteNumber || 'QT-' + Date.now();
+                    document.getElementById('zohoAccountLink').href = data.accountUrl || '#';
+                    document.getElementById('zohoQuoteLink').href = data.quoteUrl || '#';
+
+                    if (data.generatorCount > 0) {
+                        document.getElementById('zohoGeneratorsInfo').style.display = 'block';
+                        document.getElementById('zohoGeneratorCount').textContent = data.generatorCount;
+                    }
+
+                    // Add sync badge to UI
+                    addSyncStatusBadge('success', 'Synced to Zoho');
+                } else {
+                    throw new Error(data.error || 'Sync failed');
+                }
+            } catch (err) {
+                // Show error
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                retryBtn.style.display = 'block';
+                document.getElementById('zohoErrorMessage').textContent = err.message || 'Failed to sync with Zoho CRM. Please try again.';
+
+                addSyncStatusBadge('error', 'Sync failed');
+            } finally {
+                window.zohoState.syncInProgress = false;
+            }
+        }
+
+        function closeZohoSyncModal() {
+            document.getElementById('zohoSyncModal').classList.remove('active');
+        }
+
+        function retryZohoSync() {
+            closeZohoSyncModal();
+            setTimeout(() => syncWithZoho(), 100);
+        }
+
+        function addSyncStatusBadge(status, message) {
+            const statusContainer = document.getElementById('zohoSyncStatus');
+            statusContainer.innerHTML = `
+                <div class="zoho-sync-badge ${status}">
+                    <span class="material-symbols-outlined" style="font-size: 12px;">
+                        ${status === 'success' ? 'check_circle' : status === 'error' ? 'error' : 'pending'}
+                    </span>
+                    ${message}
+                </div>
+            `;
+            statusContainer.style.display = 'block';
+        }
+
+        /**
+         * Component 3: Generator Units Manager
+         */
+        async function loadGeneratorUnits(accountId) {
+            try {
+                const response = await fetch(`/api/zoho/generator-units?accountId=${accountId}`);
+                const data = await response.json();
+
+                if (data.success && data.units) {
+                    window.zohoState.generatorUnits = data.units;
+                    renderGeneratorUnits(data.units);
+
+                    // Show section if units exist
+                    if (data.units.length > 0) {
+                        document.getElementById('generatorUnitsSection').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load generator units:', error);
+            }
+        }
+
+        function renderGeneratorUnits(units) {
+            const container = document.getElementById('generatorUnitsList');
+            const countBadge = document.getElementById('generatorUnitsCount');
+
+            countBadge.textContent = units.length;
+
+            if (units.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: var(--text-tertiary); font-size: 10px;">
+                        <span class="material-symbols-outlined" style="font-size: 32px; display: block; margin-bottom: 8px; opacity: 0.3;">electric_bolt</span>
+                        No generator units found
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = units.map(unit => `
+                <div class="generator-unit-card" onclick="viewGeneratorUnit('${unit.id}')">
+                    <div class="generator-unit-header">
+                        <div>
+                            <div class="generator-unit-model">${escapeHtml(unit.model)}</div>
+                            <div class="generator-unit-specs">
+                                <div class="generator-unit-spec-item">
+                                    <span class="material-symbols-outlined" style="font-size: 12px;">numbers</span>
+                                    ${escapeHtml(unit.serialNumber || 'No SN')}
+                                </div>
+                                <div class="generator-unit-spec-item">
+                                    <span class="material-symbols-outlined" style="font-size: 12px;">bolt</span>
+                                    ${unit.kwRating}kW
+                                </div>
+                                <div class="generator-unit-spec-item">
+                                    <span class="material-symbols-outlined" style="font-size: 12px;">local_gas_station</span>
+                                    ${unit.fuelType}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="generator-unit-badges">
+                            ${unit.gpsLocation ? '<div class="generator-unit-badge gps"><span class="material-symbols-outlined" style="font-size: 10px;">location_on</span> GPS</div>' : ''}
+                            ${unit.lastServiceDate ? '<div class="generator-unit-badge service">Last: ' + new Date(unit.lastServiceDate).toLocaleDateString() + '</div>' : ''}
+                        </div>
+                    </div>
+                    ${unit.photos && unit.photos.length > 0 ? `
+                        <div class="generator-unit-photos">
+                            ${unit.photos.slice(0, 4).map(photo => `
+                                <img src="${photo.thumbnail || photo.url}" class="generator-unit-photo-thumb" alt="Unit photo">
+                            `).join('')}
+                            ${unit.photos.length > 4 ? `<div style="font-size: 9px; color: var(--text-tertiary); padding: 4px;">+${unit.photos.length - 4} more</div>` : ''}
+                        </div>
+                    ` : ''}
+                    ${unit.nextServiceDate ? `
+                        <div class="service-history-next-due">
+                            <span class="material-symbols-outlined" style="font-size: 12px;">schedule</span>
+                            Next service: ${new Date(unit.nextServiceDate).toLocaleDateString()}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function showAddGeneratorUnitModal() {
+            if (!window.zohoState.currentAccountId) {
+                alert('Please select a customer account first');
+                return;
+            }
+            document.getElementById('addGeneratorUnitModal').classList.add('active');
+        }
+
+        function closeAddGeneratorUnitModal() {
+            document.getElementById('addGeneratorUnitModal').classList.remove('active');
+            // Clear form
+            document.getElementById('newGenModel').value = '';
+            document.getElementById('newGenSerial').value = '';
+            document.getElementById('newGenKw').value = '';
+            document.getElementById('newGenYear').value = '';
+            document.getElementById('newGenAddress').value = '';
+            document.getElementById('newGenService').value = '';
+            document.getElementById('newGenPhotos').value = '';
+            document.getElementById('photoPreviewContainer').innerHTML = '';
+        }
+
+        function handleGeneratorPhotos(event) {
+            const files = event.target.files;
+            const previewContainer = document.getElementById('photoPreviewContainer');
+            previewContainer.innerHTML = '';
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const preview = document.createElement('div');
+                    preview.style.position = 'relative';
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-subtle);">
+                        <div style="position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; background: var(--accent-success); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-symbols-outlined" style="font-size: 10px; color: white;">check</span>
+                        </div>
+                    `;
+                    previewContainer.appendChild(preview);
+                };
+
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function saveGeneratorUnit() {
+            const formData = new FormData();
+            formData.append('accountId', window.zohoState.currentAccountId);
+            formData.append('model', document.getElementById('newGenModel').value);
+            formData.append('serialNumber', document.getElementById('newGenSerial').value);
+            formData.append('kwRating', document.getElementById('newGenKw').value);
+            formData.append('fuelType', document.getElementById('newGenFuel').value);
+            formData.append('year', document.getElementById('newGenYear').value);
+            formData.append('address', document.getElementById('newGenAddress').value);
+            formData.append('serviceType', document.getElementById('newGenService').value);
+
+            // Add photos
+            const photoInput = document.getElementById('newGenPhotos');
+            for (let i = 0; i < photoInput.files.length; i++) {
+                formData.append('photos', photoInput.files[i]);
+            }
+
+            try {
+                const response = await fetch('/api/zoho/add-generator-unit', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Reload units
+                    await loadGeneratorUnits(window.zohoState.currentAccountId);
+                    closeAddGeneratorUnitModal();
+
+                    // Show success message
+                    addSyncStatusBadge('success', 'Generator unit added to Zoho');
+                } else {
+                    alert('Failed to add generator unit: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Failed to save generator unit:', error);
+                alert('Failed to save generator unit. Please try again.');
+            }
+        }
+
+        function viewGeneratorUnit(unitId) {
+            // Open unit details view (can be enhanced later)
+            const unit = window.zohoState.generatorUnits.find(u => u.id === unitId);
+            if (unit) {
+                console.log('Viewing unit:', unit);
+                // TODO: Show unit details modal or navigate to unit view
+            }
+        }
+
+        /**
+         * Utility Functions
+         */
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize Zoho integration when document is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initZohoIntegration);
+        } else {
+            initZohoIntegration();
+        }
+
+        function initZohoIntegration() {
+            console.log('Zoho Integration initialized');
+
+            // Enhance company input with Zoho search
+            const companyInput = document.getElementById('companyName');
+            if (companyInput) {
+                // Save original handler
+                const originalHandler = companyInput.oninput;
+
+                // Add Zoho search handler
+                companyInput.addEventListener('input', handleCompanyInputZoho);
+            }
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.input-wrapper')) {
+                    document.querySelectorAll('.autocomplete-dropdown').forEach(dropdown => {
+                        dropdown.classList.remove('show');
+                    });
+                }
+            });
+        }
+
+        // ================================================================
+        // GENERATOR ENRICHMENT FUNCTIONS
+        // ================================================================
+
+        /**
+         * Check if generator has minimum data for enrichment and show/hide enrich button
+         */
+        function checkEnrichmentEligibility(unitId) {
+            const unit = window.state?.units.find(u => u.id === unitId);
+            if (!unit) return;
+
+            const kwInput = document.getElementById(`${unitId}-kw`);
+            const brandInput = document.getElementById(`${unitId}-brand`);
+            const modelInput = document.getElementById(`${unitId}-model`);
+            const enrichBtn = document.getElementById(`${unitId}-enrich-btn`);
+
+            if (!kwInput || !brandInput || !modelInput || !enrichBtn) return;
+
+            const kw = kwInput.value;
+            const brand = brandInput.value;
+            const model = modelInput.value;
+
+            // Show enrich button if we have kW, brand, and model
+            if (kw && brand && model) {
+                enrichBtn.style.display = 'block';
+            } else {
+                enrichBtn.style.display = 'none';
+            }
+        }
+
+        /**
+         * Enrich generator data using AI enrichment service
+         */
+        async function enrichGenerator(unitId) {
+            const unit = window.state?.units.find(u => u.id === unitId);
+            if (!unit) {
+                console.error('Unit not found:', unitId);
+                return;
+            }
+
+            const kwInput = document.getElementById(`${unitId}-kw`);
+            const brandInput = document.getElementById(`${unitId}-brand`);
+            const modelInput = document.getElementById(`${unitId}-model`);
+            const fuelInput = document.getElementById(`${unitId}-fuel`);
+
+            const kw = parseFloat(kwInput?.value);
+            const manufacturer = brandInput?.value;
+            const model = modelInput?.value;
+            const fuelType = fuelInput?.value;
+
+            if (!kw || !manufacturer || !model) {
+                alert('Please enter kW, Manufacturer, and Model to enrich generator data');
+                return;
+            }
+
+            // Show loading state
+            showEnrichmentLoading(unitId);
+
+            try {
+                const result = await window.generatorService.enrichGenerator({
+                    kw,
+                    manufacturer,
+                    model,
+                    fuelType
+                });
+
+                if (result.success) {
+                    displayEnrichmentResults(unitId, result);
+                    
+                    // Show success notification if available
+                    if (window.showNotification) {
+                        window.showNotification(`Generator enriched with ${Math.round(result.confidence * 100)}% confidence`, 'success');
+                    }
+                } else {
+                    hideEnrichmentPanel(unitId);
+                    alert('Failed to enrich generator data: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Enrichment error:', error);
+                hideEnrichmentPanel(unitId);
+                alert('Enrichment failed: ' + error.message);
+            }
+        }
+
+        /**
+         * Show loading state in enrichment panel
+         */
+        function showEnrichmentLoading(unitId) {
+            const panel = document.getElementById(`${unitId}-enrichment-panel`);
+            if (!panel) return;
+
+            panel.style.display = 'block';
+            panel.innerHTML = `
+                <div class="enrichment-loading">
+                    <div class="spinner"></div>
+                    <span>Enriching generator data...</span>
+                </div>
+            `;
+        }
+
+        /**
+         * Display enrichment results in the UI
+         */
+        function displayEnrichmentResults(unitId, result) {
+            const panel = document.getElementById(`${unitId}-enrichment-panel`);
+            if (!panel) return;
+
+            // Show panel
+            panel.style.display = 'block';
+
+            // Format display data
+            const display = window.generatorService.formatEnrichmentDisplay(result);
+
+            // Update confidence badge
+            const confidenceBadge = document.getElementById(`${unitId}-confidence-badge`);
+            const confidenceLabel = window.generatorService.getConfidenceLabel(result.confidence);
+            const confidenceClass = getConfidenceClass(result.confidence);
+
+            if (confidenceBadge) {
+                confidenceBadge.className = `confidence-badge ${confidenceClass}`;
+            }
+
+            const labelEl = document.getElementById(`${unitId}-confidence-label`);
+            if (labelEl) labelEl.textContent = confidenceLabel;
+
+            const scoreEl = document.getElementById(`${unitId}-confidence-score`);
+            if (scoreEl) scoreEl.textContent = display.confidence + '%';
+
+            const tierEl = document.getElementById(`${unitId}-enrichment-tier`);
+            if (tierEl) tierEl.textContent = getTierDisplayName(result.tier);
+
+            // Update engine specs
+            if (display.engine) {
+                const engineSection = document.getElementById(`${unitId}-engine-specs`);
+                if (engineSection) engineSection.style.display = 'block';
+
+                updateElementText(`${unitId}-engine-make`, display.engine.make || '-');
+                updateElementText(`${unitId}-engine-model`, display.engine.model || '-');
+                updateElementText(`${unitId}-engine-cylinders`, display.engine.cylinders || '-');
+                updateElementText(`${unitId}-engine-displacement`, display.engine.displacement || '-');
+            }
+
+            // Update fluid specs
+            if (display.fluids) {
+                const fluidSection = document.getElementById(`${unitId}-fluid-specs`);
+                if (fluidSection) fluidSection.style.display = 'block';
+
+                updateElementText(`${unitId}-oil-capacity`, display.fluids.oilCapacity || '-');
+                updateElementText(`${unitId}-oil-type`, display.fluids.oilType || '-');
+                updateElementText(`${unitId}-coolant-capacity`, display.fluids.coolantCapacity || '-');
+                updateElementText(`${unitId}-coolant-type`, display.fluids.coolantType || '-');
+            }
+
+            // Update maintenance intervals
+            if (display.maintenance && (display.maintenance.serviceA || display.maintenance.serviceB)) {
+                const maintenanceSection = document.getElementById(`${unitId}-maintenance-specs`);
+                if (maintenanceSection) maintenanceSection.style.display = 'block';
+
+                const serviceA = display.maintenance.serviceA;
+                const serviceB = display.maintenance.serviceB;
+
+                updateElementText(`${unitId}-service-a-interval`, 
+                    serviceA?.hours ? `${serviceA.hours} hrs` : '-');
+                updateElementText(`${unitId}-service-b-interval`, 
+                    serviceB?.hours ? `${serviceB.hours} hrs` : '-');
+            }
+
+            // Update sources
+            const sourcesText = result.sources ? result.sources.join(', ') : '-';
+            updateElementText(`${unitId}-sources-text`, sourcesText);
+
+            // Hide enrich button (already enriched)
+            const enrichBtn = document.getElementById(`${unitId}-enrich-btn`);
+            if (enrichBtn) enrichBtn.style.display = 'none';
+        }
+
+        /**
+         * Hide enrichment panel
+         */
+        function hideEnrichmentPanel(unitId) {
+            const panel = document.getElementById(`${unitId}-enrichment-panel`);
+            if (panel) panel.style.display = 'none';
+        }
+
+        /**
+         * Get confidence CSS class
+         */
+        function getConfidenceClass(confidence) {
+            if (confidence >= 0.90) return 'confidence-high';
+            if (confidence >= 0.80) return 'confidence-good';
+            if (confidence >= 0.70) return 'confidence-medium';
+            return 'confidence-low';
+        }
+
+        /**
+         * Get tier display name
+         */
+        function getTierDisplayName(tier) {
+            const tiers = {
+                'basic': 'Basic (kW Only)',
+                'ai_enrichment': 'AI Enrichment',
+                'full_enrichment': 'Full Enrichment'
+            };
+            return tiers[tier] || tier;
+        }
+
+        /**
+         * Update element text content safely
+         */
+        function updateElementText(elementId, text) {
+            const el = document.getElementById(elementId);
+            if (el) el.textContent = text;
+        }
+
+        // Make functions globally available for inline onclick handlers
+        window.enrichGenerator = enrichGenerator;
+        window.checkEnrichmentEligibility = checkEnrichmentEligibility;
+
+    </script>
+
+    <!-- Contact Selection Modal -->
+    <div class="logo-picker-modal" id="contactPickerModal" style="display: none;">
+        <div class="logo-picker-content" style="max-width: 800px;">
+            <div class="logo-picker-header">
+                <h3 class="logo-picker-title">Contact Information</h3>
+                <button class="logo-picker-close" onclick="window.closeContactPicker()">✕</button>
+            </div>
+            
+            <div class="contact-grid" id="contactGrid">
+                <!-- Contacts will be rendered here by contact-selector.js -->
+            </div>
+            
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button class="btn-primary" id="addNewContactBtn">
+                    <span class="material-symbols-outlined">add</span>
+                    Add New Contact
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Contact Form Modal -->
+    <div class="logo-picker-modal" id="addContactFormModal" style="display: none;">
+        <div class="logo-picker-content" style="max-width: 600px;">
+            <div class="logo-picker-header">
+                <h3 class="logo-picker-title">Add Contact</h3>
+                <button class="logo-picker-close" onclick="closeAddContactForm()">✕</button>
+            </div>
+            
+            <form id="addContactForm" class="contact-form">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="contactName" class="input-field" required placeholder="John Doe">
+                </div>
+                
+                <div class="form-group">
+                    <label>Title/Position</label>
+                    <input type="text" id="contactTitle" class="input-field" placeholder="Facilities Manager">
+                </div>
+                
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="contactEmail" class="input-field" required placeholder="jdoe@company.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Phone *</label>
+                    <input type="tel" id="contactPhone" class="input-field" required placeholder="(555) 123-4567">
+                </div>
+                
+                <div class="form-group">
+                    <label>Company</label>
+                    <input type="text" id="contactCompany" class="input-field" readonly>
+                </div>
+                
+                <div class="modal-actions" style="margin-top: 20px;">
+                    <button type="button" class="btn-secondary" onclick="closeAddContactForm()">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Contact</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

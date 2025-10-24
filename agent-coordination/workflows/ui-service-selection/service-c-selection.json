@@ -1,0 +1,23 @@
+{
+  "workflow_id": "service-c-selection",
+  "description": "Test Service C selection and calculation",
+  "category": "ui",
+  "critical_path": false,
+  "assigned_agent": "ui-service-selection",
+  "steps": [
+    {
+      "type": "ui",
+      "action": "select-service-C",
+      "element": "#serviceC",
+      "validation": "Service C checkbox checked"
+    },
+    {
+      "type": "api",
+      "action": "calculate",
+      "endpoint": "/api/calculate",
+      "validation": "response includes Service C in breakdown"
+    }
+  ],
+  "expected_duration_ms": 2000,
+  "dependencies": []
+}

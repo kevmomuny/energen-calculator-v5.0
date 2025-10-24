@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-post-api-zoho-update-account-logo-1761193316359",
+  "workflow_id": "api-post-api-zoho-update-account-logo",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-post-api-zoho-update-account-logo",
+    "started_at": "2025-10-23T04:21:56.358Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T04:21:56.359Z",
+    "duration_ms": 1,
+    "error": "request to http://localhost:3002/api/zoho/update-account-logo failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.484Z"
+}

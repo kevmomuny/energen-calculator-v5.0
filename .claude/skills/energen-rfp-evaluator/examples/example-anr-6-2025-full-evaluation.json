@@ -1,0 +1,352 @@
+{
+  "rfpId": "ANR-6-2025",
+  "extractionDate": "2025-10-13T00:14:49Z",
+  "evaluationVersion": "1.0.0",
+  "metadata": {
+    "rfpSource": "Request for Proposal No. ANR-6-2025 Generator Services",
+    "customer": "Lawrence Berkeley National Laboratory (LBNL)",
+    "agency": "California Franchise Tax Board",
+    "evaluatedBy": "Energen RFP Evaluator",
+    "evaluationDuration": "automated"
+  },
+  "extraction": {
+    "contactInformation": {
+      "customer": "Lawrence Berkeley National Laboratory",
+      "contactName": "Angelica Numazu Rogers",
+      "email": "anumazu@lbl.gov",
+      "phone": "(510) 486-4855",
+      "address": "1 Cyclotron Road",
+      "city": "Berkeley",
+      "state": "CA",
+      "zip": "94720",
+      "confidence": 0.98
+    },
+    "projectDetails": {
+      "rfpNumber": "ANR-6-2025",
+      "title": "Generator Services",
+      "description": "Annual preventive maintenance services for 35 generators, 3 air compressors, and 1 light tower",
+      "contractPeriod": "2025-01-01 to 2025-12-31",
+      "confidence": 0.95
+    },
+    "schedule": {
+      "bidDueDate": "2024-12-15T14:00:00-08:00",
+      "questionsDueDate": "2024-12-08T17:00:00-08:00",
+      "siteTourDate": "2024-12-01T10:00:00-08:00",
+      "contractStartDate": "2025-01-01",
+      "contractEndDate": "2025-12-31",
+      "confidence": 0.92
+    },
+    "servicesRequested": [
+      {
+        "description": "Quarterly comprehensive inspection",
+        "frequency": "Quarterly (4x per year)",
+        "rawText": "Service A - Comprehensive Inspection",
+        "confidence": 0.96
+      },
+      {
+        "description": "Quarterly oil and filter service",
+        "frequency": "Quarterly (4x per year)",
+        "rawText": "Service B - Oil & Filter Service",
+        "confidence": 0.94
+      },
+      {
+        "description": "Annual coolant service",
+        "frequency": "Annual (1x per year)",
+        "rawText": "Service C - Coolant Service",
+        "confidence": 0.93
+      },
+      {
+        "description": "Annual oil and fuel analysis",
+        "frequency": "Annual (1x per year)",
+        "rawText": "Service D - Oil & Fuel Analysis",
+        "confidence": 0.91
+      },
+      {
+        "description": "Annual load bank testing",
+        "frequency": "Annual (1x per year)",
+        "rawText": "Service E - Load Bank Testing",
+        "confidence": 0.95
+      }
+    ],
+    "stipulations": {
+      "prevailingWage": true,
+      "taxExempt": true,
+      "bondRequirements": {
+        "bidBond": false,
+        "performanceBond": false,
+        "paymentBond": false
+      },
+      "insuranceRequirements": {
+        "generalLiability": "$2,000,000",
+        "workersComp": "Statutory",
+        "autoLiability": "$1,000,000"
+      },
+      "paymentTerms": "Net 30",
+      "retainage": "0%",
+      "confidence": 0.97
+    }
+  },
+  "riskAssessment": {
+    "overall": {
+      "score": 5.8,
+      "level": "YELLOW",
+      "recommendation": "Proceed with caution - mitigation plan required"
+    },
+    "dimensions": {
+      "financial": {
+        "score": 4.5,
+        "factors": {
+          "bondRequirements": 1,
+          "paymentTerms": 3,
+          "retainage": 1,
+          "contractValue": 5
+        },
+        "notes": "No bonds required (low risk), Net 30 payment (moderate), contract value $287k within capacity"
+      },
+      "operational": {
+        "score": 4.2,
+        "factors": {
+          "distance": 2,
+          "generatorCount": 6,
+          "timeline": 4,
+          "resourceAvailability": 5
+        },
+        "notes": "Distance 49 miles (moderate), 35 generators (moderate-high), annual timeline feasible, requires dedicated crew"
+      },
+      "compliance": {
+        "score": 8.0,
+        "factors": {
+          "prevailingWage": 10,
+          "licenses": 3,
+          "insurance": 4,
+          "environmental": 2
+        },
+        "notes": "PREVAILING WAGE REQUIRED - HIGH RISK. Requires DIR registration, certified payroll, +40% labor cost increase"
+      },
+      "competitive": {
+        "score": 5.5,
+        "factors": {
+          "evaluationCriteria": 5,
+          "incumbentAdvantage": 6,
+          "expectedBidders": 5,
+          "priceWeight": 6
+        },
+        "notes": "Unknown competitive landscape, likely incumbent advantage, government pricing sensitive"
+      },
+      "technical": {
+        "score": 3.5,
+        "factors": {
+          "equipmentComplexity": 4,
+          "specializedSkills": 3,
+          "partsAvailability": 3,
+          "customWork": 4
+        },
+        "notes": "Mix of standard generators (Cummins, Kohler, CAT), one 2000kW unit requires specialized service, air compressors add complexity"
+      }
+    },
+    "mitigations": [
+      {
+        "risk": "Prevailing Wage Compliance",
+        "severity": "HIGH",
+        "action": "Obtain DIR registration, implement certified payroll system, train staff on prevailing wage requirements",
+        "cost": "$5,000 setup + ongoing compliance",
+        "timeline": "30 days before contract start"
+      },
+      {
+        "risk": "Resource Allocation",
+        "severity": "MEDIUM",
+        "action": "Assign dedicated 2-person crew for LBNL route, schedule quarterly visits in advance",
+        "cost": "Minimal - within normal operations",
+        "timeline": "Before contract start"
+      },
+      {
+        "risk": "Large Generator (2000kW)",
+        "severity": "MEDIUM",
+        "action": "Partner with Cummins for specialized support, stock critical parts, allocate extra time",
+        "cost": "$3,000 parts inventory",
+        "timeline": "Before first service"
+      }
+    ],
+    "outputFile": "data/rfp-evaluations/ANR-6-2025/ANR-6-2025_risk-assessment.json"
+  },
+  "serviceMappings": {
+    "totalMappings": 5,
+    "highConfidence": 5,
+    "requiresReview": 0,
+    "mappings": [
+      {
+        "originalService": "Quarterly comprehensive inspection",
+        "mappedTo": "ServiceA",
+        "mappedName": "A-Comprehensive Inspection",
+        "confidence": 0.96,
+        "frequency": 4,
+        "perVisitHours": 2.5,
+        "annualHours": 87.5,
+        "estimatedCost": {
+          "perVisit": 1733,
+          "annual": 242662,
+          "allGenerators": true
+        }
+      },
+      {
+        "originalService": "Quarterly oil and filter service",
+        "mappedTo": "ServiceB",
+        "mappedName": "B-Oil & Filter Service",
+        "confidence": 0.94,
+        "frequency": 4,
+        "perVisitHours": 1.5,
+        "annualHours": 52.5,
+        "estimatedCost": {
+          "perVisit": 1712,
+          "annual": 59920,
+          "allGenerators": true
+        }
+      },
+      {
+        "originalService": "Annual coolant service",
+        "mappedTo": "ServiceC",
+        "mappedName": "C-Coolant Service",
+        "confidence": 0.93,
+        "frequency": 1,
+        "perVisitHours": 2.0,
+        "annualHours": 70,
+        "estimatedCost": {
+          "perVisit": 1782,
+          "annual": 62370,
+          "allGenerators": true
+        }
+      },
+      {
+        "originalService": "Annual oil and fuel analysis",
+        "mappedTo": "ServiceD",
+        "mappedName": "D-Oil & Fuel Analysis",
+        "confidence": 0.91,
+        "frequency": 1,
+        "perVisitHours": 0.5,
+        "annualHours": 17.5,
+        "estimatedCost": {
+          "perVisit": 150,
+          "annual": 5250,
+          "allGenerators": true
+        }
+      },
+      {
+        "originalService": "Annual load bank testing",
+        "mappedTo": "ServiceE",
+        "mappedName": "E-Load Bank Testing",
+        "confidence": 0.95,
+        "frequency": 1,
+        "perVisitHours": 3.0,
+        "annualHours": 105,
+        "estimatedCost": {
+          "perVisit": 3680,
+          "annual": 128800,
+          "allGenerators": true
+        }
+      }
+    ],
+    "outputFile": "data/rfp-evaluations/ANR-6-2025/ANR-6-2025_service-mapping.json"
+  },
+  "equipmentAnalysis": {
+    "totalUnits": 38,
+    "generators": 35,
+    "otherEquipment": {
+      "airCompressors": 3,
+      "lightTowers": 1
+    },
+    "kwRangeDistribution": {
+      "2-14": 1,
+      "15-30": 1,
+      "35-150": 9,
+      "151-250": 9,
+      "251-400": 10,
+      "401-500": 1,
+      "501-670": 2,
+      "1051-1500": 1,
+      "1501+": 1
+    },
+    "manufacturerBreakdown": {
+      "Cummins": 20,
+      "Kohler": 5,
+      "CAT": 3,
+      "Sullivan-Palatek": 3,
+      "Stamford": 1,
+      "Katolight": 1,
+      "Multiquip": 1,
+      "Unknown": 3
+    },
+    "location": {
+      "primary": "1 Cyclotron Road, Berkeley, CA 94720",
+      "multiSite": false,
+      "distanceFromBase": 49
+    },
+    "specialNotes": [
+      "One 2000kW unit - largest in fleet",
+      "Three air compressors require different service protocols",
+      "One light tower - minimal service requirements",
+      "Multiple building locations across LBNL campus"
+    ],
+    "outputFile": "data/rfp-evaluations/ANR-6-2025/ANR-6-2025_equipment-list.json"
+  },
+  "financialSummary": {
+    "estimatedValue": {
+      "low": 450000,
+      "mid": 519207,
+      "high": 588414,
+      "currency": "USD",
+      "period": "annual",
+      "basis": "Sum of all 35 generator quotes with prevailing wage rates"
+    },
+    "breakdown": {
+      "laborCosts": 163800,
+      "partsCosts": 241821,
+      "mobilizationCosts": 88200,
+      "taxCosts": 24786,
+      "totalCosts": 518607
+    },
+    "profitability": {
+      "estimatedMargin": "15-20%",
+      "profitDollars": 77790,
+      "riskAdjustedMargin": "12-17%",
+      "notes": "Prevailing wage increases labor cost but passes through to customer"
+    }
+  },
+  "goNoGoDecision": {
+    "decision": "CONDITIONAL GO",
+    "score": 6.8,
+    "threshold": 6.0,
+    "rationale": [
+      "Contract value $519k within capacity and profitable",
+      "All services map cleanly to existing offerings (A, B, C, D, E)",
+      "Distance 49 miles manageable for quarterly visits",
+      "Tax-exempt status confirmed (government contract)",
+      "PREVAILING WAGE requirement adds compliance risk and cost"
+    ],
+    "conditions": [
+      "Obtain DIR registration before bidding (30 days)",
+      "Implement certified payroll system ($5k investment)",
+      "Partner with Cummins for 2000kW generator support",
+      "Allocate dedicated 2-person crew for LBNL route",
+      "Price prevailing wage costs transparently"
+    ],
+    "strategicValue": "HIGH - Major research institution, potential for long-term relationship, reference value for other government contracts",
+    "nextSteps": [
+      "Apply for DIR registration immediately",
+      "Contact Cummins for 2000kW service agreement",
+      "Prepare compliance documentation",
+      "Finalize pricing with prevailing wage rates",
+      "Attend mandatory site visit (Dec 1)",
+      "Submit proposal by Dec 15, 2:00 PM PST"
+    ]
+  },
+  "outputFiles": {
+    "fullEvaluation": "data/rfp-evaluations/ANR-6-2025/ANR-6-2025_full-evaluation.json",
+    "executiveSummary": "data/rfp-evaluations/ANR-6-2025/ANR-6-2025_executive-summary.md",
+    "riskAssessment": "data/rfp-evaluations/ANR-6-2025/ANR-6-2025_risk-assessment.json",
+    "serviceMapping": "data/rfp-evaluations/ANR-6-2025/ANR-6-2025_service-mapping.json",
+    "equipmentList": "data/rfp-evaluations/ANR-6-2025/ANR-6-2025_equipment-list.json",
+    "complianceChecklist": "data/rfp-evaluations/ANR-6-2025/ANR-6-2025_compliance-checklist.md"
+  },
+  "generatedAt": "2025-10-13T00:14:49Z",
+  "evaluationComplete": true
+}

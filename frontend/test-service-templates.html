@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Templates Test</title>
+    <style>
+        :root {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #aaaaaa;
+            --text-tertiary: #888888;
+            --border-subtle: #444444;
+            --accent-primary: #4CAF50;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 20px;
+        }
+
+        h1 {
+            color: var(--accent-primary);
+        }
+
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .service-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .service-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .service-price {
+            font-size: 12px;
+            margin: 8px 0;
+        }
+
+        .service-breakdown {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .frequency-selector {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .frequency-btn {
+            flex: 1;
+            padding: 6px 12px;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .frequency-btn.active {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 4px;
+        }
+
+        .test-result {
+            background: #2a4a2a;
+            border: 1px solid #4a6a4a;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .test-error {
+            background: #4a2a2a;
+            border: 1px solid #6a4a4a;
+        }
+
+        code {
+            background: var(--bg-primary);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Service Templates Test</h1>
+        <p>Testing the unified template system with live rendering.</p>
+
+        <div id="test-results"></div>
+        <div id="service-preview"></div>
+    </div>
+
+    <script type="module">
+        // Mock state for testing
+        const state = {
+            activeSettings: {
+                fluidAnalysisPrices: {
+                    oil: 16.55,
+                    coolant: 16.55,
+                    fuel: 60
+                }
+            }
+        };
+
+        // Mock window functions
+        window.setFrequency = (unitId, code, freq, btn) => {
+            console.log(`setFrequency called: ${unitId}, ${code}, ${freq}`);
+        };
+
+        // Import and test
+        import { renderServiceCard } from './modules/service-templates.js';
+
+        const SERVICES = {
+            'A': { name: 'A-Comprehensive Inspection', description: 'Complete system inspection', defaultFreq: 4 },
+            'D': { name: 'D-Oil & Fuel Analysis', description: 'Laboratory testing', defaultFreq: 1 },
+            'H': { name: 'H-Electrical Testing', description: 'Generator electrical testing (5 year)', defaultFreq: 0 },
+            'F': { name: 'F-Diesel Engine Tune-Up', description: 'Diesel engine optimization', defaultFreq: 0, fuelType: 'Diesel' },
+            'CUSTOM': { name: 'Custom Service/Parts', description: 'Additional services or parts', defaultFreq: 1, isCustom: true }
+        };
+
+        const mockUnit = {
+            id: 'unit-test',
+            kw: 100,
+            brand: 'Generac'
+        };
+
+        const resultsDiv = document.getElementById('test-results');
+        const previewDiv = document.getElementById('service-preview');
+
+        // Run tests
+        let passed = 0;
+        let failed = 0;
+
+        function runTest(name, testFn) {
+            try {
+                testFn();
+                resultsDiv.innerHTML += `<div class="test-result">✓ ${name}</div>`;
+                passed++;
+            } catch (error) {
+                resultsDiv.innerHTML += `<div class="test-result test-error">✗ ${name}: ${error.message}</div>`;
+                failed++;
+            }
+        }
+
+        // Test 1: Render Service A
+        runTest('Service A renders correctly', () => {
+            const html = renderServiceCard('A', SERVICES['A'], mockUnit);
+            if (html.includes('${')) throw new Error('Template variables not replaced');
+            if (!html.includes('service-card')) throw new Error('Missing service-card class');
+            if (!html.includes('Quarterly')) throw new Error('Missing frequency buttons');
+        });
+
+        // Test 2: Render Service D
+        runTest('Service D renders with checkboxes', () => {
+            const html = renderServiceCard('D', SERVICES['D'], mockUnit);
+            if (!html.includes('Oil Analysis')) throw new Error('Missing oil checkbox');
+            if (!html.includes('Coolant Analysis')) throw new Error('Missing coolant checkbox');
+            if (!html.includes('Fuel Analysis')) throw new Error('Missing fuel checkbox');
+        });
+
+        // Test 3: Render Service H
+        runTest('Service H renders with 5-year checkbox', () => {
+            const html = renderServiceCard('H', SERVICES['H'], mockUnit);
+            if (!html.includes('Include 5-Year Electrical Testing')) throw new Error('Missing checkbox');
+            if (html.includes('frequency-selector')) throw new Error('Should not have frequency selector');
+        });
+
+        // Test 4: Render CUSTOM service
+        runTest('CUSTOM service renders with inputs', () => {
+            const html = renderServiceCard('CUSTOM', SERVICES['CUSTOM'], mockUnit);
+            if (!html.includes('custom-description')) throw new Error('Missing description input');
+            if (!html.includes('custom-parts')) throw new Error('Missing parts input');
+            if (!html.includes('custom-labor')) throw new Error('Missing labor input');
+        });
+
+        // Test 5: No undefined values
+        runTest('No undefined values in output', () => {
+            const services = ['A', 'D', 'H', 'F', 'CUSTOM'];
+            services.forEach(code => {
+                const html = renderServiceCard(code, SERVICES[code], mockUnit);
+                if (html.includes('undefined')) throw new Error(`Service ${code} has undefined values`);
+            });
+        });
+
+        // Summary
+        resultsDiv.innerHTML += `<div class="test-result" style="margin-top: 20px; background: #3a3a5a;">
+            <strong>Summary:</strong> ${passed} passed, ${failed} failed
+        </div>`;
+
+        // Render preview
+        previewDiv.innerHTML = `<h2>Live Preview</h2>`;
+        Object.entries(SERVICES).forEach(([code, service]) => {
+            previewDiv.innerHTML += renderServiceCard(code, service, mockUnit);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-get-health-1761193315986",
+  "workflow_id": "api-get-health",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-get-health",
+    "started_at": "2025-10-23T04:21:55.982Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T04:21:55.986Z",
+    "duration_ms": 4,
+    "error": "request to http://localhost:3002/health failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.437Z"
+}

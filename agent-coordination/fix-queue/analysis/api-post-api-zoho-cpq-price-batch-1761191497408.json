@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-post-api-zoho-cpq-price-batch-1761191497408",
+  "workflow_id": "api-post-api-zoho-cpq-price-batch",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-post-api-zoho-cpq-price-batch",
+    "started_at": "2025-10-23T03:51:37.407Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T03:51:37.408Z",
+    "duration_ms": 1,
+    "error": "request to http://localhost:3002/api/zoho-cpq-price-batch failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.473Z"
+}

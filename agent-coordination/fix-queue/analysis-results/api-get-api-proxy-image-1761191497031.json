@@ -1,0 +1,20 @@
+{
+  "bug_id": "api-get-api-proxy-image-1761191497031",
+  "workflow_id": "api-get-api-proxy-image",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "analyzed_at": "2025-10-23T16:10:54.307Z",
+  "root_cause": "API endpoint returning error or not found",
+  "confidence": 90,
+  "recommended_fix": "Implement missing endpoint",
+  "files_affected": [
+    "src/api/server-secure.cjs"
+  ],
+  "requires_human_review": false,
+  "verification_details": [
+    "✓ Parsed endpoint: GET /api/proxy/image",
+    "✓ Server file exists",
+    "✓ Endpoint /api/proxy/image MISSING - needs implementation",
+    "✓ Found 30 similar GET endpoints as templates"
+  ]
+}

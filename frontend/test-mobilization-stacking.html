@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobilization Stacking Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .header {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      margin: 0 0 10px 0;
+      color: #333;
+    }
+
+    .subtitle {
+      color: #666;
+      margin: 0;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      color: #333;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 10px;
+    }
+
+    .test-controls {
+      margin-top: 20px;
+    }
+
+    .control-group {
+      margin-bottom: 15px;
+    }
+
+    .control-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    .control-group input,
+    .control-group select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .service-selector {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .service-checkbox {
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .service-checkbox:hover {
+      background: #f8f9fa;
+      border-color: #007bff;
+    }
+
+    .service-checkbox.selected {
+      background: #007bff;
+      color: white;
+      border-color: #007bff;
+    }
+
+    .service-checkbox input {
+      margin-right: 5px;
+    }
+
+    .calculate-btn {
+      width: 100%;
+      padding: 12px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .calculate-btn:hover {
+      background: #218838;
+    }
+
+    .results {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .mobilization-breakdown {
+      margin-top: 20px;
+    }
+
+    .breakdown-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .breakdown-item.total {
+      font-weight: bold;
+      border-top: 2px solid #333;
+      margin-top: 10px;
+      padding-top: 15px;
+    }
+
+    .breakdown-item.savings {
+      color: #28a745;
+      font-weight: bold;
+    }
+
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      .service-selector {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🚚 Mobilization Stacking Test</h1>
+    <p class="subtitle">Test the hybrid mobilization stacking implementation</p>
+  </div>
+
+  <div class="container">
+    <!-- Left Panel: Settings -->
+    <div class="panel">
+      <h2>Settings & Controls</h2>
+
+      <!-- This is where the mobilization UI component will be mounted -->
+      <div id="mobilization-ui"></div>
+
+      <div class="test-controls">
+        <div class="control-group">
+          <label for="generator-size">Generator Size (kW)</label>
+          <input type="number" id="generator-size" value="30" min="10" max="2000" step="10">
+        </div>
+
+        <div class="control-group">
+          <label>Select Services</label>
+          <div class="service-selector">
+            <label class="service-checkbox selected" data-service="A">
+              <input type="checkbox" value="A" checked> A
+            </label>
+            <label class="service-checkbox selected" data-service="B">
+              <input type="checkbox" value="B" checked> B
+            </label>
+            <label class="service-checkbox selected" data-service="C">
+              <input type="checkbox" value="C" checked> C
+            </label>
+            <label class="service-checkbox" data-service="D">
+              <input type="checkbox" value="D"> D
+            </label>
+            <label class="service-checkbox" data-service="E">
+              <input type="checkbox" value="E"> E
+            </label>
+            <label class="service-checkbox" data-service="F">
+              <input type="checkbox" value="F"> F
+            </label>
+            <label class="service-checkbox" data-service="G">
+              <input type="checkbox" value="G"> G
+            </label>
+            <label class="service-checkbox" data-service="H">
+              <input type="checkbox" value="H"> H
+            </label>
+            <label class="service-checkbox" data-service="I">
+              <input type="checkbox" value="I"> I
+            </label>
+            <label class="service-checkbox" data-service="J">
+              <input type="checkbox" value="J"> J
+            </label>
+          </div>
+        </div>
+
+        <button class="calculate-btn" onclick="calculateQuote()">
+          Calculate Quote with Stacking
+        </button>
+      </div>
+
+      <div id="status"></div>
+    </div>
+
+    <!-- Right Panel: Results -->
+    <div class="panel">
+      <h2>Calculation Results</h2>
+
+      <div class="mobilization-breakdown" id="breakdown">
+        <p style="color: #666; text-align: center;">
+          Select services and calculate to see mobilization breakdown
+        </p>
+      </div>
+
+      <div class="results" id="results">
+        Waiting for calculation...
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { mobilizationStackingUI } from './modules/mobilization-stacking-ui.js';
+    import { mobilizationSettings } from './services/mobilization-settings.js';
+    import { api } from './services/api.js';
+
+    // Mount the mobilization UI
+    mobilizationStackingUI.mount('#mobilization-ui');
+
+    // Handle service selection
+    document.querySelectorAll('.service-checkbox').forEach(label => {
+      const checkbox = label.querySelector('input');
+      checkbox.addEventListener('change', (e) => {
+        label.classList.toggle('selected', e.target.checked);
+      });
+    });
+
+    // Make calculateQuote available globally
+    window.calculateQuote = async function() {
+      const statusEl = document.getElementById('status');
+      const resultsEl = document.getElementById('results');
+      const breakdownEl = document.getElementById('breakdown');
+
+      try {
+        statusEl.className = 'status';
+        statusEl.textContent = 'Calculating...';
+
+        // Get selected services
+        const services = Array.from(document.querySelectorAll('.service-checkbox input:checked'))
+          .map(cb => cb.value);
+
+        if (services.length === 0) {
+          throw new Error('Please select at least one service');
+        }
+
+        // Get generator size
+        const kw = parseInt(document.getElementById('generator-size').value);
+
+        // Get mobilization settings
+        const settings = mobilizationSettings.getSettings();
+
+        // Prepare request
+        const requestData = {
+          kw: kw,
+          distance: 25, // Default distance for testing
+          services: services,
+          customerInfo: {
+            name: 'Test Customer',
+            address: '123 Main St',
+            city: 'San Francisco',
+            state: 'CA',
+            zip: '94102'
+          },
+          mobilizationStacking: {
+            enabled: settings.enabled,
+            stackingDiscount: settings.stackingDiscount
+          },
+          taxRate: 0.0875
+        };
+        // Make API call
+        const response = await fetch('http://localhost:3002/api/calculate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestData)
+        });
+
+        if (!response.ok) {
+          throw new Error(`API error: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        // Display results
+        resultsEl.textContent = JSON.stringify(result, null, 2);
+
+        // Display mobilization breakdown if available
+        if (result.mobilizationBreakdown) {
+          let breakdownHTML = '<h3>Mobilization Breakdown</h3>';
+
+          // Group services by visit
+          if (result.mobilizationBreakdown.visitGroups) {
+            for (const [schedule, group] of Object.entries(result.mobilizationBreakdown.visitGroups)) {
+              breakdownHTML += `<div class="breakdown-section">`;
+              breakdownHTML += `<h4>${schedule.charAt(0).toUpperCase() + schedule.slice(1)} Visit</h4>`;
+
+              if (group.breakdown) {
+                group.breakdown.forEach(item => {
+                  breakdownHTML += `<div class="breakdown-item">`;
+                  breakdownHTML += `<span>Service ${item.service}: ${item.hours} hrs ${item.isPrimary ? '(Primary)' : '(Discounted)'}</span>`;
+                  breakdownHTML += `<span>$${item.cost.toFixed(2)}</span>`;
+                  breakdownHTML += `</div>`;
+                });
+              }
+
+              breakdownHTML += `<div class="breakdown-item total">`;
+              breakdownHTML += `<span>Visit Total:</span>`;
+              breakdownHTML += `<span>$${group.totalCost.toFixed(2)}</span>`;
+              breakdownHTML += `</div>`;
+            }
+          }
+
+          // Show total savings
+          if (result.mobilizationBreakdown.totalSavings > 0) {
+            breakdownHTML += `<div class="breakdown-item savings">`;
+            breakdownHTML += `<span>Total Savings from Stacking:</span>`;
+            breakdownHTML += `<span>$${result.mobilizationBreakdown.totalSavings.toFixed(2)}</span>`;
+            breakdownHTML += `</div>`;
+          }
+
+          breakdownEl.innerHTML = breakdownHTML;
+        } else {
+          // Fallback display
+          breakdownEl.innerHTML = `
+            <h3>Quote Summary</h3>
+            <div class="breakdown-item">
+              <span>Services:</span>
+              <span>${services.join(', ')}</span>
+            </div>
+            <div class="breakdown-item">
+              <span>Generator Size:</span>
+              <span>${kw} kW</span>
+            </div>
+            <div class="breakdown-item">
+              <span>Stacking:</span>
+              <span>${settings.enabled ? `${settings.stackingDiscount}%` : 'Disabled'}</span>
+            </div>
+            <div class="breakdown-item total">
+              <span>Total Annual:</span>
+              <span>$${(result.total || 0).toFixed(2)}</span>
+            </div>
+          `;
+        }
+
+        statusEl.className = 'status success';
+        statusEl.textContent = 'Calculation complete!';
+      } catch (error) {
+        console.error('Calculation error:', error);
+        statusEl.className = 'status error';
+        statusEl.textContent = `Error: ${error.message}`;
+        resultsEl.textContent = `Error details:\n${error.stack}`;
+      }
+    };
+
+    // Test API connection on load
+    window.addEventListener('load', async () => {
+      try {
+        const response = await fetch('http://localhost:3002/health');
+        const health = await response.json();
+      } catch (error) {
+        console.error('API connection failed:', error);
+        document.getElementById('status').innerHTML =
+          '<div class="status error">API not responding. Please ensure server is running on port 3002.</div>';
+      }
+    });
+  </script>
+</body>
+</html>

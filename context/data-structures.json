@@ -1,0 +1,180 @@
+{
+  "calculationPayload": {
+    "type": "object",
+    "required": ["kw", "distance", "services", "customerInfo"],
+    "properties": {
+      "kw": {
+        "type": "number",
+        "minimum": 10,
+        "maximum": 5000,
+        "description": "Generator kilowatt rating"
+      },
+      "distance": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1000,
+        "description": "Miles from service location"
+      },
+      "services": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "string",
+          "enum": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "CUSTOM"],
+          "description": "Service letter codes"
+        }
+      },
+      "customerInfo": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "city": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "state": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$",
+            "description": "Two-letter state code"
+          },
+          "zip": {
+            "type": "string",
+            "pattern": "^\\d{5}$",
+            "description": "5-digit ZIP code"
+          }
+        }
+      },
+      "generators": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["kw", "quantity"],
+          "properties": {
+            "kw": {
+              "type": "number",
+              "minimum": 10,
+              "maximum": 5000
+            },
+            "quantity": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "contractLength": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 60,
+        "default": 12,
+        "description": "Contract duration in months"
+      },
+      "settings": {
+        "type": "object",
+        "properties": {
+          "laborRate": {
+            "type": "number",
+            "default": 191,
+            "description": "Base hourly labor rate"
+          },
+          "nonContractRate": {
+            "type": "number",
+            "default": 200
+          },
+          "overtimeRate": {
+            "type": "number",
+            "default": 255.50
+          },
+          "doubleTimeRate": {
+            "type": "number",
+            "default": 400
+          },
+          "oilPrice": {
+            "type": "number",
+            "default": 16,
+            "description": "Price per gallon"
+          },
+          "coolantPrice": {
+            "type": "number",
+            "default": 15,
+            "description": "Price per gallon"
+          },
+          "mileageRate": {
+            "type": "number",
+            "default": 2.50,
+            "description": "Price per mile"
+          },
+          "partsMarkup": {
+            "type": "number",
+            "default": 1.2,
+            "description": "20% markup as multiplier"
+          },
+          "oilMarkup": {
+            "type": "number",
+            "default": 1.5,
+            "description": "50% markup as multiplier"
+          },
+          "coolantMarkup": {
+            "type": "number",
+            "default": 1.5,
+            "description": "50% markup as multiplier"
+          },
+          "freightMarkup": {
+            "type": "number",
+            "default": 1.05,
+            "description": "5% freight as multiplier"
+          },
+          "mobilizationStacking": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "default": true
+              },
+              "discount": {
+                "type": "number",
+                "default": 35,
+                "description": "Stacking discount percentage"
+              }
+            }
+          }
+        }
+      },
+      "taxRate": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 0.2,
+        "description": "Tax rate as decimal (0.1025 = 10.25%)"
+      }
+    }
+  },
+  "kwRanges": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "range": {
+          "type": "string",
+          "enum": ["2-14", "15-30", "35-150", "155-250", "255-400", "405-500", "505-670", "675-1050", "1055-1500", "1500-2050"]
+        },
+        "minKw": {
+          "type": "number"
+        },
+        "maxKw": {
+          "type": "number"
+        }
+      }
+    },
+    "description": "kW ranges determine service pricing tiers"
+  }
+}

@@ -1,0 +1,218 @@
+{
+  "criteria": [
+    {
+      "name": "Profit Margin >15%",
+      "weight": 0.25,
+      "description": "Estimated profit margin meets minimum threshold",
+      "threshold": 15,
+      "unit": "percent",
+      "calculation": "((revenue - costs) / revenue) * 100",
+      "scoring": {
+        "below10": 0,
+        "10to14": 5,
+        "15to20": 8,
+        "above20": 10
+      }
+    },
+    {
+      "name": "Resources Available",
+      "weight": 0.20,
+      "description": "Technicians and equipment available without new hires",
+      "scoreMethod": "manual",
+      "scoring": {
+        "fullyAvailable": 10,
+        "mostlyAvailable": 7,
+        "partialAvailable": 5,
+        "newHiringNeeded": 2,
+        "inadequateResources": 0
+      }
+    },
+    {
+      "name": "Risk Score <5.0",
+      "weight": 0.20,
+      "description": "Overall risk assessment below medium threshold",
+      "threshold": 5.0,
+      "inverted": true,
+      "scoring": {
+        "0to3": 10,
+        "3to5": 7,
+        "5to7": 3,
+        "7to10": 0
+      }
+    },
+    {
+      "name": "Strategic Fit",
+      "weight": 0.15,
+      "description": "Contract aligns with company strategic goals",
+      "scoreMethod": "manual",
+      "scoring": {
+        "highStrategicValue": 10,
+        "moderateValue": 7,
+        "neutralValue": 5,
+        "lowValue": 2,
+        "misaligned": 0
+      },
+      "considerations": [
+        "Geographic expansion opportunity",
+        "New market segment entry",
+        "Relationship with major customer",
+        "Reference value for future work",
+        "Technology/expertise development"
+      ]
+    },
+    {
+      "name": "Customer Relationship",
+      "weight": 0.10,
+      "description": "Quality of existing or potential relationship",
+      "scoreMethod": "manual",
+      "scoring": {
+        "existingStrong": 10,
+        "existingNeutral": 7,
+        "newGoodProspect": 6,
+        "unknown": 4,
+        "concerningHistory": 0
+      }
+    },
+    {
+      "name": "Contract Terms Acceptable",
+      "weight": 0.10,
+      "description": "Payment terms, bonds, and conditions are acceptable",
+      "scoreMethod": "automated",
+      "scoring": {
+        "veryFavorable": 10,
+        "standard": 7,
+        "challenging": 4,
+        "unfavorable": 2,
+        "unacceptable": 0
+      },
+      "factors": [
+        "Payment terms (Net 30 ideal)",
+        "Retainage (<10% acceptable)",
+        "Bond requirements (reasonable)",
+        "Insurance requirements (achievable)",
+        "Liability limitations (fair)"
+      ]
+    }
+  ],
+  "thresholds": {
+    "strongGo": {
+      "min": 8.0,
+      "max": 10.0,
+      "label": "STRONG GO",
+      "color": "🟢",
+      "recommendation": "Pursue aggressively. Allocate top resources to proposal development.",
+      "actions": [
+        "Assign senior proposal manager",
+        "Allocate maximum proposal budget",
+        "Schedule executive review",
+        "Consider site visit even if optional",
+        "Develop comprehensive win strategy"
+      ]
+    },
+    "go": {
+      "min": 6.0,
+      "max": 7.9,
+      "label": "GO",
+      "color": "🟢",
+      "recommendation": "Pursue with standard process. Good opportunity worth pursuing.",
+      "actions": [
+        "Assign experienced proposal team",
+        "Follow standard proposal process",
+        "Conduct thorough cost analysis",
+        "Develop competitive pricing strategy",
+        "Prepare strong technical response"
+      ]
+    },
+    "conditional": {
+      "min": 4.0,
+      "max": 5.9,
+      "label": "CONDITIONAL GO",
+      "color": "🟡",
+      "recommendation": "Proceed only with mitigation plan addressing identified concerns.",
+      "actions": [
+        "Identify specific concerns requiring mitigation",
+        "Develop detailed mitigation strategies",
+        "Evaluate cost vs. benefit of mitigations",
+        "Obtain executive approval for conditional pursuit",
+        "Set decision deadline for final go/no-go"
+      ]
+    },
+    "noGo": {
+      "min": 0,
+      "max": 3.9,
+      "label": "NO-GO",
+      "color": "🔴",
+      "recommendation": "Decline to bid unless strategically critical. Requires board approval to proceed.",
+      "actions": [
+        "Document reasons for no-bid decision",
+        "If pursuing anyway, escalate to board",
+        "Develop exceptional circumstances justification",
+        "Consider partnership or subcontracting alternative",
+        "Evaluate if declining damages future opportunities"
+      ]
+    }
+  },
+  "weightValidation": {
+    "totalWeight": 1.00,
+    "mustEqual": true,
+    "tolerance": 0.001
+  },
+  "scoringNotes": {
+    "profitMargin": "Calculate using fully-burdened costs including overhead, G&A, and risk contingency",
+    "resources": "Consider both immediate availability and ability to backfill from other projects",
+    "riskScore": "Use output from risk assessment engine - this is inverted (lower is better)",
+    "strategicFit": "Requires executive input on strategic priorities and long-term goals",
+    "relationship": "Historical payment record and communication quality are key factors",
+    "contractTerms": "Aggregate score from financial risk sub-criteria in risk assessment"
+  },
+  "exampleCalculation": {
+    "description": "Sample calculation for ANR-6-2025 RFP",
+    "criteria": [
+      {
+        "name": "Profit Margin >15%",
+        "weight": 0.25,
+        "rawScore": 7,
+        "weightedScore": 1.75,
+        "notes": "Estimated 18% margin after prevailing wage adjustment"
+      },
+      {
+        "name": "Resources Available",
+        "weight": 0.20,
+        "rawScore": 6,
+        "weightedScore": 1.20,
+        "notes": "Mostly available, one additional hire needed"
+      },
+      {
+        "name": "Risk Score <5.0",
+        "weight": 0.20,
+        "rawScore": 5,
+        "weightedScore": 1.00,
+        "notes": "Overall risk 5.8 = medium concern"
+      },
+      {
+        "name": "Strategic Fit",
+        "weight": 0.15,
+        "rawScore": 8,
+        "weightedScore": 1.20,
+        "notes": "Government contract reference valuable"
+      },
+      {
+        "name": "Customer Relationship",
+        "weight": 0.10,
+        "rawScore": 4,
+        "weightedScore": 0.40,
+        "notes": "New customer, unknown payment history"
+      },
+      {
+        "name": "Contract Terms Acceptable",
+        "weight": 0.10,
+        "rawScore": 6,
+        "weightedScore": 0.60,
+        "notes": "Standard government terms, manageable"
+      }
+    ],
+    "totalScore": 6.15,
+    "decision": "GO",
+    "rationale": "Score of 6.15 indicates good opportunity worth pursuing with standard process. Profit margin meets threshold, strategic value is high despite new customer. Risk is manageable with proper planning."
+  }
+}

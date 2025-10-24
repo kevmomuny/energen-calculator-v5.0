@@ -1,0 +1,12 @@
+{
+  "bug_id": "api-post-api-zoho-inventory-check-availability-1761193316311",
+  "workflow_id": "api-post-api-zoho-inventory-check-availability",
+  "timestamp": "2025-10-23T16:38:01.424Z",
+  "status": "failed",
+  "patches_applied": 0,
+  "test_results": {},
+  "ready_for_merge": false,
+  "confidence": 90,
+  "validated_at": "2025-10-23T16:38:01.424Z",
+  "error": "Old string not found in src/api/server-secure.cjs"
+}

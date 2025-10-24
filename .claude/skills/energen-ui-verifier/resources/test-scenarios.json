@@ -1,0 +1,166 @@
+{
+  "version": "1.0.0",
+  "description": "Test scenarios for UI verification - Based on 20-real-businesses-test-dataset.json",
+  "scenarios": [
+    {
+      "id": "scenario_small",
+      "name": "Small Generator - Safeway",
+      "source": "test_004",
+      "generator_size": "small",
+      "customer": {
+        "company_name": "Safeway",
+        "address": "5290 Diamond Heights Blvd, San Francisco, CA 94131",
+        "phone": "(415) 587-3822",
+        "email": "tom.martinez@safeway.com",
+        "website": "www.safeway.com"
+      },
+      "contact": {
+        "name": "Tom Martinez",
+        "title": "Store Manager",
+        "email": "tom.martinez@safeway.com",
+        "phone": "(415) 587-3822"
+      },
+      "generator": {
+        "manufacturer": "Generac",
+        "model": "MD100",
+        "kw": 100,
+        "serial_number": "GEN-100-2022",
+        "fuel_type": "Natural Gas",
+        "location": "Behind Store"
+      },
+      "services": {
+        "A": "Quarterly",
+        "B": "Semi-Annual",
+        "G": "Annual"
+      },
+      "expected_results": {
+        "annual_min": 6000,
+        "annual_max": 9000,
+        "services_count": 3,
+        "quarterly_services": 1,
+        "semi_annual_services": 1,
+        "annual_services": 1
+      }
+    },
+    {
+      "id": "scenario_medium",
+      "name": "Medium Generator - Starbucks",
+      "source": "test_001",
+      "generator_size": "medium",
+      "customer": {
+        "company_name": "Starbucks",
+        "address": "1 Market St, San Francisco, CA 94105",
+        "phone": "(415) 896-0810",
+        "email": "facilities@starbucks.com",
+        "website": "www.starbucks.com"
+      },
+      "contact": {
+        "name": "Sarah Chen",
+        "title": "Facilities Manager",
+        "email": "facilities@starbucks.com",
+        "phone": "(415) 896-0810"
+      },
+      "generator": {
+        "manufacturer": "Cummins",
+        "model": "C150 D5e",
+        "kw": 150,
+        "serial_number": "K150-2023-001",
+        "fuel_type": "Natural Gas",
+        "location": "Rooftop - Main Store"
+      },
+      "services": {
+        "A": "Quarterly",
+        "B": "Quarterly",
+        "C": "Semi-Annual"
+      },
+      "expected_results": {
+        "annual_min": 8000,
+        "annual_max": 12000,
+        "services_count": 3,
+        "quarterly_services": 2,
+        "semi_annual_services": 1,
+        "annual_services": 0
+      }
+    },
+    {
+      "id": "scenario_large",
+      "name": "Large Generator - Apple Inc",
+      "source": "test_003",
+      "generator_size": "large",
+      "customer": {
+        "company_name": "Apple Inc",
+        "address": "1 Infinite Loop, Cupertino, CA 95014",
+        "phone": "(408) 996-1010",
+        "email": "j.park@apple.com",
+        "website": "www.apple.com"
+      },
+      "contact": {
+        "name": "Jennifer Park",
+        "title": "Data Center Operations",
+        "email": "j.park@apple.com",
+        "phone": "(408) 996-1010"
+      },
+      "generator": {
+        "manufacturer": "MTU",
+        "model": "12V4000 DS2000",
+        "kw": 2000,
+        "serial_number": "MTU-2000-2021",
+        "fuel_type": "Diesel",
+        "location": "Data Center - Building 4"
+      },
+      "services": {
+        "A": "Quarterly",
+        "B": "Quarterly",
+        "C": "Quarterly",
+        "E": "Semi-Annual",
+        "F": "Semi-Annual",
+        "J": "Semi-Annual"
+      },
+      "expected_results": {
+        "annual_min": 95000,
+        "annual_max": 115000,
+        "services_count": 6,
+        "quarterly_services": 3,
+        "semi_annual_services": 3,
+        "annual_services": 0
+      }
+    }
+  ],
+  "service_codes": {
+    "A": "Comprehensive Inspection",
+    "B": "Air & Fuel System Service",
+    "C": "Cooling System Service",
+    "D": "DPF Service (Diesel only, Semi-Annual/Annual)",
+    "E": "Oil & Filter Service",
+    "F": "Fuel System Service",
+    "G": "Governor/Actuator Service",
+    "H": "Load Bank Test (Annual only)",
+    "I": "Valve Lash Adjustment",
+    "J": "Vibration Dampener Inspection",
+    "K": "SCR/DEF System Service (Diesel only)",
+    "CUSTOM": "Custom Service (user-defined)"
+  },
+  "frequency_codes": {
+    "Quarterly": 4,
+    "Semi-Annual": 2,
+    "Annual": 1
+  },
+  "validation_rules": {
+    "kw_range": {
+      "min": 20,
+      "max": 2500
+    },
+    "fuel_types": ["Diesel", "Natural Gas", "Propane", "Bi-Fuel"],
+    "manufacturers": ["Cummins", "Caterpillar", "Kohler", "Generac", "MTU", "Other"],
+    "service_d_restrictions": {
+      "allowed_frequencies": ["Semi-Annual", "Annual"],
+      "fuel_types": ["Diesel"]
+    },
+    "service_h_restrictions": {
+      "allowed_frequencies": ["Annual"]
+    },
+    "service_k_restrictions": {
+      "fuel_types": ["Diesel"]
+    }
+  }
+}

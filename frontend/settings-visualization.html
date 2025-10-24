@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings Modal - Complete Visualization</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #9ca3af;
+            font-size: 1.1rem;
+        }
+
+        .tabs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .tab-card {
+            background: rgba(31, 41, 55, 0.7);
+            border: 2px solid transparent;
+            border-radius: 16px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--tab-color) 0%, transparent 100%);
+        }
+
+        .tab-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--tab-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .tab-card.labor { --tab-color: #3b82f6; }
+        .tab-card.materials { --tab-color: #f59e0b; }
+        .tab-card.service-a { --tab-color: #10b981; }
+        .tab-card.service-b { --tab-color: #ef4444; }
+        .tab-card.service-c { --tab-color: #8b5cf6; }
+        .tab-card.service-d { --tab-color: #06b6d4; }
+        .tab-card.battery { --tab-color: #f97316; }
+        .tab-card.fuel-polish { --tab-color: #84cc16; }
+        .tab-card.service-e { --tab-color: #ec4899; }
+        .tab-card.service-f { --tab-color: #14b8a6; }
+        .tab-card.service-g { --tab-color: #6366f1; }
+        .tab-card.service-h { --tab-color: #fbbf24; }
+        .tab-card.service-i { --tab-color: #a78bfa; }
+        .tab-card.service-j { --tab-color: #fb7185; }
+        .tab-card.frequency { --tab-color: #22d3ee; }
+        .tab-card.tax-fees { --tab-color: #94a3b8; }
+        .tab-card.api { --tab-color: #4ade80; }
+        .tab-card.company { --tab-color: #fde047; }
+
+        .tab-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .tab-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+        }
+
+        .tab-title {
+            flex: 1;
+        }
+
+        .tab-title h3 {
+            color: #fff;
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .tab-subtitle {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .tab-content {
+            color: #d1d5db;
+        }
+
+        .setting-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .setting-label {
+            font-weight: 500;
+            color: #e5e7eb;
+        }
+
+        .setting-value {
+            color: var(--tab-color);
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .key-features {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            color: #9ca3af;
+            font-size: 0.95rem;
+        }
+
+        .feature::before {
+            content: '✓';
+            margin-right: 8px;
+            color: var(--tab-color);
+            font-weight: bold;
+        }
+
+        .statistics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 40px 0;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #3b82f6 0%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ Energen Calculator v5.0 Settings</h1>
+            <p>Complete Configuration System Overview - 18 Tabs Total</p>
+        </div>
+
+        <div class="statistics">
+            <div class="stat">
+                <div class="stat-value">18</div>
+                <div class="stat-label">Configuration Tabs</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">250+</div>
+                <div class="stat-label">Configurable Parameters</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">100%</div>
+                <div class="stat-label">SSOT Compliance</div>
+            </div>
+        </div>
+
+        <div class="tabs-grid">
+            <!-- Tab 1: Labor & Travel -->
+            <div class="tab-card labor">
+                <div class="tab-header">
+                    <div class="tab-icon">👷</div>
+                    <div class="tab-title">
+                        <h3>Labor & Travel</h3>
+                        <div class="tab-subtitle">Core pricing configuration</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Base Labor Rate</span>
+                        <span class="setting-value">$180.00/hr</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Overtime Rate</span>
+                        <span class="setting-value">$270.00/hr</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Travel Rate</span>
+                        <span class="setting-value">$100.00/hr</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">Private/Public Works/GSA modes</div>
+                        <div class="feature">Prevailing wage support</div>
+                        <div class="feature">Zone adjustments</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Materials & Markups -->
+            <div class="tab-card materials">
+                <div class="tab-header">
+                    <div class="tab-icon">📦</div>
+                    <div class="tab-title">
+                        <h3>Materials & Markups</h3>
+                        <div class="tab-subtitle">Parts and material pricing</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Oil Cost</span>
+                        <span class="setting-value">$7.00/qt</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Coolant Cost</span>
+                        <span class="setting-value">$29.00/gal</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Parts Markup</span>
+                        <span class="setting-value">70%</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">Filter costs configuration</div>
+                        <div class="feature">Fuel additive pricing</div>
+                        <div class="feature">Custom markup percentages</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Service A - Inspection -->
+            <div class="tab-card service-a">
+                <div class="tab-header">
+                    <div class="tab-icon">🔍</div>
+                    <div class="tab-title">
+                        <h3>Service A - Inspection</h3>
+                        <div class="tab-subtitle">Quarterly comprehensive inspection</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Labor Hours</span>
+                        <span class="setting-value">Calculated</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Service Type</span>
+                        <span class="setting-value">Quarterly</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Technician Level</span>
+                        <span class="setting-value">Standard</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">33-point inspection checklist</div>
+                        <div class="feature">Visual and operational checks</div>
+                        <div class="feature">Documentation included</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: Service B - Oil & Filter -->
+            <div class="tab-card service-b">
+                <div class="tab-header">
+                    <div class="tab-icon">🛢️</div>
+                    <div class="tab-title">
+                        <h3>Service B - Oil & Filter</h3>
+                        <div class="tab-subtitle">Annual maintenance service</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Oil Quantity</span>
+                        <span class="setting-value">By kW Range</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Filter Count</span>
+                        <span class="setting-value">Variable</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Labor Hours</span>
+                        <span class="setting-value">Size-based</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">Oil capacity by generator size</div>
+                        <div class="feature">Filter quantities configured</div>
+                        <div class="feature">Labor scales with kW</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 5: Service C - Coolant -->
+            <div class="tab-card service-c">
+                <div class="tab-header">
+                    <div class="tab-icon">❄️</div>
+                    <div class="tab-title">
+                        <h3>Service C - Coolant</h3>
+                        <div class="tab-subtitle">Coolant system service</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Service Frequency</span>
+                        <span class="setting-value">Annual/Biannual</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Coolant Type</span>
+                        <span class="setting-value">ELC</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">System Flush</span>
+                        <span class="setting-value">Optional</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">Coolant capacity tables</div>
+                        <div class="feature">SCA additive options</div>
+                        <div class="feature">Flush service available</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 6: Service D - Analysis -->
+            <div class="tab-card service-d">
+                <div class="tab-header">
+                    <div class="tab-icon">🧪</div>
+                    <div class="tab-title">
+                        <h3>Service D - Analysis</h3>
+                        <div class="tab-subtitle">Oil, Fuel & Coolant testing</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Oil Analysis</span>
+                        <span class="setting-value">$80.00</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Fuel Analysis</span>
+                        <span class="setting-value">$100.00</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Coolant Analysis</span>
+                        <span class="setting-value">$80.00</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">Laboratory testing included</div>
+                        <div class="feature">Trend analysis reports</div>
+                        <div class="feature">Predictive maintenance data</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 7: Battery Service -->
+            <div class="tab-card battery">
+                <div class="tab-header">
+                    <div class="tab-icon">🔋</div>
+                    <div class="tab-title">
+                        <h3>Battery Service</h3>
+                        <div class="tab-subtitle">Starting battery maintenance</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Service Type</span>
+                        <span class="setting-value">Annual</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Load Testing</span>
+                        <span class="setting-value">Included</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Replacement</span>
+                        <span class="setting-value">As needed</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">Conductance testing</div>
+                        <div class="feature">Terminal cleaning</div>
+                        <div class="feature">Charger verification</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 8: Fuel Polishing -->
+            <div class="tab-card fuel-polish">
+                <div class="tab-header">
+                    <div class="tab-icon">⛽</div>
+                    <div class="tab-title">
+                        <h3>Fuel Polishing</h3>
+                        <div class="tab-subtitle">Fuel system cleaning</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Service Rate</span>
+                        <span class="setting-value">$3.50/gal</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Minimum Charge</span>
+                        <span class="setting-value">$1,500.00</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Filter Included</span>
+                        <span class="setting-value">Yes</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">Water removal</div>
+                        <div class="feature">Particulate filtration</div>
+                        <div class="feature">Tank cleaning option</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 9: Service E - Load Bank -->
+            <div class="tab-card service-e">
+                <div class="tab-header">
+                    <div class="tab-icon">⚡</div>
+                    <div class="tab-title">
+                        <h3>Service E - Load Bank</h3>
+                        <div class="tab-subtitle">Load testing service</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Test Duration</span>
+                        <span class="setting-value">4 hours</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Load Level</span>
+                        <span class="setting-value">80% rated</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Report</span>
+                        <span class="setting-value">Included</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">NFPA 110 compliance</div>
+                        <div class="feature">Resistive/reactive loads</div>
+                        <div class="feature">Thermal imaging included</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 10: Service F - Diesel Tune-Up -->
+            <div class="tab-card service-f">
+                <div class="tab-header">
+                    <div class="tab-icon">🔧</div>
+                    <div class="tab-title">
+                        <h3>Service F - Diesel Tune-Up</h3>
+                        <div class="tab-subtitle">Engine optimization</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Valve Adjustment</span>
+                        <span class="setting-value">Included</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Injector Service</span>
+                        <span class="setting-value">Optional</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Labor Hours</span>
+                        <span class="setting-value">6-12</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">Compression testing</div>
+                        <div class="feature">Governor adjustment</div>
+                        <div class="feature">Performance optimization</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 11: Service G - Gas Tune-Up -->
+            <div class="tab-card service-g">
+                <div class="tab-header">
+                    <div class="tab-icon">🔥</div>
+                    <div class="tab-title">
+                        <h3>Service G - Gas Tune-Up</h3>
+                        <div class="tab-subtitle">Natural gas engine service</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Spark Plugs</span>
+                        <span class="setting-value">Included</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Ignition System</span>
+                        <span class="setting-value">Checked</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Air/Fuel Ratio</span>
+                        <span class="setting-value">Adjusted</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">Emissions tuning</div>
+                        <div class="feature">Valve adjustment</div>
+                        <div class="feature">Carburetor service</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 12: Service H - Electrical Test -->
+            <div class="tab-card service-h">
+                <div class="tab-header">
+                    <div class="tab-icon">🔌</div>
+                    <div class="tab-title">
+                        <h3>Service H - Electrical Test</h3>
+                        <div class="tab-subtitle">Comprehensive electrical testing</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Insulation Test</span>
+                        <span class="setting-value">Megger</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Winding Resistance</span>
+                        <span class="setting-value">Measured</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Protection Test</span>
+                        <span class="setting-value">Full</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">Generator windings test</div>
+                        <div class="feature">Control circuit verification</div>
+                        <div class="feature">Protective relay testing</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 13: Service I - Transfer Switch -->
+            <div class="tab-card service-i">
+                <div class="tab-header">
+                    <div class="tab-icon">🔄</div>
+                    <div class="tab-title">
+                        <h3>Service I - Transfer Switch</h3>
+                        <div class="tab-subtitle">ATS maintenance service</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Exercise Test</span>
+                        <span class="setting-value">Monthly</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Contact Service</span>
+                        <span class="setting-value">Annual</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Time Delays</span>
+                        <span class="setting-value">Verified</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">Automatic operation test</div>
+                        <div class="feature">Manual bypass verification</div>
+                        <div class="feature">Contact resistance check</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 14: Service J - Thermal Imaging -->
+            <div class="tab-card service-j">
+                <div class="tab-header">
+                    <div class="tab-icon">📷</div>
+                    <div class="tab-title">
+                        <h3>Service J - Thermal Imaging</h3>
+                        <div class="tab-subtitle">Infrared inspection service</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Equipment</span>
+                        <span class="setting-value">FLIR Pro</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Report Type</span>
+                        <span class="setting-value">Detailed</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Points Scanned</span>
+                        <span class="setting-value">All critical</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">Electrical connections</div>
+                        <div class="feature">Bearing temperatures</div>
+                        <div class="feature">Exhaust system scan</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 15: Frequency Matrix -->
+            <div class="tab-card frequency">
+                <div class="tab-header">
+                    <div class="tab-icon">📅</div>
+                    <div class="tab-title">
+                        <h3>Frequency Matrix</h3>
+                        <div class="tab-subtitle">Service scheduling configuration</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Monthly</span>
+                        <span class="setting-value">Exercise run</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Quarterly</span>
+                        <span class="setting-value">Service A</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Annual</span>
+                        <span class="setting-value">Service B+C</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">Customizable intervals</div>
+                        <div class="feature">Runtime-based triggers</div>
+                        <div class="feature">Compliance tracking</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 16: Tax & Fees -->
+            <div class="tab-card tax-fees">
+                <div class="tab-header">
+                    <div class="tab-icon">💰</div>
+                    <div class="tab-title">
+                        <h3>Tax & Fees</h3>
+                        <div class="tab-subtitle">Financial settings</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Sales Tax</span>
+                        <span class="setting-value">8.75%</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Environment Fee</span>
+                        <span class="setting-value">$35.00</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Disposal Fee</span>
+                        <span class="setting-value">$25.00</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">Location-based tax rates</div>
+                        <div class="feature">Automatic calculation</div>
+                        <div class="feature">Exemption support</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 17: API Configuration -->
+            <div class="tab-card api">
+                <div class="tab-header">
+                    <div class="tab-icon">🔐</div>
+                    <div class="tab-title">
+                        <h3>API Configuration</h3>
+                        <div class="tab-subtitle">External service integration</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Google Maps</span>
+                        <span class="setting-value">Configured</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Zoho CRM</span>
+                        <span class="setting-value">Connected</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Tax Service</span>
+                        <span class="setting-value">Active</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">API key management</div>
+                        <div class="feature">OAuth tokens</div>
+                        <div class="feature">Webhook endpoints</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 18: Company Info -->
+            <div class="tab-card company">
+                <div class="tab-header">
+                    <div class="tab-icon">🏢</div>
+                    <div class="tab-title">
+                        <h3>Company Info</h3>
+                        <div class="tab-subtitle">Business details</div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="setting-item">
+                        <span class="setting-label">Company Name</span>
+                        <span class="setting-value">Energen Inc.</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">License #</span>
+                        <span class="setting-value">C10-12345</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Tax ID</span>
+                        <span class="setting-value">**-*******</span>
+                    </div>
+                    <div class="key-features">
+                        <div class="feature">Logo customization</div>
+                        <div class="feature">Contact information</div>
+                        <div class="feature">Terms & conditions</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>✨ Post-Refactor Status: All settings now flow directly to calculation engine</p>
+            <p>🎯 Single Source of Truth (SSOT) Architecture Fully Implemented</p>
+        </div>
+    </div>
+</body>
+</html>

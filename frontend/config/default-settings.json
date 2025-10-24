@@ -1,0 +1,262 @@
+{
+  "laborRate": 180.00,
+  "mobilizationRate": 180.00,
+  "mileageRate": 0.67,
+
+  "oilPrice": 16.00,
+  "oilMarkup": 1.5,
+
+  "coolantPrice": 16.00,
+  "coolantMarkup": 1.5,
+
+  "partsMarkup": 1.25,
+  "freightMarkup": 1.05,
+  "annualEscalation": 2.5,
+
+  "defaultTaxRate": 8.75,
+  "taxRate": 0.0875,
+  "disposalFee": 35.00,
+  "permitFee": 250.00,
+  "environmentFee": 35.00,
+  "oilDisposalFee": 35.00,
+  "coolantDisposalFee": 125.00,
+
+  "defaultFrequency": "quarterly",
+  "numberOfInspections": 4,
+  "includeTravel": true,
+  "includeTax": true,
+
+  "showLogo": true,
+  "showTerms": true,
+  "pdfOrientation": "portrait",
+
+  "googleMapsEnabled": true,
+  "zohoEnabled": false,
+  "brandFetchEnabled": false,
+
+  "company": {
+    "name": "Energen Systems Inc.",
+    "license": "1143462",
+    "address": "150 Mason Circle, Suite K",
+    "city": "Concord",
+    "state": "CA",
+    "zip": "94520",
+    "phone": "(925) 289-8969",
+    "email": "service@energensystems.com",
+    "website": "https://energensystems.com"
+  },
+
+  "prevailingWage": {
+    "enabled": false,
+    "electricianJourneyman": 75.00,
+    "electricianForeman": 85.00,
+    "totalWithFringe": 125.00,
+    "healthWelfare": 15.00,
+    "pension": 20.00,
+    "vacation": 10.00,
+    "training": 5.00
+  },
+
+  "perDiem": {
+    "lodging": 150.00,
+    "meals": 75.00,
+    "total": 225.00,
+    "mileage": 0.67
+  },
+
+  "serviceA": {
+    "name": "Service A - Comprehensive Inspection (Quarterly)",
+    "frequency": 4,
+    "data": {
+      "2-14": { "labor": 1, "mobilization": 2, "parts": 621.65 },
+      "15-30": { "labor": 1, "mobilization": 2, "parts": 621.65 },
+      "35-150": { "labor": 2, "mobilization": 2, "parts": 802.20 },
+      "151-250": { "labor": 2, "mobilization": 2, "parts": 802.20 },
+      "251-400": { "labor": 2.5, "mobilization": 2, "parts": 923.48 },
+      "401-500": { "labor": 2.5, "mobilization": 2, "parts": 923.48 },
+      "501-670": { "labor": 3, "mobilization": 2, "parts": 1003.75 },
+      "671-1050": { "labor": 3, "mobilization": 2, "parts": 1003.75 },
+      "1051-1500": { "labor": 4, "mobilization": 2, "parts": 1203.30 },
+      "1501-2050": { "labor": 4, "mobilization": 2, "parts": 1203.30 }
+    }
+  },
+
+  "serviceB": {
+    "name": "Service B - Oil & Filter Service (Annual)",
+    "frequency": 1,
+    "data": {
+      "2-14": { "labor": 1, "mobilization": 2, "filterCost": 171.90, "oilGallons": 1.5 },
+      "15-30": { "labor": 1, "mobilization": 2, "filterCost": 171.90, "oilGallons": 3.0 },
+      "35-150": { "labor": 2, "mobilization": 2, "filterCost": 229.20, "oilGallons": 5.0 },
+      "151-250": { "labor": 2, "mobilization": 2, "filterCost": 229.20, "oilGallons": 8.0 },
+      "251-400": { "labor": 4, "mobilization": 2, "filterCost": 343.80, "oilGallons": 12.0 },
+      "401-500": { "labor": 6, "mobilization": 2, "filterCost": 458.40, "oilGallons": 18.0 },
+      "501-670": { "labor": 8, "mobilization": 4, "filterCost": 687.60, "oilGallons": 30.0 },
+      "671-1050": { "labor": 12, "mobilization": 4, "filterCost": 916.80, "oilGallons": 50.0 },
+      "1051-1500": { "labor": 16, "mobilization": 4, "filterCost": 1146.00, "oilGallons": 100.0 },
+      "1501-2050": { "labor": 16, "mobilization": 4, "filterCost": 1146.00, "oilGallons": 150.0 }
+    }
+  },
+
+  "serviceC": {
+    "name": "Service C - Coolant Service (Annual/Biannual)",
+    "frequency": 1,
+    "data": {
+      "2-14": { "labor": 2, "mobilization": 2, "coolantGallons": 2.25, "hoseBeltCost": 150 },
+      "15-30": { "labor": 2, "mobilization": 2, "coolantGallons": 4.5, "hoseBeltCost": 200 },
+      "35-150": { "labor": 2, "mobilization": 2, "coolantGallons": 7.5, "hoseBeltCost": 250 },
+      "151-250": { "labor": 3, "mobilization": 2, "coolantGallons": 12, "hoseBeltCost": 300 },
+      "251-400": { "labor": 3, "mobilization": 2, "coolantGallons": 18, "hoseBeltCost": 450 },
+      "401-500": { "labor": 4, "mobilization": 2, "coolantGallons": 27, "hoseBeltCost": 500 },
+      "501-670": { "labor": 4, "mobilization": 2, "coolantGallons": 45, "hoseBeltCost": 600 },
+      "671-1050": { "labor": 6, "mobilization": 2, "coolantGallons": 75, "hoseBeltCost": 650 },
+      "1051-1500": { "labor": 6, "mobilization": 2, "coolantGallons": 150, "hoseBeltCost": 850 },
+      "1501-2050": { "labor": 8, "mobilization": 2, "coolantGallons": 225, "hoseBeltCost": 1000 }
+    }
+  },
+
+  "serviceD": {
+    "name": "Service D - Oil, Fuel & Coolant Analysis",
+    "frequency": "As Needed",
+    "timesPerYear": 0,
+    "oilAnalysisCost": 16.55,
+    "coolantAnalysisCost": 16.55,
+    "fuelAnalysisCost": 60.00
+  },
+
+  "serviceE": {
+    "name": "Service E - Load Bank Testing (Annual)",
+    "frequency": 1,
+    "data": {
+      "2-14": { "labor": 3, "mobilization": 2, "loadBankRental": 350, "transformerRental": 0, "deliveryCost": 0 },
+      "15-30": { "labor": 3, "mobilization": 2, "loadBankRental": 350, "transformerRental": 0, "deliveryCost": 0 },
+      "35-150": { "labor": 3, "mobilization": 2, "loadBankRental": 350, "transformerRental": 0, "deliveryCost": 0 },
+      "151-250": { "labor": 4, "mobilization": 2, "loadBankRental": 700, "transformerRental": 0, "deliveryCost": 0 },
+      "251-400": { "labor": 6, "mobilization": 2, "loadBankRental": 700, "transformerRental": 0, "deliveryCost": 0 },
+      "401-500": { "labor": 6, "mobilization": 2, "loadBankRental": 1000, "transformerRental": 0, "deliveryCost": 0 },
+      "501-670": { "labor": 8, "mobilization": 2, "loadBankRental": 1500, "transformerRental": 1500, "deliveryCost": 3500 },
+      "671-1050": { "labor": 8, "mobilization": 2, "loadBankRental": 1500, "transformerRental": 1500, "deliveryCost": 3500 },
+      "1051-1500": { "labor": 8, "mobilization": 2, "loadBankRental": 2000, "transformerRental": 1500, "deliveryCost": 3500 },
+      "1501-2050": { "labor": 12, "mobilization": 2, "loadBankRental": 2500, "transformerRental": 1500, "deliveryCost": 3500 }
+    }
+  },
+
+  "serviceF": {
+    "name": "Service F - Engine Tune-Up (Diesel) - By Cylinder Count",
+    "frequency": 0.33,
+    "popNozzleInjectors": [
+      { "cylinders": 4, "labor": 2, "mobilization": 2, "parts": 250 },
+      { "cylinders": 6, "labor": 3, "mobilization": 2, "parts": 350 },
+      { "cylinders": 8, "labor": 4, "mobilization": 2, "parts": 450 },
+      { "cylinders": 12, "labor": 4, "mobilization": 2, "parts": 550 },
+      { "cylinders": 16, "labor": 6, "mobilization": 4, "parts": 750 }
+    ],
+    "unitInjectors": [
+      { "cylinders": 4, "labor": 4, "mobilization": 2, "parts": 450 },
+      { "cylinders": 6, "labor": 4, "mobilization": 2, "parts": 550 },
+      { "cylinders": 8, "labor": 4, "mobilization": 2, "parts": 650 },
+      { "cylinders": 12, "labor": 7, "mobilization": 4, "parts": 850 }
+    ]
+  },
+
+  "serviceG": {
+    "name": "Service G - Gas Engine Tune-Up - By Cylinder Count",
+    "frequency": 0.33,
+    "data": [
+      { "cylinders": 4, "labor": 2, "mobilization": 2, "sparkPlugs": 25, "ignitionKit": 150 },
+      { "cylinders": 6, "labor": 3, "mobilization": 2, "sparkPlugs": 25, "ignitionKit": 175 },
+      { "cylinders": 8, "labor": 4, "mobilization": 2, "sparkPlugs": 25, "ignitionKit": 200 },
+      { "cylinders": 10, "labor": 5, "mobilization": 2, "sparkPlugs": 25, "ignitionKit": 225 },
+      { "cylinders": 12, "labor": 6, "mobilization": 2, "sparkPlugs": 25, "ignitionKit": 275 },
+      { "cylinders": 16, "labor": 8, "mobilization": 4, "sparkPlugs": 25, "ignitionKit": 350 }
+    ]
+  },
+
+  "serviceH": {
+    "name": "Service H - Generator Electrical Testing (Every 5 Years)",
+    "frequency": 0.2,
+    "data": {
+      "2-14": { "labor": 2, "mobilization": 2, "testingEquipment": 250 },
+      "15-30": { "labor": 2, "mobilization": 2, "testingEquipment": 250 },
+      "35-150": { "labor": 3, "mobilization": 2, "testingEquipment": 350 },
+      "151-250": { "labor": 4, "mobilization": 2, "testingEquipment": 450 },
+      "251-400": { "labor": 4, "mobilization": 2, "testingEquipment": 450 },
+      "401-500": { "labor": 6, "mobilization": 2, "testingEquipment": 650 },
+      "501-670": { "labor": 6, "mobilization": 2, "testingEquipment": 650 },
+      "671-1050": { "labor": 8, "mobilization": 4, "testingEquipment": 850 },
+      "1051-1500": { "labor": 8, "mobilization": 4, "testingEquipment": 850 },
+      "1501-2050": { "labor": 8, "mobilization": 4, "testingEquipment": 850 }
+    }
+  },
+
+  "serviceI": {
+    "name": "Service I - Transfer Switch Service (Annual)",
+    "frequency": 1,
+    "data": {
+      "2-14": { "labor": 2, "mobilization": 2, "switchMaintenance": 150 },
+      "15-30": { "labor": 2, "mobilization": 2, "switchMaintenance": 150 },
+      "35-150": { "labor": 3, "mobilization": 2, "switchMaintenance": 200 },
+      "151-250": { "labor": 3, "mobilization": 2, "switchMaintenance": 200 },
+      "251-400": { "labor": 4, "mobilization": 2, "switchMaintenance": 250 },
+      "401-500": { "labor": 4, "mobilization": 2, "switchMaintenance": 250 },
+      "501-670": { "labor": 6, "mobilization": 2, "switchMaintenance": 350 },
+      "671-1050": { "labor": 6, "mobilization": 2, "switchMaintenance": 350 },
+      "1051-1500": { "labor": 8, "mobilization": 2, "switchMaintenance": 450 },
+      "1501-2050": { "labor": 8, "mobilization": 2, "switchMaintenance": 450 }
+    }
+  },
+
+  "serviceJ": {
+    "name": "Service J - Thermal Imaging Scan",
+    "frequency": 1,
+    "kwCategory": [
+      { "category": "Up to 150 kW", "labor": 2, "mobilization": 2, "equipmentCost": 100 },
+      { "category": "151 - 500 kW", "labor": 3, "mobilization": 2, "equipmentCost": 150 },
+      { "category": "Over 500 kW", "labor": 4, "mobilization": 2, "equipmentCost": 200 }
+    ]
+  },
+
+  "batteryService": {
+    "name": "Battery Service (As Needed)",
+    "frequency": "As Needed",
+    "timesPerYear": 0,
+    "data": {
+      "2-14": { "labor": 2, "mobilization": 2, "batteryCost": 100, "quantity": 1 },
+      "15-30": { "labor": 2, "mobilization": 2, "batteryCost": 100, "quantity": 1 },
+      "35-150": { "labor": 2, "mobilization": 2, "batteryCost": 150, "quantity": 1 },
+      "151-250": { "labor": 2, "mobilization": 2, "batteryCost": 350, "quantity": 1 },
+      "251-400": { "labor": 4, "mobilization": 2, "batteryCost": 600, "quantity": 1 },
+      "401-500": { "labor": 4, "mobilization": 2, "batteryCost": 1200, "quantity": 2 },
+      "501-670": { "labor": 4, "mobilization": 2, "batteryCost": 1250, "quantity": 2 },
+      "671-1050": { "labor": 8, "mobilization": 2, "batteryCost": 1750, "quantity": 2 },
+      "1051-1500": { "labor": 8, "mobilization": 2, "batteryCost": 2400, "quantity": 2 },
+      "1501-2050": { "labor": 8, "mobilization": 2, "batteryCost": 2500, "quantity": 2 }
+    }
+  },
+
+  "serviceFrequencies": {
+    "A": 4,
+    "B": 1,
+    "C": 1,
+    "D": 1,
+    "E": 1,
+    "F": 0,
+    "G": 0,
+    "H": 0,
+    "I": 1,
+    "J": 1
+  },
+
+  "mobilizationHours": {
+    "A": 0.5,
+    "B": 1.0,
+    "C": 1.0,
+    "D": 0.5,
+    "E": 2.0,
+    "F": 1.5,
+    "G": 1.5,
+    "H": 1.0,
+    "I": 1.0,
+    "J": 0.5
+  }
+}

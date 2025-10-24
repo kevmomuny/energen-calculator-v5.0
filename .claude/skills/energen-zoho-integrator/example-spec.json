@@ -1,0 +1,126 @@
+{
+  "moduleName": "Service_Contracts",
+  "displayName": "Service Contracts",
+  "fields": [
+    {
+      "api_name": "Contract_Number",
+      "field_label": "Contract Number",
+      "data_type": "text",
+      "length": 50,
+      "mandatory": true,
+      "tooltip": {
+        "name": "Unique identifier for the service contract"
+      }
+    },
+    {
+      "api_name": "Customer_Account",
+      "field_label": "Customer Account",
+      "data_type": "lookup",
+      "mandatory": true,
+      "lookup": {
+        "module": {
+          "api_name": "Accounts"
+        }
+      }
+    },
+    {
+      "api_name": "Generator_Asset",
+      "field_label": "Generator Asset",
+      "data_type": "lookup",
+      "lookup": {
+        "module": {
+          "api_name": "Generator_Equipment"
+        }
+      }
+    },
+    {
+      "api_name": "Start_Date",
+      "field_label": "Start Date",
+      "data_type": "date",
+      "mandatory": true
+    },
+    {
+      "api_name": "End_Date",
+      "field_label": "End Date",
+      "data_type": "date",
+      "mandatory": true
+    },
+    {
+      "api_name": "Annual_Value",
+      "field_label": "Annual Value",
+      "data_type": "currency",
+      "precision": 2
+    },
+    {
+      "api_name": "Quarterly_Value",
+      "field_label": "Quarterly Value",
+      "data_type": "currency",
+      "precision": 2
+    },
+    {
+      "api_name": "Services_Included",
+      "field_label": "Services Included",
+      "data_type": "multiselectpicklist",
+      "pick_list_values": [
+        { "display_value": "Service A", "actual_value": "Service_A" },
+        { "display_value": "Service B", "actual_value": "Service_B" },
+        { "display_value": "Service C", "actual_value": "Service_C" },
+        { "display_value": "Service D", "actual_value": "Service_D" },
+        { "display_value": "Service E", "actual_value": "Service_E" },
+        { "display_value": "Service F", "actual_value": "Service_F" },
+        { "display_value": "Service G", "actual_value": "Service_G" },
+        { "display_value": "Service H", "actual_value": "Service_H" },
+        { "display_value": "Service I", "actual_value": "Service_I" },
+        { "display_value": "Service J", "actual_value": "Service_J" },
+        { "display_value": "Service K", "actual_value": "Service_K" },
+        { "display_value": "Custom Service", "actual_value": "Custom" }
+      ]
+    },
+    {
+      "api_name": "Status",
+      "field_label": "Status",
+      "data_type": "picklist",
+      "pick_list_values": [
+        { "display_value": "-None-", "actual_value": "-None-" },
+        { "display_value": "Draft", "actual_value": "Draft" },
+        { "display_value": "Active", "actual_value": "Active" },
+        { "display_value": "Expired", "actual_value": "Expired" },
+        { "display_value": "Cancelled", "actual_value": "Cancelled" },
+        { "display_value": "Renewed", "actual_value": "Renewed" }
+      ]
+    },
+    {
+      "api_name": "Auto_Renew",
+      "field_label": "Auto Renew",
+      "data_type": "boolean"
+    },
+    {
+      "api_name": "Payment_Terms",
+      "field_label": "Payment Terms",
+      "data_type": "picklist",
+      "pick_list_values": [
+        { "display_value": "Net 30", "actual_value": "Net_30" },
+        { "display_value": "Net 45", "actual_value": "Net_45" },
+        { "display_value": "Net 60", "actual_value": "Net_60" },
+        { "display_value": "Due on Receipt", "actual_value": "Due_on_Receipt" }
+      ]
+    },
+    {
+      "api_name": "Billing_Frequency",
+      "field_label": "Billing Frequency",
+      "data_type": "picklist",
+      "pick_list_values": [
+        { "display_value": "Monthly", "actual_value": "Monthly" },
+        { "display_value": "Quarterly", "actual_value": "Quarterly" },
+        { "display_value": "Semi-Annual", "actual_value": "Semi_Annual" },
+        { "display_value": "Annual", "actual_value": "Annual" }
+      ]
+    },
+    {
+      "api_name": "Notes",
+      "field_label": "Notes",
+      "data_type": "textarea"
+    }
+  ],
+  "operations": ["create", "read", "update", "delete", "search"]
+}

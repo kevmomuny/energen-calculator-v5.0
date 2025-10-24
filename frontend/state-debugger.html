@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>State Debugger Helper</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #00ff00;
+        }
+        button {
+            background: #333;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #444;
+        }
+        #output {
+            background: #000;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid #00ff00;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 State Debugger Console</h1>
+    <p>Open this alongside your main app to debug state issues.</p>
+    
+    <div>
+        <button onclick="reportState()">📊 Get State Report</button>
+        <button onclick="checkCurrentState()">🔍 Check Current State</button>
+        <button onclick="clearHistory()">🗑️ Clear History</button>
+        <button onclick="simulateTest()">🧪 Run Test Sequence</button>
+    </div>
+    
+    <div id="output"></div>
+    
+    <script>
+        const output = document.getElementById('output');
+        
+        function log(msg) {
+            output.textContent += msg + '\n';
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function getMainWindow() {
+            // Try multiple methods to find the main window
+            if (window.opener && window.opener.state) {
+                return window.opener;
+            }
+            if (window.parent && window.parent !== window && window.parent.state) {
+                return window.parent;
+            }
+            // Try to find other windows with the same origin
+            try {
+                // Look for the main app window by checking all open windows
+                const mainUrl = window.location.origin + '/integrated-ui.html';
+                // Note: This won't work due to browser security, but keeping for reference
+                console.log('Looking for main window at:', mainUrl);
+            } catch(e) {
+                console.log('Cannot access other windows due to browser security');
+            }
+            return null;
+        }
+        
+        function reportState() {
+            output.textContent = '';
+            const win = getMainWindow();
+            if (win && win.stateDebugger) {
+                const history = win.stateDebugger.report();
+                log('STATE HISTORY REPORT\n' + '='.repeat(50));
+                history.forEach((entry, i) => {
+                    log(`\n${i + 1}. [${entry.timestamp}]`);
+                    log(`   Location: ${entry.location}`);
+                    log(`   Labor Rate: $${entry.laborRate}`);
+                    log(`   Source: ${entry.settingsSource}`);
+                    if (entry.details) {
+                        log(`   Details: ${JSON.stringify(entry.details, null, 2)}`);
+                    }
+                });
+            } else if (win && win.state) {
+                log('⚠️ State found but debugger not active.\nDebugging data not being collected.');
+                log('\nCurrent state values:');
+                log(`Labor Rate: $${win.state.activeSettings?.laborRate}`);
+                log(`Settings Source: ${win.state.settingsSource}`);
+            } else {
+                log('❌ Cannot connect to main application window.');
+                log('\nTo use the debugger:');
+                log('1. Make sure the main application is open at /integrated-ui.html');
+                log('2. Open the browser console in the main window');
+                log('3. State changes will be logged there with 🔍 prefix');
+                log('\nAlternatively, open this debugger using:');
+                log('window.open("/state-debugger.html", "debugger")');
+                log('from the main application console.');
+            }
+        }
+        
+        function checkCurrentState() {
+            output.textContent = '';
+            const win = getMainWindow();
+            if (win && win.state) {
+                log('CURRENT STATE\n' + '='.repeat(50));
+                log(`\nActive Settings Labor Rate: $${win.state.activeSettings?.laborRate}`);
+                log(`Settings Source: ${win.state.settingsSource}`);
+                log(`Settings Loaded: ${win.state.settingsLoaded}`);
+                log(`\nFull Active Settings:\n${JSON.stringify(win.state.activeSettings, null, 2)}`);
+            } else {
+                log('❌ State not found. Make sure main window is open.');
+            }
+        }
+        
+        function clearHistory() {
+            const win = getMainWindow();
+            if (win && win.stateDebugger) {
+                win.stateDebugger.history = [];
+                log('✅ History cleared');
+            }
+        }
+        
+        function simulateTest() {
+            output.textContent = '';
+            log('🧪 TEST SEQUENCE\n' + '='.repeat(50));
+            log('\n1. Open the settings modal');
+            log('2. Change labor rate to $200');
+            log('3. Click Save');
+            log('4. Close the modal');
+            log('5. Click a service checkbox');
+            log('6. Click "Get State Report" to see the full trace');
+            log('\nThe report will show exactly where the state changes or fails to change.');
+        }
+        
+        // Auto-refresh state every 2 seconds
+        setInterval(() => {
+            const win = getMainWindow();
+            if (win && win.state && win.state.activeSettings) {
+                document.title = `🔍 Labor Rate: $${win.state.activeSettings.laborRate}`;
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

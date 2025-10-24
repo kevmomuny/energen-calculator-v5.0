@@ -1,0 +1,252 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build outputs
+dist/
+build/
+output/pdfs/
+output/rfp-evaluations/
+temp/
+
+# Test coverage
+coverage/
+
+# Backup files
+backup/
+*.backup
+*.bak
+*.backup-*
+src/api/*.backup*
+src/api/*.before-*
+src/api/*-endpoints.txt
+frontend/*.backup*
+frontend/*.backup-*
+frontend/**/*.backup*
+
+# MCP local configs (use 'claude mcp add' instead)
+.mcp.json
+.mcp.json.backup*
+.mcp.json.fixed
+.mcp.json.validated
+add-*-mcp.ps1
+fix-*-mcp.ps1
+test-*-mcp.js
+
+# Playwright
+.playwright-mcp/
+
+# Local development
+*.local.js
+*.local.cjs
+*.local.mjs
+test-*.cjs
+test-*.js
+test-*.mjs
+generate-*.cjs
+examine-*.cjs
+process-*.cjs
+lnbl-*.cjs
+fix-*.patch*
+fix-*.ps1
+backup-*.cjs
+debug-*.cjs
+debug-*.mjs
+insert-*.cjs
+patch-*.cjs
+*.patch
+kill-*.ps1
+safe-*.ps1
+sow-extracted.txt
+quote-creation-log.txt
+module-verification-report.json
+
+# Data files (project specific)
+data/rfp-extractions/
+temp/rfp-uploads/
+data/generator-assets-backup/
+data/quotes/
+data/zoho-complete-backup/
+data/*-backup/
+data/*-results*.json
+data/*-report*.json
+data/*-comparison*.json
+
+# Documentation artifacts
+*_ANALYSIS.md
+*_REPORT.md
+*_SUMMARY.md
+*_FIXED.md
+*_COMPLETE.md
+*_VERIFICATION.md
+QUICK_*.md
+START_HERE.txt
+RELOAD_NOW.txt
+FINAL_FIX.txt
+
+# MCP troubleshooting docs (obsolete - correct docs are ZOHO_MCP_INSTALLATION.md and ZOHO_MCP_TOOLS_REFERENCE.md)
+ZOHO_MCP_ACTIVATION*.md
+ZOHO_MCP_FIX*.md
+ZOHO_MCP_DIAGNOSIS*.md
+ZOHO_MCP_CLOUD*.md
+ZOHO_MCP_TROUBLESHOOTING*.md
+ZOHO_MCP_QUICK*.md
+ZOHO_MCP_FINAL*.md
+ZOHO_MCP_SOLUTION*.md
+ZOHO_MCP_FIXED*.md
+MCP_SERVERS*.md
+MCP_COMMAND*.md
+CLAUDE_CODE_HTTP*.md
+VSCODE_MCP*.md
+CORRECT_MCP*.md
+USING_LOCAL_MCP*.md
+FINAL_TROUBLESHOOTING*.md
+FINAL_RECOMMENDATION*.md
+HOW_TO_CHECK_OUTPUT*.md
+
+# Project specific
+Final 10_7_25/
+New folder/
+LBNL_*.pdf
+LBNL_*.json
+LBNL_*.csv
+FTB_*.csv
+FTB_*.json
+FTB_*.md
+
+# Archived/organized directories
+archive/
+scripts/utilities/
+
+# RFP and external documents
+Request for Proposal*/
+
+# Example env files (real ones covered above)
+.env.*.example
+.env.catalyst-setup
+.env.email.example
+.env.workdrive.example
+.env.zoho.example
+
+# ESLint configs (prefer project-wide config in package.json)
+.eslintignore
+.eslintrc.json
+
+# Temporary/working files
+DUAL_SOURCE_FRONTEND_CODE.js
+OPEN_ARCHITECTURE_DOCS.bat
+ZOHO_OAUTH_INSTRUCTIONS.txt
+ZOHO_SAFE_TO_DELETE.txt
+eng.traineddata
+
+# Example environment files (real ones already ignored)
+.env.catalyst.example
+.env.google
+
+# Catalyst functions (deployment specific)
+catalyst-functions/
+
+# Test data and docs directories
+test-data/
+docs/
+test-results/
+test-results*.txt
+test-results*.json
+startup.err
+zoho-schema-automation/
+src/utils/
+zoho-cpq-setup.cjs
+zoho-product-mapping.cjs
+zoho-setup-*.cjs
+zoho-deluge-*.ds
+zoho-books-endpoints-insert.txt
+update-*-credentials.ps1
+
+# Sibling directories (not part of this repo)
+../electron-quickstart/
+../electron-test/
+../electron-test-clean/
+../energen-md-formatter/
+
+# Archive backup directory
+../energen-calculator-v5.0-BACKUP/
+
+# Parent directory Python scripts
+../../*.py
+../../*.txt
+
+
+# Autonomous Test Fleet
+worktrees/
+agent-logs/
+.chrome-profiles/
+agent-coordination/test-results/
+agent-coordination/evidence/
+*.lock
+
+# Embedded git repositories (use as submodules or external deps)
+.claude/skills/anthropic-skills/
+.claude/skills/superpowers-community/
+Windows-MCP/
+
+# Windows reserved filenames
+nul
+NUL
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build outputs
+dist/
+build/
+output/pdfs/
+output/rfp-evaluations/
+temp/

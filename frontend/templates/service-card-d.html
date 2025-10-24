@@ -1,0 +1,38 @@
+<!-- Service D Template: Fluid Analysis with Checkboxes -->
+<div class="service-card" id="${unitId}-service-D">
+    <div class="service-name">${serviceName}</div>
+    <div style="font-size: 9px; color: var(--text-secondary); margin-bottom: 8px;">${serviceDescription}</div>
+    <div class="service-price" id="${unitId}-service-D-price">
+        ${priceText}
+    </div>
+    <div class="service-breakdown" id="${unitId}-service-D-breakdown" style="font-size: 9px; color: var(--text-secondary); margin-top: 4px;"></div>
+
+    <!-- Fluid Analysis Checkboxes -->
+    <div style="padding: 8px 0; border-top: 1px solid var(--border-subtle); margin-top: 8px;">
+        <div style="margin-bottom: 6px;">
+            <label style="display: flex; align-items: center; cursor: pointer; font-size: 10px;">
+                <input type="checkbox" id="${unitId}-service-D-oil" style="margin-right: 6px;">
+                <span id="${unitId}-service-D-oil-label">Oil Analysis - $${oilPrice}</span>
+            </label>
+        </div>
+        <div style="margin-bottom: 6px;">
+            <label style="display: flex; align-items: center; cursor: pointer; font-size: 10px;">
+                <input type="checkbox" id="${unitId}-service-D-coolant" style="margin-right: 6px;">
+                <span id="${unitId}-service-D-coolant-label">Coolant Analysis - $${coolantPrice}</span>
+            </label>
+        </div>
+        <div style="margin-bottom: 6px;">
+            <label style="display: flex; align-items: center; cursor: pointer; font-size: 10px;">
+                <input type="checkbox" id="${unitId}-service-D-fuel" style="margin-right: 6px;">
+                <span id="${unitId}-service-D-fuel-label">Fuel Analysis - $${fuelPrice}</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Frequency selector -->
+    <div class="frequency-selector">
+        <button class="frequency-btn ${isQuarterly}" data-freq="4">Quarterly</button>
+        <button class="frequency-btn ${isSemiAnnual}" data-freq="2">Semi-Annual</button>
+        <button class="frequency-btn ${isAnnual}" data-freq="1">Annual</button>
+    </div>
+</div>

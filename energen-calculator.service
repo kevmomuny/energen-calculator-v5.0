@@ -1,0 +1,38 @@
+[Unit]
+Description=Energen Calculator v5.0 API Service
+Documentation=https://energensystems.com/docs
+After=network.target
+
+[Service]
+Type=forking
+User=energen
+Group=energen
+ExecStart=/usr/bin/pm2 start /opt/energen-calculator-v5/ecosystem.config.js --env production
+ExecReload=/usr/bin/pm2 reload energen-calculator-v5
+ExecStop=/usr/bin/pm2 stop energen-calculator-v5
+PIDFile=/home/energen/.pm2/pids/energen-calculator-v5-0.pid
+
+# Environment
+Environment="NODE_ENV=production"
+Environment="PATH=/usr/bin:/usr/local/bin"
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/energen-calculator-v5/logs
+ReadWritePaths=/opt/energen-calculator-v5/output
+
+# Resource limits
+LimitNOFILE=65535
+LimitNPROC=512
+
+# Restart policy
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

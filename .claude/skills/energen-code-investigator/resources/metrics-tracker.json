@@ -1,0 +1,398 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Code Investigation Metrics",
+  "description": "Schema for tracking code investigation metrics and verification minimums",
+  "type": "object",
+  "required": [
+    "timestamp",
+    "investigation_type",
+    "metrics",
+    "requirements",
+    "verification",
+    "confidence"
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of when metrics were tracked"
+    },
+    "investigation_type": {
+      "type": "string",
+      "enum": ["assessment", "bug_fix", "feature_verification", "completion_claim"],
+      "description": "Type of investigation being performed"
+    },
+    "investigator": {
+      "type": "string",
+      "description": "AI agent or person performing investigation",
+      "default": "Claude AI"
+    },
+    "metrics": {
+      "type": "object",
+      "required": [
+        "lines_examined",
+        "files_read",
+        "functions_analyzed",
+        "search_queries"
+      ],
+      "properties": {
+        "lines_examined": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of lines of code examined"
+        },
+        "files_read": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of files read completely"
+        },
+        "files_list": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of files read with line counts"
+        },
+        "functions_analyzed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of complete functions analyzed"
+        },
+        "functions_list": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of function names analyzed"
+        },
+        "search_queries": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of search queries performed"
+        },
+        "queries_list": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of search patterns used"
+        },
+        "contradictions_found": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of documentation vs code contradictions found"
+        },
+        "contradictions_list": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "claim": {
+                "type": "string",
+                "description": "What documentation claimed"
+              },
+              "reality": {
+                "type": "string",
+                "description": "What code actually shows"
+              },
+              "source": {
+                "type": "string",
+                "description": "File path and line numbers"
+              }
+            }
+          }
+        }
+      }
+    },
+    "requirements": {
+      "type": "object",
+      "description": "Minimum requirements for investigation type",
+      "required": ["type", "minimum_lines", "minimum_files", "minimum_functions"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["assessment", "bug_fix", "feature_verification", "completion_claim"]
+        },
+        "minimum_lines": {
+          "type": "integer",
+          "description": "Minimum lines that must be examined"
+        },
+        "minimum_files": {
+          "type": "integer",
+          "description": "Minimum files that must be read completely"
+        },
+        "minimum_functions": {
+          "type": "integer",
+          "description": "Minimum complete functions that must be analyzed"
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "description": "Verification status for each requirement",
+      "required": [
+        "lines_met",
+        "files_met",
+        "functions_met",
+        "queries_met",
+        "all_minimums_met"
+      ],
+      "properties": {
+        "lines_met": {
+          "type": "boolean",
+          "description": "Whether line count minimum was met"
+        },
+        "files_met": {
+          "type": "boolean",
+          "description": "Whether file count minimum was met"
+        },
+        "functions_met": {
+          "type": "boolean",
+          "description": "Whether function count minimum was met"
+        },
+        "queries_met": {
+          "type": "boolean",
+          "description": "Whether search queries were performed"
+        },
+        "all_minimums_met": {
+          "type": "boolean",
+          "description": "Whether all minimums were met"
+        }
+      }
+    },
+    "confidence": {
+      "type": "object",
+      "required": ["score", "level", "bet_10k"],
+      "properties": {
+        "score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Confidence score 0-100%"
+        },
+        "level": {
+          "type": "string",
+          "enum": ["high", "medium", "low"],
+          "description": "Confidence level category"
+        },
+        "bet_10k": {
+          "type": "boolean",
+          "description": "Would investigator bet $10,000 on accuracy"
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Explanation of confidence level"
+        }
+      }
+    },
+    "code_evidence": {
+      "type": "array",
+      "description": "Code snippets and evidence supporting findings",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title of finding"
+          },
+          "file": {
+            "type": "string",
+            "description": "File path"
+          },
+          "lines": {
+            "type": "string",
+            "description": "Line numbers (e.g., '100-150')"
+          },
+          "code": {
+            "type": "string",
+            "description": "Actual code snippet"
+          },
+          "analysis": {
+            "type": "string",
+            "description": "What this code proves/disproves"
+          }
+        }
+      }
+    },
+    "completion_status": {
+      "type": "object",
+      "description": "Completion status tracking",
+      "properties": {
+        "code_written": {
+          "type": "boolean",
+          "description": "Code has been written/modified"
+        },
+        "tests_exist": {
+          "type": "boolean",
+          "description": "Tests exist for this code"
+        },
+        "tests_passing": {
+          "type": "boolean",
+          "description": "Tests are passing"
+        },
+        "user_confirmed": {
+          "type": "boolean",
+          "description": "User has confirmed functionality"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ready for testing",
+            "tests passing",
+            "complete and verified",
+            "incomplete"
+          ],
+          "description": "Overall completion status"
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Explanation of status"
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of warnings about verification gaps"
+    },
+    "session_memory_updates": {
+      "type": "object",
+      "description": "Updates to make to SESSION_MEMORY.json",
+      "properties": {
+        "verified_facts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "code_changes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "file": {
+                "type": "string"
+              },
+              "lines": {
+                "type": "string"
+              },
+              "change": {
+                "type": "string"
+              },
+              "commit": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "architecture_notes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata about investigation",
+      "properties": {
+        "skill_version": {
+          "type": "string",
+          "description": "Version of energen-code-investigator skill used"
+        },
+        "protocol": {
+          "type": "string",
+          "description": "Protocol followed (e.g., 'Anti-Hallucination Enforcement')"
+        },
+        "git_commit": {
+          "type": "string",
+          "description": "Git commit hash at time of investigation"
+        },
+        "git_branch": {
+          "type": "string",
+          "description": "Git branch at time of investigation"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "timestamp": "2025-10-17T14:30:00Z",
+      "investigation_type": "feature_verification",
+      "investigator": "Claude Sonnet 4.5",
+      "metrics": {
+        "lines_examined": 1247,
+        "files_read": 4,
+        "files_list": [
+          "src/api/server-secure.cjs (1400 lines)",
+          "src/api/complete-calculation-engine.cjs (925 lines)",
+          "frontend/integrated-ui.html (6650 lines - partial)",
+          "test-battery-service.cjs (147 lines)"
+        ],
+        "functions_analyzed": 5,
+        "functions_list": [
+          "getBatteryService()",
+          "calculateBatteryPrice()",
+          "updateBatteryUI()",
+          "validateBatteryConfig()",
+          "testBatteryCalculation()"
+        ],
+        "search_queries": 7,
+        "queries_list": [
+          "ServiceK",
+          "getServiceK",
+          "battery",
+          "batteryReplacement",
+          "getBatteryService",
+          "test-battery",
+          "Battery.*Service"
+        ],
+        "contradictions_found": 1,
+        "contradictions_list": [
+          {
+            "claim": "Service K has no backend implementation",
+            "reality": "getBatteryService() exists in complete-calculation-engine.cjs lines 505-520",
+            "source": "src/api/complete-calculation-engine.cjs:505-520"
+          }
+        ]
+      },
+      "requirements": {
+        "type": "feature_verification",
+        "minimum_lines": 500,
+        "minimum_files": 3,
+        "minimum_functions": 3
+      },
+      "verification": {
+        "lines_met": true,
+        "files_met": true,
+        "functions_met": true,
+        "queries_met": true,
+        "all_minimums_met": true
+      },
+      "confidence": {
+        "score": 100,
+        "level": "high",
+        "bet_10k": true,
+        "rationale": "All minimums exceeded, comprehensive search performed, code evidence found, tests verified passing"
+      },
+      "completion_status": {
+        "code_written": true,
+        "tests_exist": true,
+        "tests_passing": true,
+        "user_confirmed": false,
+        "status": "tests passing",
+        "rationale": "Code implemented and tests passing, awaiting user confirmation"
+      },
+      "warnings": [],
+      "metadata": {
+        "skill_version": "1.0.0",
+        "protocol": "Anti-Hallucination Enforcement",
+        "git_commit": "467083d",
+        "git_branch": "main"
+      }
+    }
+  ]
+}

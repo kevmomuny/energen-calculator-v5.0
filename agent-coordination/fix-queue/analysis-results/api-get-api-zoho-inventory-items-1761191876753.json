@@ -1,0 +1,19 @@
+{
+  "bug_id": "api-get-api-zoho-inventory-items-1761191876753",
+  "workflow_id": "api-get-api-zoho-inventory-items",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "analyzed_at": "2025-10-23T16:13:06.661Z",
+  "root_cause": "API endpoint returning error or not found",
+  "confidence": 50,
+  "recommended_fix": "Debug existing endpoint error handling",
+  "files_affected": [
+    "src/api/server-secure.cjs"
+  ],
+  "requires_human_review": true,
+  "verification_details": [
+    "✓ Parsed endpoint: GET /api/zoho/inventory/items",
+    "✓ Server file exists",
+    "⚠️ Endpoint /api/zoho/inventory/items EXISTS but returns error - needs debugging"
+  ]
+}

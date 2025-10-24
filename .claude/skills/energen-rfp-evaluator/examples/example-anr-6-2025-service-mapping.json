@@ -1,0 +1,544 @@
+{
+  "rfpId": "ANR-6-2025",
+  "mappingDate": "2025-10-13T00:14:49Z",
+  "mappingVersion": "1.0.0",
+  "mappingEngine": "ServiceMappingEngine v2.1",
+  "summary": {
+    "totalServicesRequested": 5,
+    "totalServicesMapped": 5,
+    "highConfidenceMappings": 5,
+    "mediumConfidenceMappings": 0,
+    "lowConfidenceMappings": 0,
+    "requiresReview": 0,
+    "averageConfidence": 0.938,
+    "mappingQuality": "EXCELLENT"
+  },
+  "mappings": [
+    {
+      "originalService": {
+        "description": "Quarterly comprehensive inspection",
+        "rawText": "Service A - Comprehensive Inspection - Quarterly preventive maintenance including all systems check",
+        "frequency": "Quarterly (4 times per year)",
+        "source": "RFP Section 4.2, Page 8"
+      },
+      "mappedTo": "ServiceA",
+      "mappedName": "A-Comprehensive Inspection",
+      "mappedDescription": "Complete system inspection including engine, cooling, electrical, fuel, and exhaust systems",
+      "confidence": 0.96,
+      "scores": {
+        "keywordMatch": 0.95,
+        "aliasMatch": 0.92,
+        "frequencyMatch": 1.0,
+        "contextMatch": 0.85,
+        "total": 0.93
+      },
+      "keywordsMatched": [
+        "comprehensive",
+        "inspection",
+        "quarterly",
+        "preventive",
+        "systems check"
+      ],
+      "frequencyDetected": {
+        "raw": "Quarterly",
+        "normalized": "4x per year",
+        "timesPerYear": 4,
+        "frequencyCode": "Q"
+      },
+      "laborEstimate": {
+        "perVisitHours": 2.5,
+        "perVisitHoursRange": "2.0-3.0",
+        "annualHoursPerGenerator": 10.0,
+        "totalGenerators": 35,
+        "totalAnnualHours": 87.5,
+        "basis": "Standard Service A inspection protocol for 251-400kW range (avg)"
+      },
+      "pricingEstimate": {
+        "perVisitPriceRange": {
+          "low": 1650,
+          "mid": 1733,
+          "high": 1850
+        },
+        "annualPricePerGenerator": {
+          "low": 6600,
+          "mid": 6933,
+          "high": 7400
+        },
+        "totalAnnualAllGenerators": {
+          "low": 231000,
+          "mid": 242662,
+          "high": 259000
+        },
+        "basis": "Energen Service A pricing for kW range 251-400, prevailing wage rates applied",
+        "assumptionsPrevailingWage": true,
+        "assumptionsTaxExempt": true,
+        "includesMobilization": true
+      },
+      "alternativeMatches": [],
+      "requiresReview": false,
+      "reviewReason": null,
+      "mappingNotes": "Perfect match. Service A is core offering, quarterly frequency confirmed, high keyword overlap.",
+      "zohoProductCode": "SVC-A-{KW_RANGE}-Q",
+      "zohoProductExamples": [
+        "SVC-A-251-400-Q (10 generators)",
+        "SVC-A-151-250-Q (9 generators)",
+        "SVC-A-35-150-Q (9 generators)",
+        "SVC-A-501-670-Q (2 generators)",
+        "SVC-A-1051-1500-Q (1 generator)"
+      ]
+    },
+    {
+      "originalService": {
+        "description": "Quarterly oil and filter service",
+        "rawText": "Service B - Oil & Filter Service - Quarterly oil change, oil filter, fuel filter replacement",
+        "frequency": "Quarterly (4 times per year)",
+        "source": "RFP Section 4.2, Page 9"
+      },
+      "mappedTo": "ServiceB",
+      "mappedName": "B-Oil & Filter Service",
+      "mappedDescription": "Engine oil change, oil filter replacement, fuel filter replacement",
+      "confidence": 0.94,
+      "scores": {
+        "keywordMatch": 0.98,
+        "aliasMatch": 0.95,
+        "frequencyMatch": 1.0,
+        "contextMatch": 0.80,
+        "total": 0.93
+      },
+      "keywordsMatched": [
+        "oil change",
+        "oil filter",
+        "fuel filter",
+        "quarterly"
+      ],
+      "frequencyDetected": {
+        "raw": "Quarterly",
+        "normalized": "4x per year",
+        "timesPerYear": 4,
+        "frequencyCode": "Q"
+      },
+      "laborEstimate": {
+        "perVisitHours": 1.5,
+        "perVisitHoursRange": "1.0-2.0",
+        "annualHoursPerGenerator": 6.0,
+        "totalGenerators": 35,
+        "totalAnnualHours": 52.5,
+        "basis": "Standard Service B oil change protocol"
+      },
+      "pricingEstimate": {
+        "perVisitPriceRange": {
+          "low": 1600,
+          "mid": 1712,
+          "high": 1850
+        },
+        "annualPricePerGenerator": {
+          "low": 1600,
+          "mid": 1712,
+          "high": 1850
+        },
+        "totalAnnualAllGenerators": {
+          "low": 56000,
+          "mid": 59920,
+          "high": 64750
+        },
+        "basis": "Energen Service B pricing with parts (oil, filters) for 251-400kW range",
+        "assumptionsPrevailingWage": true,
+        "assumptionsTaxExempt": true,
+        "includesMobilization": true
+      },
+      "alternativeMatches": [],
+      "requiresReview": false,
+      "reviewReason": null,
+      "mappingNotes": "Excellent match. Service B is standard oil change service, exact keyword match for oil and filters.",
+      "zohoProductCode": "SVC-B-{KW_RANGE}-Q",
+      "zohoProductExamples": [
+        "SVC-B-251-400-Q (10 generators)",
+        "SVC-B-151-250-Q (9 generators)",
+        "SVC-B-35-150-Q (9 generators)"
+      ],
+      "specialNote": "RFP specifies quarterly frequency for Service B, which is higher than typical annual Service B. Confirms quarterly combined A+B visits."
+    },
+    {
+      "originalService": {
+        "description": "Annual coolant service",
+        "rawText": "Service C - Coolant Service - Annual coolant system flush and refill with OEM-approved coolant",
+        "frequency": "Annual (1 time per year)",
+        "source": "RFP Section 4.2, Page 9"
+      },
+      "mappedTo": "ServiceC",
+      "mappedName": "C-Coolant Service",
+      "mappedDescription": "Coolant system flush and refill with OEM-approved coolant",
+      "confidence": 0.93,
+      "scores": {
+        "keywordMatch": 0.95,
+        "aliasMatch": 0.88,
+        "frequencyMatch": 1.0,
+        "contextMatch": 0.82,
+        "total": 0.91
+      },
+      "keywordsMatched": [
+        "coolant",
+        "flush",
+        "refill",
+        "annual",
+        "cooling system"
+      ],
+      "frequencyDetected": {
+        "raw": "Annual",
+        "normalized": "1x per year",
+        "timesPerYear": 1,
+        "frequencyCode": "A"
+      },
+      "laborEstimate": {
+        "perVisitHours": 2.0,
+        "perVisitHoursRange": "1.5-2.5",
+        "annualHoursPerGenerator": 2.0,
+        "totalGenerators": 35,
+        "totalAnnualHours": 70,
+        "basis": "Standard Service C coolant flush protocol"
+      },
+      "pricingEstimate": {
+        "perVisitPriceRange": {
+          "low": 1650,
+          "mid": 1782,
+          "high": 1920
+        },
+        "annualPricePerGenerator": {
+          "low": 1650,
+          "mid": 1782,
+          "high": 1920
+        },
+        "totalAnnualAllGenerators": {
+          "low": 57750,
+          "mid": 62370,
+          "high": 67200
+        },
+        "basis": "Energen Service C pricing including coolant (5-10 gallons avg), prevailing wage labor",
+        "assumptionsPrevailingWage": true,
+        "assumptionsTaxExempt": true,
+        "includesMobilization": true
+      },
+      "alternativeMatches": [],
+      "requiresReview": false,
+      "reviewReason": null,
+      "mappingNotes": "Strong match. Service C is standard coolant service offering. Annual frequency confirmed.",
+      "zohoProductCode": "SVC-C-{KW_RANGE}-A",
+      "zohoProductExamples": [
+        "SVC-C-251-400-A (10 generators)",
+        "SVC-C-151-250-A (9 generators)"
+      ]
+    },
+    {
+      "originalService": {
+        "description": "Annual oil and fuel analysis",
+        "rawText": "Service D - Laboratory Analysis - Annual oil analysis, fuel analysis, and coolant analysis with lab testing",
+        "frequency": "Annual (1 time per year)",
+        "source": "RFP Section 4.2, Page 10"
+      },
+      "mappedTo": "ServiceD",
+      "mappedName": "D-Oil & Fuel Analysis",
+      "mappedDescription": "Laboratory testing of oil, fuel, and coolant samples with comprehensive analysis report",
+      "confidence": 0.91,
+      "scores": {
+        "keywordMatch": 0.90,
+        "aliasMatch": 0.85,
+        "frequencyMatch": 1.0,
+        "contextMatch": 0.88,
+        "total": 0.91
+      },
+      "keywordsMatched": [
+        "oil analysis",
+        "fuel analysis",
+        "laboratory",
+        "testing",
+        "sample",
+        "annual"
+      ],
+      "frequencyDetected": {
+        "raw": "Annual",
+        "normalized": "1x per year",
+        "timesPerYear": 1,
+        "frequencyCode": "A"
+      },
+      "laborEstimate": {
+        "perVisitHours": 0.5,
+        "perVisitHoursRange": "0.25-0.75",
+        "annualHoursPerGenerator": 0.5,
+        "totalGenerators": 35,
+        "totalAnnualHours": 17.5,
+        "basis": "Service D is sample collection (15-30 min), lab does analysis"
+      },
+      "pricingEstimate": {
+        "perVisitPriceRange": {
+          "low": 120,
+          "mid": 150,
+          "high": 180
+        },
+        "annualPricePerGenerator": {
+          "low": 120,
+          "mid": 150,
+          "high": 180
+        },
+        "totalAnnualAllGenerators": {
+          "low": 4200,
+          "mid": 5250,
+          "high": 6300
+        },
+        "basis": "Lab analysis fees $100-150 per sample, minimal labor for sample collection",
+        "assumptionsPrevailingWage": false,
+        "assumptionsTaxExempt": true,
+        "includesMobilization": false,
+        "note": "Service D is primarily lab fees (parts), not labor-intensive, so prevailing wage impact minimal"
+      },
+      "alternativeMatches": [],
+      "requiresReview": false,
+      "reviewReason": null,
+      "mappingNotes": "Good match. Service D maps to oil/fuel/coolant laboratory analysis. Low labor component (sample collection only).",
+      "zohoProductCode": "SVC-D-{KW_RANGE}-A",
+      "zohoProductExamples": [
+        "SVC-D-251-400-A (10 generators)",
+        "SVC-D-151-250-A (9 generators)"
+      ],
+      "specialNote": "Service D has minimal labor (sample collection). Can be bundled with Service C coolant service visit to reduce mobilization costs."
+    },
+    {
+      "originalService": {
+        "description": "Annual load bank testing",
+        "rawText": "Service E - Load Bank Testing - Annual 2-hour full load testing with load bank equipment to verify generator performance at rated capacity",
+        "frequency": "Annual (1 time per year)",
+        "source": "RFP Section 4.2, Page 10"
+      },
+      "mappedTo": "ServiceE",
+      "mappedName": "E-Load Bank Testing",
+      "mappedDescription": "Full load testing using portable load bank equipment to verify generator performance and capacity",
+      "confidence": 0.95,
+      "scores": {
+        "keywordMatch": 0.98,
+        "aliasMatch": 0.95,
+        "frequencyMatch": 1.0,
+        "contextMatch": 0.88,
+        "total": 0.95
+      },
+      "keywordsMatched": [
+        "load bank",
+        "load test",
+        "full load",
+        "performance test",
+        "capacity",
+        "annual",
+        "2-hour"
+      ],
+      "frequencyDetected": {
+        "raw": "Annual",
+        "normalized": "1x per year",
+        "timesPerYear": 1,
+        "frequencyCode": "A"
+      },
+      "laborEstimate": {
+        "perVisitHours": 3.0,
+        "perVisitHoursRange": "2.5-4.0",
+        "annualHoursPerGenerator": 3.0,
+        "totalGenerators": 35,
+        "totalAnnualHours": 105,
+        "basis": "2-hour load test + 1 hour setup/breakdown/reporting"
+      },
+      "pricingEstimate": {
+        "perVisitPriceRange": {
+          "low": 3400,
+          "mid": 3680,
+          "high": 4000
+        },
+        "annualPricePerGenerator": {
+          "low": 3400,
+          "mid": 3680,
+          "high": 4000
+        },
+        "totalAnnualAllGenerators": {
+          "low": 119000,
+          "mid": 128800,
+          "high": 140000
+        },
+        "basis": "Energen Service E pricing with load bank rental, fuel consumption, prevailing wage labor",
+        "assumptionsPrevailingWage": true,
+        "assumptionsTaxExempt": true,
+        "includesMobilization": true,
+        "includesLoadBankRental": true
+      },
+      "alternativeMatches": [],
+      "requiresReview": false,
+      "reviewReason": null,
+      "mappingNotes": "Excellent match. Service E is standard load bank testing service. RFP specifies 2-hour test duration which aligns with standard protocol.",
+      "zohoProductCode": "SVC-E-{KW_RANGE}-A",
+      "zohoProductExamples": [
+        "SVC-E-251-400-A (10 generators)",
+        "SVC-E-151-250-A (9 generators)",
+        "SVC-E-1501-A (1 × 2000kW generator - special pricing)"
+      ],
+      "specialNote": "2000kW generator load bank testing requires specialized equipment rental. May need to schedule separately from other units."
+    }
+  ],
+  "servicesNotMapped": [],
+  "additionalServicesAvailable": [
+    {
+      "service": "ServiceF",
+      "name": "F-Engine Tune-Up Diesel",
+      "description": "Diesel engine injector service and tune-up",
+      "reason": "Not requested in RFP but available if needed",
+      "applicability": "Could be offered as optional/additional service for diesel generators"
+    },
+    {
+      "service": "ServiceG",
+      "name": "G-Gas Engine Tune-Up",
+      "description": "Natural gas engine spark plug and ignition service",
+      "reason": "Not requested in RFP, no natural gas generators in fleet",
+      "applicability": "Not applicable - all generators are diesel"
+    },
+    {
+      "service": "ServiceH",
+      "name": "H-Generator Electrical Testing",
+      "description": "Comprehensive electrical testing (every 5 years)",
+      "reason": "Not requested in RFP but recommended for older generators",
+      "applicability": "Could be offered as optional add-on for generators >10 years old"
+    },
+    {
+      "service": "ServiceI",
+      "name": "I-Transfer Switch Service",
+      "description": "Automatic transfer switch maintenance and testing",
+      "reason": "Not requested in RFP",
+      "applicability": "Unknown if ATS maintenance is included in building electrical contracts"
+    },
+    {
+      "service": "ServiceJ",
+      "name": "J-Thermal Imaging Scan",
+      "description": "Infrared thermal imaging scan of electrical connections",
+      "reason": "Not requested in RFP but valuable preventive diagnostic",
+      "applicability": "Could be offered as optional value-add service"
+    },
+    {
+      "service": "ServiceK",
+      "name": "K-Custom Service",
+      "description": "As-needed custom work and repairs",
+      "reason": "Not explicitly requested but typically needed",
+      "applicability": "Include in proposal as hourly rate for additional work outside scope"
+    }
+  ],
+  "recommendedBundling": [
+    {
+      "bundle": "Quarterly PM Bundle",
+      "services": ["ServiceA", "ServiceB"],
+      "frequency": "4x per year",
+      "benefits": [
+        "Single site visit for both services reduces mobilization costs",
+        "Consistent quarterly maintenance schedule",
+        "35% mobilization stacking discount already applied in pricing"
+      ],
+      "totalAnnualHours": 140,
+      "estimatedAnnualValue": 302582
+    },
+    {
+      "bundle": "Annual Services Bundle",
+      "services": ["ServiceC", "ServiceD", "ServiceE"],
+      "frequency": "1x per year",
+      "benefits": [
+        "Combine all annual services into single extended visit",
+        "Share mobilization costs across three services",
+        "Efficient use of technician time on-site"
+      ],
+      "totalAnnualHours": 192.5,
+      "estimatedAnnualValue": 196420,
+      "recommendedScheduling": "Q2 or Q3 to avoid overlap with quarterly PM"
+    }
+  ],
+  "totalLaborEstimate": {
+    "quarterlyPM": {
+      "services": ["ServiceA", "ServiceB"],
+      "hoursPerVisit": 4.0,
+      "visitsPerYear": 4,
+      "generatorsPerVisit": 35,
+      "totalAnnualHours": 140
+    },
+    "annualServices": {
+      "services": ["ServiceC", "ServiceD", "ServiceE"],
+      "hoursPerVisit": 5.5,
+      "visitsPerYear": 1,
+      "generatorsPerVisit": 35,
+      "totalAnnualHours": 192.5
+    },
+    "grandTotal": {
+      "totalAnnualHours": 332.5,
+      "fullTimeEquivalent": 0.16,
+      "crewRequirement": "2-person crew, 1 day per quarter + 1 week annually"
+    }
+  },
+  "totalPricingEstimate": {
+    "serviceA": {
+      "low": 231000,
+      "mid": 242662,
+      "high": 259000
+    },
+    "serviceB": {
+      "low": 56000,
+      "mid": 59920,
+      "high": 64750
+    },
+    "serviceC": {
+      "low": 57750,
+      "mid": 62370,
+      "high": 67200
+    },
+    "serviceD": {
+      "low": 4200,
+      "mid": 5250,
+      "high": 6300
+    },
+    "serviceE": {
+      "low": 119000,
+      "mid": 128800,
+      "high": 140000
+    },
+    "grandTotal": {
+      "low": 467950,
+      "mid": 499002,
+      "high": 537250
+    },
+    "withTaxAndContingency": {
+      "low": 490000,
+      "mid": 519207,
+      "high": 560000
+    },
+    "basis": "All pricing includes prevailing wage labor rates, parts, mobilization, and sales tax on parts only (tax-exempt services)"
+  },
+  "mappingQualityMetrics": {
+    "averageConfidence": 0.938,
+    "confidenceDistribution": {
+      "high": 5,
+      "medium": 0,
+      "low": 0
+    },
+    "keywordMatchRate": 0.952,
+    "frequencyMatchRate": 1.0,
+    "contextMatchRate": 0.846,
+    "requiresReviewCount": 0,
+    "ambiguousCount": 0,
+    "mappingQuality": "EXCELLENT"
+  },
+  "notes": [
+    "All 5 requested services map cleanly to existing Energen service offerings (A, B, C, D, E)",
+    "Service B quarterly frequency is higher than typical annual - confirms combined quarterly A+B visits",
+    "No custom or non-standard services requested - reduces risk and complexity",
+    "Service D (analysis) has minimal labor component - primarily lab fees",
+    "Service E (load bank) for 2000kW generator may require specialty equipment rental",
+    "Total annual hours (332.5) is manageable with dedicated 2-person crew"
+  ],
+  "recommendations": [
+    "Bundle Services A+B for quarterly visits to maximize efficiency",
+    "Schedule Services C+D+E as single annual extended visit (combine with Q2 or Q3 PM)",
+    "Apply 35% mobilization stacking discount for bundled quarterly services",
+    "Price 2000kW load bank test separately due to specialty equipment requirements",
+    "Consider offering Services H, J, K as optional add-ons to increase contract value",
+    "Highlight value-adds in proposal: advanced diagnostics, detailed reporting, emergency support"
+  ],
+  "generatedAt": "2025-10-13T00:14:49Z",
+  "generatedBy": "Energen Service Mapping Engine v2.1",
+  "confidenceLevel": 0.94
+}

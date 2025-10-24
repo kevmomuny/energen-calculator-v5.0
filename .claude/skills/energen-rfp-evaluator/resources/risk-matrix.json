@@ -1,0 +1,316 @@
+{
+  "financial": {
+    "bondRequirements": {
+      "description": "Financial exposure from bond requirements",
+      "scores": {
+        "none": 1,
+        "bidOnly": 2,
+        "bidAndPerformance": 5,
+        "allThreeBonds": 7,
+        "highPercentage": 9
+      }
+    },
+    "paymentTerms": {
+      "description": "Cash flow impact from payment timing",
+      "scores": {
+        "net15": 2,
+        "net30": 3,
+        "net45": 5,
+        "net60": 7,
+        "net90OrWorse": 9
+      }
+    },
+    "retainage": {
+      "description": "Withheld funds impact on cash flow",
+      "scores": {
+        "none": 1,
+        "5percent": 4,
+        "10percent": 7,
+        "15percentOrMore": 9
+      }
+    },
+    "contractValue": {
+      "description": "Contract size vs. company capacity",
+      "thresholds": {
+        "low": 50000,
+        "medium": 250000,
+        "high": 500000,
+        "veryHigh": 1000000
+      },
+      "scores": {
+        "belowCapacity": 2,
+        "withinCapacity": 4,
+        "stretchCapacity": 7,
+        "exceedsCapacity": 10
+      }
+    }
+  },
+  "operational": {
+    "distance": {
+      "description": "Travel distance from base to site (miles)",
+      "scores": {
+        "0-25": 1,
+        "26-50": 2,
+        "51-100": 4,
+        "101-150": 6,
+        "151-200": 8,
+        "200plus": 10
+      }
+    },
+    "generatorCount": {
+      "description": "Number of generators to service",
+      "scores": {
+        "1-10": 1,
+        "11-20": 3,
+        "21-40": 5,
+        "41-60": 7,
+        "61-80": 9,
+        "80plus": 10
+      }
+    },
+    "timeline": {
+      "description": "Time to contract start (days)",
+      "scores": {
+        "90plus": 1,
+        "60-89": 3,
+        "30-59": 5,
+        "15-29": 7,
+        "0-14": 10
+      }
+    },
+    "resourceAvailability": {
+      "description": "Technician and equipment availability",
+      "scores": {
+        "fullyAvailable": 1,
+        "mostlyAvailable": 3,
+        "limitedAvailability": 6,
+        "newHiringRequired": 8,
+        "significantConstraints": 10
+      }
+    },
+    "siteAccess": {
+      "description": "Site accessibility and logistics",
+      "scores": {
+        "easy": 1,
+        "moderate": 3,
+        "restricted": 6,
+        "highSecurity": 8,
+        "remoteOrDifficult": 10
+      }
+    }
+  },
+  "compliance": {
+    "prevailingWage": {
+      "description": "Prevailing wage requirements",
+      "impact": "Increases labor costs 30-50%, requires certified payroll",
+      "scores": {
+        "notRequired": 1,
+        "required": 8
+      }
+    },
+    "certifications": {
+      "description": "Required licenses and certifications",
+      "scores": {
+        "standardOnly": 1,
+        "someSpecialized": 4,
+        "multipleSpecialized": 7,
+        "rareCertifications": 10
+      }
+    },
+    "insurance": {
+      "description": "Insurance coverage requirements",
+      "thresholds": {
+        "standard": 1000000,
+        "elevated": 2000000,
+        "high": 5000000,
+        "veryHigh": 10000000
+      },
+      "scores": {
+        "standard": 2,
+        "elevated": 4,
+        "high": 7,
+        "veryHigh": 9
+      }
+    },
+    "environmental": {
+      "description": "Environmental compliance requirements",
+      "scores": {
+        "none": 1,
+        "basicHazmat": 3,
+        "multipleRequirements": 6,
+        "specializedPermits": 9
+      }
+    },
+    "safety": {
+      "description": "Safety program requirements",
+      "scores": {
+        "standard": 2,
+        "enhanced": 4,
+        "siteSpecific": 6,
+        "comprehensiveProgram": 8
+      }
+    }
+  },
+  "competitive": {
+    "evaluationCriteria": {
+      "description": "How proposals are evaluated",
+      "scores": {
+        "qualityFocused": 2,
+        "balanced": 5,
+        "priceFocused": 8,
+        "lowestPriceWins": 10
+      }
+    },
+    "incumbentAdvantage": {
+      "description": "Existing contractor advantages",
+      "scores": {
+        "newContract": 2,
+        "weakIncumbent": 3,
+        "moderateIncumbent": 6,
+        "strongIncumbent": 9
+      }
+    },
+    "bidderCount": {
+      "description": "Expected number of bidders",
+      "scores": {
+        "few": 3,
+        "moderate": 5,
+        "many": 8,
+        "highlyCompetitive": 10
+      }
+    },
+    "relationship": {
+      "description": "Existing relationship with customer",
+      "scores": {
+        "existingCustomer": 1,
+        "priorContact": 3,
+        "knownOrganization": 5,
+        "newCustomer": 7,
+        "unknownEntity": 9
+      }
+    }
+  },
+  "technical": {
+    "generatorTypes": {
+      "description": "Generator model complexity",
+      "scores": {
+        "standardModels": 1,
+        "mostlyStandard": 3,
+        "someSpecialized": 5,
+        "manySpecialized": 8,
+        "exoticModels": 10
+      }
+    },
+    "serviceComplexity": {
+      "description": "Service requirement complexity",
+      "scores": {
+        "routineOnly": 1,
+        "mostlyRoutine": 3,
+        "someSpecialized": 6,
+        "highlySpecialized": 9
+      }
+    },
+    "partsAvailability": {
+      "description": "Parts sourcing difficulty",
+      "scores": {
+        "commonParts": 1,
+        "mostlyCommon": 3,
+        "someRare": 6,
+        "difficultToSource": 9
+      }
+    },
+    "trainingNeeds": {
+      "description": "Staff training requirements",
+      "scores": {
+        "noTrainingNeeded": 1,
+        "minimalTraining": 3,
+        "moderateTraining": 6,
+        "extensiveTraining": 9
+      }
+    },
+    "equipmentNeeds": {
+      "description": "Specialized equipment requirements",
+      "scores": {
+        "standardTools": 1,
+        "someSpecializedTools": 4,
+        "significantInvestment": 7,
+        "majorCapitalRequired": 10
+      }
+    }
+  },
+  "weights": {
+    "description": "Default weights for overall risk calculation",
+    "financial": 0.25,
+    "operational": 0.25,
+    "compliance": 0.20,
+    "competitive": 0.15,
+    "technical": 0.15
+  },
+  "overallThresholds": {
+    "description": "Overall risk score thresholds and recommendations",
+    "green": {
+      "max": 3.0,
+      "label": "LOW RISK",
+      "recommendation": "Proceed with standard process. No special mitigation required.",
+      "color": "🟢"
+    },
+    "yellow": {
+      "min": 3.1,
+      "max": 5.0,
+      "label": "MEDIUM RISK",
+      "recommendation": "Proceed with caution. Develop mitigation plan for identified risks.",
+      "color": "🟡"
+    },
+    "orange": {
+      "min": 5.1,
+      "max": 7.0,
+      "label": "HIGH RISK",
+      "recommendation": "Executive review required before bidding. Significant mitigation needed.",
+      "color": "🟠"
+    },
+    "red": {
+      "min": 7.1,
+      "max": 10.0,
+      "label": "VERY HIGH RISK",
+      "recommendation": "Consider no-bid unless strategically critical. Requires board approval.",
+      "color": "🔴"
+    }
+  },
+  "mitigationStrategies": {
+    "financial": [
+      "Negotiate better payment terms",
+      "Secure line of credit for bond costs",
+      "Request progress payments",
+      "Factor retainage into pricing",
+      "Consider bonding capacity limits"
+    ],
+    "operational": [
+      "Hire additional technicians",
+      "Establish local partnerships",
+      "Pre-position equipment",
+      "Develop efficient routing",
+      "Build in contingency time"
+    ],
+    "compliance": [
+      "Partner with DIR-registered contractor",
+      "Obtain required certifications early",
+      "Increase insurance coverage",
+      "Develop compliance training program",
+      "Budget for certified payroll administration"
+    ],
+    "competitive": [
+      "Differentiate on quality and service",
+      "Highlight relevant experience",
+      "Build relationships before bid",
+      "Offer value-adds beyond requirements",
+      "Price strategically for long-term relationship"
+    ],
+    "technical": [
+      "Partner with OEM for specialized models",
+      "Invest in training before contract starts",
+      "Secure parts supplier agreements",
+      "Build contingency into service schedules",
+      "Develop backup technician coverage"
+    ]
+  }
+}

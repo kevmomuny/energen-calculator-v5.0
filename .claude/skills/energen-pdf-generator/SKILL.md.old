@@ -1,0 +1,290 @@
+---
+skill_name: energen-pdf-generator
+description: Generate professionally formatted, brand-compliant PDF documents from Markdown using the Energen MD Formatter
+version: 1.0.0
+author: Energen Systems Inc.
+created: 2025-10-17
+tags: [pdf, markdown, formatting, branding, documents]
+---
+
+# Energen PDF Generator Skill
+
+Convert Markdown content to professionally formatted PDF documents with Energen branding and scalable formatting tiers.
+
+## Purpose
+
+This skill provides command-line access to the Energen Markdown-to-PDF Formatter, enabling:
+- Conversion of Markdown files to branded PDF documents
+- Selection of 4 scaling tiers (Compact, Standard, Comfortable, Presentation)
+- Application of 4 document templates (Default, Minimal, Formal, Plain)
+- Batch processing of multiple files
+- Brand-compliant output with Energen colors, logos, and contact information
+
+## Use Cases
+
+1. **RFP Response Generation**: Convert RFP evaluation markdown to professional PDFs
+2. **Technical Documentation**: Generate compact technical docs from markdown
+3. **Executive Summaries**: Create comfortable-tier executive summaries
+4. **Presentations**: Format presentation materials with large fonts
+5. **Batch Processing**: Convert multiple markdown files simultaneously
+
+## Project Location
+
+**Path**: `C:/ECalc/active/energen-md-formatter`
+
+## Available Commands
+
+### 1. Generate Single PDF
+
+```bash
+node C:/ECalc/active/energen-md-formatter/cli/generate-pdf.js \
+  --input "path/to/file.md" \
+  --output "path/to/output.pdf" \
+  --template "energen-default" \
+  --tier "standard"
+```
+
+### 2. Batch Generate PDFs
+
+```bash
+node C:/ECalc/active/energen-md-formatter/cli/batch-generate.js \
+  --input "path/to/markdown/folder" \
+  --output "path/to/output/folder" \
+  --template "energen-minimal" \
+  --tier "comfortable"
+```
+
+### 3. Launch Electron App (GUI)
+
+```bash
+cd C:/ECalc/active/energen-md-formatter
+npm run electron:dev
+```
+
+## Scaling Tiers
+
+| Tier | Body Size | Use Case | Margins | Line Height |
+|------|-----------|----------|---------|-------------|
+| **compact** | 9pt | Dense technical docs | 36pt (0.5") | 1.3 |
+| **standard** | 11pt | General business docs | 54pt (0.75") | 1.5 |
+| **comfortable** | 12pt | Executive summaries | 72pt (1") | 1.6 |
+| **presentation** | 14pt | Presentations, training | 90pt (1.25") | 1.8 |
+
+## Document Templates
+
+| Template | Description | Features |
+|----------|-------------|----------|
+| **energen-default** | Full branding | Header + Footer + TOC |
+| **energen-minimal** | Clean with branding | Footer only |
+| **energen-formal** | Complete formal | Cover + Header + Footer + TOC |
+| **plain** | No branding | Content only |
+
+## Supported Markdown Features
+
+- Headers (H1-H6)
+- Lists (ordered, unordered, nested)
+- Tables with auto-sizing
+- Code blocks with syntax highlighting
+- Images with captions
+- Links and references
+- Block quotes
+- Horizontal rules
+- Custom attributes
+- Auto-generated table of contents
+
+## Configuration
+
+### Brand Settings
+Edit: `src/config/default-settings.json`
+- Company name, tagline
+- Contact information
+- Logo path
+- Brand colors
+
+### Scaling Rules
+Edit: `src/config/scaling-rules.json`
+- Font sizes for each tier
+- Margins, spacing
+- Header/footer dimensions
+
+### Templates
+Edit: `src/config/templates.json`
+- Template configurations
+- Header/footer settings
+- Cover page options
+
+## Integration Examples
+
+### Example 1: Generate RFP Evaluation PDF
+
+```bash
+# After RFP evaluation completes, convert markdown to PDF
+node C:/ECalc/active/energen-md-formatter/cli/generate-pdf.js \
+  --input "C:/ECalc/active/energen-calculator-v5.0/output/rfp-evaluations/P2540009-Fish-and-Game-Lake-Merced/executive-summary.md" \
+  --output "C:/ECalc/active/energen-calculator-v5.0/output/rfp-evaluations/P2540009-Fish-and-Game-Lake-Merced/executive-summary.pdf" \
+  --template "energen-formal" \
+  --tier "comfortable"
+```
+
+### Example 2: Batch Convert Documentation
+
+```bash
+# Convert all markdown docs in a folder
+node C:/ECalc/active/energen-md-formatter/cli/batch-generate.js \
+  --input "C:/ECalc/active/energen-calculator-v5.0/docs" \
+  --output "C:/ECalc/active/energen-calculator-v5.0/docs/pdf" \
+  --template "energen-default" \
+  --tier "standard"
+```
+
+### Example 3: Generate Technical Specification
+
+```bash
+# Create compact technical doc
+node C:/ECalc/active/energen-md-formatter/cli/generate-pdf.js \
+  --input "tech-spec.md" \
+  --output "tech-spec.pdf" \
+  --template "energen-minimal" \
+  --tier "compact"
+```
+
+## Installation & Setup
+
+### Prerequisites
+- Node.js 18+
+- npm
+
+### Setup
+```bash
+cd C:/ECalc/active/energen-md-formatter
+npm install
+```
+
+### Verify Installation
+```bash
+npm run lint
+npm test
+```
+
+## Technology Stack
+
+- **Frontend**: React 18, TailwindCSS, Zustand
+- **PDF Engine**: PDFKit
+- **Markdown Parser**: Markdown-it + plugins
+- **Desktop**: Electron
+- **Build Tool**: Vite
+
+## CLI Tool Creation (Required)
+
+**NOTE**: The CLI tools referenced above need to be created. Here's the structure:
+
+### Create `cli/generate-pdf.js`
+
+```javascript
+#!/usr/bin/env node
+import { PDFGenerator } from '../src/lib/pdf-generator.js';
+import { TemplateEngine } from '../src/lib/template-engine.js';
+import fs from 'fs';
+import yargs from 'yargs';
+
+const argv = yargs(process.argv.slice(2))
+  .option('input', { alias: 'i', describe: 'Input markdown file', type: 'string', demandOption: true })
+  .option('output', { alias: 'o', describe: 'Output PDF file', type: 'string', demandOption: true })
+  .option('template', { alias: 't', describe: 'Template (energen-default, energen-minimal, energen-formal, plain)', type: 'string', default: 'energen-default' })
+  .option('tier', { describe: 'Scaling tier (compact, standard, comfortable, presentation)', type: 'string', default: 'standard' })
+  .argv;
+
+async function main() {
+  const markdownContent = fs.readFileSync(argv.input, 'utf8');
+
+  const generator = new PDFGenerator({
+    template: argv.template,
+    tier: argv.tier
+  });
+
+  await generator.generate(markdownContent, argv.output);
+  console.log(`✅ PDF generated: ${argv.output}`);
+}
+
+main().catch(console.error);
+```
+
+### Create `cli/batch-generate.js`
+
+```javascript
+#!/usr/bin/env node
+import { PDFGenerator } from '../src/lib/pdf-generator.js';
+import fs from 'fs';
+import path from 'path';
+import yargs from 'yargs';
+
+const argv = yargs(process.argv.slice(2))
+  .option('input', { alias: 'i', describe: 'Input directory', type: 'string', demandOption: true })
+  .option('output', { alias: 'o', describe: 'Output directory', type: 'string', demandOption: true })
+  .option('template', { alias: 't', describe: 'Template', type: 'string', default: 'energen-default' })
+  .option('tier', { describe: 'Scaling tier', type: 'string', default: 'standard' })
+  .argv;
+
+async function main() {
+  const files = fs.readdirSync(argv.input).filter(f => f.endsWith('.md'));
+
+  fs.mkdirSync(argv.output, { recursive: true });
+
+  for (const file of files) {
+    const inputPath = path.join(argv.input, file);
+    const outputPath = path.join(argv.output, file.replace('.md', '.pdf'));
+
+    const content = fs.readFileSync(inputPath, 'utf8');
+    const generator = new PDFGenerator({
+      template: argv.template,
+      tier: argv.tier
+    });
+
+    await generator.generate(content, outputPath);
+    console.log(`✅ Generated: ${outputPath}`);
+  }
+
+  console.log(`\n✅ Batch complete: ${files.length} files processed`);
+}
+
+main().catch(console.error);
+```
+
+## Troubleshooting
+
+### Issue: "Module not found"
+**Solution**: Run `npm install` in the project directory
+
+### Issue: "Permission denied"
+**Solution**: Ensure output directory exists and is writable
+
+### Issue: "PDFKit error"
+**Solution**: Check that all required fonts are available
+
+### Issue: "Template not found"
+**Solution**: Verify template name matches config in `templates.json`
+
+## Future Enhancements
+
+- [ ] Add CLI tools (generate-pdf.js, batch-generate.js)
+- [ ] Support custom fonts
+- [ ] Add page break controls
+- [ ] Implement image optimization
+- [ ] Add watermark support
+- [ ] Create template editor GUI
+- [ ] Add export to other formats (HTML, DOCX)
+
+## Related Skills
+
+- **energen-rfp-evaluator**: Generate RFP evaluations (outputs markdown for this skill)
+- **energen-code-investigator**: Generate code documentation (can be formatted with this skill)
+
+## Support
+
+**Project Documentation**: See `C:/ECalc/active/energen-md-formatter/README.md`
+**Developer Guide**: See `C:/ECalc/active/energen-md-formatter/DEVELOPMENT.md`
+**Template System**: See `C:/ECalc/active/energen-md-formatter/TEMPLATE_SYSTEM_README.md`
+
+---
+
+*This skill provides CLI access to the Energen MD Formatter for automated document generation workflows.*

@@ -1,0 +1,16 @@
+{
+  "bug_id": "api-post-api-settings-1761191497371",
+  "workflow_id": "api-post-api-settings",
+  "category": "api_endpoint_error",
+  "confidence": 50,
+  "generated_at": "2025-10-23T16:29:56.584Z",
+  "patches": [
+    {
+      "file": "MANUAL_FIX_REQUIRED.txt",
+      "type": "note",
+      "old_string": "",
+      "new_string": "Manual fix required for api-post-api-settings-1761191497371: API endpoint returning error or not found"
+    }
+  ],
+  "ready_for_validation": false
+}

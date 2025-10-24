@@ -1,0 +1,23 @@
+{
+  "bug_id": "simple-quote-creation-1761190598807",
+  "workflow_id": "simple-quote-creation",
+  "category": "missing_ui_element",
+  "priority": 75,
+  "evidence": {
+    "workflow_id": "simple-quote-creation",
+    "started_at": "2025-10-23T03:36:36.082Z",
+    "steps": [],
+    "screenshots": [
+      {
+        "filename": "simple-quote-creation-FAILURE-1761190598804.png",
+        "path": "C:\\ECalc\\active\\energen-calculator-v5.0\\agent-coordination\\evidence\\simple-quote-creation-FAILURE-1761190598804.png",
+        "timestamp": "2025-10-23T03:36:38.807Z"
+      }
+    ],
+    "console_logs": [],
+    "failed_at": "2025-10-23T03:36:38.412Z",
+    "duration_ms": 2330,
+    "error": "SyntaxError: Illegal return statement"
+  },
+  "discovered_at": "2025-10-23T05:46:27.497Z"
+}

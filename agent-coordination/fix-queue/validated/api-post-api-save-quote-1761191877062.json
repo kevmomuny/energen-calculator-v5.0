@@ -1,0 +1,12 @@
+{
+  "bug_id": "api-post-api-save-quote-1761191877062",
+  "workflow_id": "api-post-api-save-quote",
+  "timestamp": "2025-10-23T16:33:35.961Z",
+  "status": "failed",
+  "patches_applied": 0,
+  "test_results": {},
+  "ready_for_merge": false,
+  "confidence": 90,
+  "validated_at": "2025-10-23T16:33:35.961Z",
+  "error": "Old string not found in src/api/server-secure.cjs"
+}

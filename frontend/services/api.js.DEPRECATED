@@ -1,0 +1,296 @@
+/**
+ * API Service Module
+ * Centralized API communication layer with proper error handling
+ */
+
+// Dynamic API base URL - works in both dev and production
+const API_BASE = window.location.hostname === 'localhost'
+  ? 'http://localhost:3002'
+  : window.location.origin
+
+// Cache for expensive API calls
+const cache = new Map()
+const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
+/**
+ * Get cached data or fetch if expired
+ */
+async function getCached(key, fetcher, ttl = CACHE_TTL) {
+  if (cache.has(key)) {
+    const { data, timestamp } = cache.get(key)
+    if (Date.now() - timestamp < ttl) {
+
+      return data
+    }
+  }
+  
+  const data = await fetcher()
+  cache.set(key, { data, timestamp: Date.now() })
+  return data
+}
+
+/**
+ * Make a POST request with proper error handling
+ */
+async function post(endpoint, data) {
+  try {
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.error || `API call failed: ${response.status} ${response.statusText}`)
+    }
+    
+    return await response.json()
+  } catch (error) {
+    window.logError('api', `API Error (${endpoint})`, error)
+    throw error
+  }
+}
+
+/**
+ * API Service with all endpoints
+ */
+export const api = {
+  /**
+   * Google Places Autocomplete
+   */
+  async autocomplete(input) {
+    if (!input || input.length < 3) return { predictions: [] }
+
+    try {
+      const result = await post('/api/google-places', { input })
+      return result
+    } catch (error) {
+      window.logError('api', 'Autocomplete failed', error)
+      return { predictions: [] }
+    }
+  },
+
+  /**
+   * Enrich customer data using Google Places
+   */
+  async enrichCustomer(companyName, address, placeId = null) {
+    if (!companyName) throw new Error('Company name is required')
+    
+    try {
+      const result = await post('/api/enrichment/google-places', { 
+        companyName, 
+        address: address || '',
+        placeId 
+      })
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Enrichment failed')
+      }
+      
+      return result.data
+    } catch (error) {
+      window.logError('api', 'Customer enrichment failed', error)
+      // Return minimal data on failure so UI doesn't break
+      return {
+        name: companyName,
+        formatted_address: address || '',
+        types: ['business'],
+        no_enrichment: true
+      }
+    }
+  },
+
+  /**
+   * Get company logo from multiple sources
+   */
+  async getCompanyLogo(companyName, website) {
+    const cacheKey = `logo:${companyName}:${website}`
+    
+    return getCached(cacheKey, async () => {
+      try {
+        const result = await post('/api/enrichment/logo', { 
+          companyName, 
+          domain: website 
+        })
+        return result.logoUrl || null
+      } catch (error) {
+        window.logError('api', 'Logo fetch failed', error)
+        return null
+      }
+    })
+  },
+
+  /**
+   * Get tax rate for location
+   */
+  async getTaxRate(address, city, zip, state = 'CA') {
+    const cacheKey = `tax:${zip || city}`
+    
+    return getCached(cacheKey, async () => {
+      try {
+        const result = await post('/api/enrichment/tax-rate', { 
+          address, 
+          city, 
+          zip, 
+          state 
+        })
+        return result.taxRate || 0.1025 // Default CA tax rate
+      } catch (error) {
+        window.logError('api', 'Tax rate fetch failed', error)
+        return 0.1025 // Fallback to default
+      }
+    }, 24 * 60 * 60 * 1000) // Cache tax rates for 24 hours
+  },
+
+  /**
+   * Calculate distance between two addresses
+   */
+  async calculateDistance(origin, destination) {
+    if (!origin || !destination) throw new Error('Origin and destination required')
+    
+    const cacheKey = `distance:${origin}:${destination}`
+    
+    return getCached(cacheKey, async () => {
+      try {
+        const result = await post('/api/enrichment/distance', { 
+          origin, 
+          destination 
+        })
+        
+        if (typeof result.distance !== 'number') {
+          throw new Error('Invalid distance returned')
+        }
+        
+        return result.distance
+      } catch (error) {
+        window.logError('api', 'Distance calculation failed', error)
+        // Don't return a fallback distance - let the caller handle it
+        throw error
+      }
+    }, 60 * 60 * 1000) // Cache distances for 1 hour
+  },
+
+  /**
+   * Calculate service pricing
+   */
+  async calculatePricing(data) {
+    try {
+      const result = await post('/api/calculate', {
+        kw: data.kw,
+        services: data.services || [],
+        distance: data.distance || 0,
+        unitCount: data.unitCount || 1,
+        address: data.address || '',
+        city: data.city || '',
+        state: data.state || 'CA',
+        zip: data.zip || '',
+        contractYears: data.contractYears || 1
+      })
+      
+      if (!result.success && !result.labor) {
+        throw new Error('Invalid calculation response')
+      }
+      
+      return {
+        laborHours: parseFloat(result.laborHours) || 0,
+        laborCost: parseFloat(result.labor) || 0,
+        materialsCost: parseFloat(result.parts) || 0,
+        travelCost: parseFloat(result.travel) || 0,
+        shopTime: parseFloat(result.shopTime) || 0,
+        subtotal: parseFloat(result.subtotal) || 0,
+        tax: parseFloat(result.tax) || 0,
+        total: parseFloat(result.annual || result.total) || 0,
+        breakdown: result.breakdown || {}
+      }
+    } catch (error) {
+      window.logError('api', 'Calculation failed', error)
+      throw error
+    }
+  },
+
+  /**
+   * Calculate individual service price
+   */
+  async calculateServicePrice(data) {
+    try {
+      const result = await post('/api/service-price', {
+        serviceCode: data.serviceCode,
+        kw: data.kw,
+        frequency: data.frequency || 1,
+        settings: data.settings || {},
+        customData: data.customData || {}
+      })
+      
+      return result
+    } catch (error) {
+      console.error('Service price calculation failed:', error)
+      throw error
+    }
+  },
+
+  /**
+   * Search Zoho CRM for existing customer
+   */
+  async searchZohoCustomer(companyName) {
+    try {
+      const result = await post('/api/zoho/search-customer', { companyName })
+      
+      if (!result.success || !result.customer) {
+        return null
+      }
+      
+      return result.customer
+    } catch (error) {
+      window.logError('api', 'Zoho search failed', error)
+      return null // Don't break flow if Zoho is down
+    }
+  },
+
+  /**
+   * Sync quote to Zoho CRM
+   */
+  async syncToZoho(quoteData) {
+    try {
+      const result = await post('/api/zoho/create-quote', quoteData)
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Zoho sync failed')
+      }
+      
+      return result
+    } catch (error) {
+      window.logError('api', 'Zoho sync failed', error)
+      throw error // Let caller handle this
+    }
+  },
+
+  /**
+   * Generate PDF quote
+   */
+  async generatePDF(quoteData) {
+    try {
+      const result = await post('/api/generate-pdf', quoteData)
+      
+      if (!result.success) {
+        throw new Error(result.error || 'PDF generation failed')
+      }
+      
+      return result
+    } catch (error) {
+      window.logError('api', 'PDF generation failed', error)
+      throw error
+    }
+  },
+
+  /**
+   * Clear cache (useful for debugging)
+   */
+  clearCache() {
+    cache.clear()
+
+  }
+}
+
+// Make available globally for easy debugging
+window.apiService = api

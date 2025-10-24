@@ -1,0 +1,242 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Energen Bug Tracking Schema",
+  "description": "Schema for bug entries in E2E_BUGS_TRACKING.json",
+  "type": "object",
+  "required": ["id", "title", "severity", "priority", "status", "component", "discovered_by", "discovered_date"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^E2E-\\d{3}$",
+      "description": "Unique bug identifier (e.g., E2E-001, E2E-002)",
+      "examples": ["E2E-001", "E2E-002", "E2E-010"]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 200,
+      "description": "Brief, descriptive bug title"
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW"],
+      "description": "Bug severity level based on impact"
+    },
+    "priority": {
+      "type": "string",
+      "pattern": "^P[0-3]$",
+      "description": "Fix priority (P0=Critical, P1=High, P2=Medium, P3=Low)",
+      "examples": ["P0", "P1", "P2", "P3"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["IDENTIFIED", "FIXED", "VERIFIED", "WONTFIX", "DUPLICATE"],
+      "description": "Current bug status"
+    },
+    "component": {
+      "type": "string",
+      "description": "Component or module affected (e.g., UI/Performance, API/Calculation)",
+      "examples": ["UI/Performance", "API/Calculation", "Zoho/Integration"]
+    },
+    "discovered_by": {
+      "type": "string",
+      "description": "Agent or person who discovered the bug",
+      "examples": ["Agent T1", "Agent F1", "User Testing"]
+    },
+    "discovered_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date bug was discovered (YYYY-MM-DD)"
+    },
+    "fixed_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date bug was fixed (YYYY-MM-DD)"
+    },
+    "verified_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date fix was verified in production (YYYY-MM-DD)"
+    },
+    "symptoms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of observable symptoms",
+      "minItems": 1,
+      "examples": [
+        ["Clear All button takes 5+ seconds to respond", "No loading indicator during delay"]
+      ]
+    },
+    "impact": {
+      "type": "string",
+      "description": "Business/user impact of the bug"
+    },
+    "root_cause": {
+      "type": "string",
+      "description": "Root cause analysis (brief, details in fix report)"
+    },
+    "workaround": {
+      "type": "string",
+      "description": "Temporary workaround if available"
+    },
+    "fix_required": {
+      "type": "string",
+      "description": "High-level description of fix needed"
+    },
+    "fix_report": {
+      "type": "string",
+      "description": "Path to detailed fix report (e.g., FIX_REPORT_F1.md)"
+    },
+    "fix_summary": {
+      "type": "string",
+      "description": "Brief summary of fix applied"
+    },
+    "fixes_applied": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of specific fixes/changes made"
+    },
+    "files_affected": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Files affected by bug or fix",
+      "examples": [
+        ["frontend/modules/global-handlers.js", "frontend/integrated-ui.html"]
+      ]
+    },
+    "estimated_effort": {
+      "type": "string",
+      "description": "Estimated effort to fix",
+      "examples": ["1-2 hours", "4-6 hours", "1 day"]
+    },
+    "actual_effort": {
+      "type": "string",
+      "description": "Actual time spent fixing (if tracked)"
+    },
+    "test_to_verify": {
+      "type": "string",
+      "description": "How to test/verify the fix"
+    },
+    "verification": {
+      "type": "string",
+      "description": "Verification results or notes"
+    },
+    "investigation_steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Steps to investigate the bug"
+    },
+    "implementation_steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Steps to implement the fix"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes or context"
+    },
+    "related_bugs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^E2E-\\d{3}$"
+      },
+      "description": "IDs of related bugs"
+    },
+    "blocking": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "What this bug is blocking"
+    },
+    "blocked_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "What is blocking this bug fix"
+    },
+    "regression": {
+      "type": "boolean",
+      "description": "Whether this is a regression from a previous fix"
+    },
+    "performance_impact": {
+      "type": "object",
+      "properties": {
+        "before": {
+          "type": "string",
+          "description": "Performance before fix"
+        },
+        "after": {
+          "type": "string",
+          "description": "Performance after fix"
+        },
+        "improvement": {
+          "type": "string",
+          "description": "Performance improvement description"
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for categorization",
+      "examples": [["performance", "ui", "data-loss", "zoho-integration"]]
+    }
+  },
+  "examples": [
+    {
+      "id": "E2E-002",
+      "title": "Clear All Button Has 5+ Second Delay",
+      "severity": "HIGH",
+      "priority": "P0",
+      "status": "FIXED",
+      "component": "UI/Performance",
+      "discovered_by": "Agent T1",
+      "discovered_date": "2025-10-12",
+      "fixed_date": "2025-10-12",
+      "symptoms": [
+        "Clear All button takes 5+ seconds to respond",
+        "No loading indicator during delay",
+        "Feels like application is frozen"
+      ],
+      "impact": "Poor user experience, frustrating for operators",
+      "root_cause": "Inefficient DOM query using querySelectorAll on entire 4458-line HTML",
+      "workaround": "None - users must wait",
+      "fix_required": "Replace querySelectorAll with direct field access by ID",
+      "fix_report": "FIX_REPORT_F1.md",
+      "fix_summary": "Replaced slow querySelectorAll with O(1) direct field access",
+      "fixes_applied": [
+        "Changed from querySelectorAll() scanning all DOM to getElementById() array",
+        "Reduced algorithmic complexity from O(n) to O(1)",
+        "Added logo reset and autocomplete cleanup"
+      ],
+      "files_affected": [
+        "frontend/modules/global-handlers.js"
+      ],
+      "estimated_effort": "2 hours",
+      "actual_effort": "1.5 hours",
+      "test_to_verify": "Click Clear All, measure response time (should be < 100ms)",
+      "verification": "Tested manually - Clear All now instant (<10ms)",
+      "performance_impact": {
+        "before": "5000-7000ms with UI freeze",
+        "after": "<10ms, no UI freeze",
+        "improvement": "500x faster"
+      },
+      "tags": ["performance", "ui", "critical-ux"]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Test</title>
+</head>
+<body>
+    <h1>Debug Test</h1>
+    <div id="status"></div>
+    <div id="units-container" style="border: 2px solid red; min-height: 100px; padding: 20px;">
+        Units will appear here
+    </div>
+
+    <script>
+        function updateStatus(msg) {
+            document.getElementById('status').innerHTML += '<br>' + msg;
+            console.log(msg);
+        }
+
+        // Test 1: Check if state exists
+        updateStatus('Test 1: window.state exists? ' + (typeof window.state !== 'undefined'));
+
+        // Initialize minimal state
+        window.state = {
+            units: [],
+            unitCounter: 1
+        };
+
+        // Test 2: Define addNewUnit
+        function addNewUnit() {
+            updateStatus('addNewUnit called!');
+            const unitId = 'unit-' + window.state.unitCounter++;
+            const container = document.getElementById('units-container');
+            container.innerHTML = '<div style="border: 1px solid blue; padding: 10px;">Unit ' + unitId + ' added!</div>';
+            updateStatus('Unit rendered: ' + unitId);
+        }
+        window.addNewUnit = addNewUnit;
+
+        // Test 3: Try to call it
+        updateStatus('Test 3: Calling addNewUnit...');
+        try {
+            addNewUnit();
+            updateStatus('SUCCESS: addNewUnit worked!');
+        } catch (e) {
+            updateStatus('ERROR: ' + e.message);
+        }
+    </script>
+</body>
+</html>

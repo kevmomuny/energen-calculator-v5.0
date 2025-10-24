@@ -1,0 +1,17 @@
+{
+  "bug_id": "api-post-api-save-quote-1761193316218",
+  "workflow_id": "api-post-api-save-quote",
+  "category": "api_endpoint_error",
+  "priority": 65,
+  "evidence": {
+    "workflow_id": "api-post-api-save-quote",
+    "started_at": "2025-10-23T04:21:56.217Z",
+    "steps": [],
+    "requests": [],
+    "responses": [],
+    "failed_at": "2025-10-23T04:21:56.218Z",
+    "duration_ms": 1,
+    "error": "request to http://localhost:3002/api/save-quote failed, reason: "
+  },
+  "discovered_at": "2025-10-23T05:46:27.468Z"
+}

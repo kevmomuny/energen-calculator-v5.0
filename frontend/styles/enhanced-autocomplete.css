@@ -1,0 +1,210 @@
+/* Enhanced Dual-Source Autocomplete Styles */
+/* Visual separation for Zoho CRM vs Google Places results */
+
+.autocomplete-section-header {
+    padding: 8px 12px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    border-bottom: 2px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.autocomplete-section-header.zoho-section {
+    color: #FF6F00;
+    border-bottom-color: #FF6F00;
+    background: rgba(255, 111, 0, 0.05);
+}
+
+.autocomplete-section-header.google-section {
+    color: #4285F4;
+    border-bottom-color: #4285F4;
+    background: rgba(66, 133, 244, 0.05);
+}
+
+.autocomplete-section-header .material-symbols-outlined {
+    font-size: 16px;
+}
+
+.source-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 8px;
+}
+
+.source-badge.zoho {
+    background: rgba(255, 111, 0, 0.2);
+    color: #FF6F00;
+    border: 1px solid #FF6F00;
+}
+
+.source-badge.google {
+    background: rgba(66, 133, 244, 0.2);
+    color: #4285F4;
+    border: 1px solid #4285F4;
+}
+
+.autocomplete-item.zoho-item {
+    border-left: 3px solid #FF6F00;
+    background: rgba(255, 111, 0, 0.02);
+}
+
+.autocomplete-item.zoho-item:hover {
+    background: rgba(255, 111, 0, 0.08);
+    border-left-color: #FF8C1A;
+}
+
+.autocomplete-item.google-item {
+    border-left: 3px solid #4285F4;
+    background: rgba(66, 133, 244, 0.02);
+}
+
+.autocomplete-item.google-item:hover {
+    background: rgba(66, 133, 244, 0.08);
+    border-left-color: #5A9FF8;
+}
+
+/* Enhanced Zoho account display */
+.zoho-account-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.zoho-account-logo {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border-radius: 50%;
+}
+
+.zoho-account-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.zoho-account-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 11px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.zoho-account-details {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 9px;
+    color: var(--text-secondary);
+}
+
+.zoho-account-details span:not(:first-child):before {
+    content: '•';
+    margin-right: 8px;
+    color: var(--text-tertiary);
+}
+
+/* Loading states */
+.zoho-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+}
+
+.zoho-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--accent-blue);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* No results state */
+.no-results-message {
+    padding: 16px 12px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 10px;
+}
+
+.no-results-message .material-symbols-outlined {
+    font-size: 32px;
+    opacity: 0.3;
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* Enhance with Google button */
+.enhance-button {
+    margin-top: 6px;
+    padding: 4px 10px;
+    font-size: 9px;
+    font-weight: 600;
+    color: #4285F4;
+    background: rgba(66, 133, 244, 0.1);
+    border: 1px solid #4285F4;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+}
+
+.enhance-button:hover {
+    background: rgba(66, 133, 244, 0.2);
+    border-color: #5A9FF8;
+    transform: translateY(-1px);
+}
+
+.enhance-button .material-symbols-outlined {
+    font-size: 12px;
+}
+
+/* Missing data indicator */
+.autocomplete-item.has-missing-data {
+    border-left-width: 4px;
+    position: relative;
+}
+
+.autocomplete-item.has-missing-data::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    background: #FFA500;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px #FF6F00;
+}

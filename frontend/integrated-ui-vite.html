@@ -1,0 +1,2224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>Energen Calculator v5.0 - Integrated</title>
+    <!-- Error Handler - Must load first to prevent console auto-opening -->
+    <script src="js/error-handler.js"></script>
+    <script src="services/error-handler.js"></script>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Material Symbols Outlined with Rounded/Soft style -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
+    <style>
+        :root {
+            /* Command Center Dark Theme - EXACT from energen_design_1 */
+            --bg-primary: #0a0b0d;
+            --bg-secondary: #12141a;
+            --bg-tertiary: #1a1d26;
+            --bg-elevated: #22252f;
+            --text-primary: #e4e6eb;
+            --text-secondary: #9ca3af;
+            --text-tertiary: #6b7280;
+            --accent-blue: #3b82f6;
+            --accent-electric: #60a5fa;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --border-subtle: #1f2937;
+            --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* Fix for webpack dev server scaling differences */
+        html {
+            zoom: 1;
+            -moz-transform: scale(1);
+            -moz-transform-origin: 0 0;
+        }
+
+        /* Prevent WebKit text inflation without breaking zoom */
+        html {
+            -webkit-text-size-adjust: 100%;
+            -moz-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+        
+        body {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 11px;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            /* Workaround for Chrome Android font boosting */
+            max-height: 999999px;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 60px 320px 1fr 280px;
+            grid-template-rows: 48px 1fr 32px;
+            height: 100vh;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            grid-column: 1 / -1;
+            background: rgba(18, 20, 26, 0.9);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .logo svg .cls-1 {
+            fill: #ffffff;
+        }
+        
+        .logo svg .cls-2 {
+            fill: #60a5fa;
+        }
+
+        .cmd-palette {
+            padding: 4px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .kbd {
+            padding: 2px 4px;
+            background: var(--bg-primary);
+            border-radius: 3px;
+            font-size: 10px;
+        }
+
+        /* Activity Bar */
+        .activity-bar {
+            grid-row: 2;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-subtle);
+            padding: 8px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .activity-item {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+
+        .activity-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .activity-item.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        /* Left Sidebar - Customer Enrichment */
+        .sidebar-left {
+            grid-row: 2;
+            background: var(--bg-tertiary);
+            border-right: 1px solid var(--border-subtle);
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .section-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+            margin-bottom: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 6px 8px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            color: var(--text-primary); /* Use theme text color */
+            font-size: 11px;
+            font-family: inherit;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Override browser autofill styles */
+        .input-field:-webkit-autofill,
+        .input-field:-webkit-autofill:hover,
+        .input-field:-webkit-autofill:focus,
+        .input-field:-webkit-autofill:active {
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: var(--text-primary) !important;
+            background-color: var(--bg-secondary) !important;
+            transition: background-color 5000s ease-in-out 0s;
+            box-shadow: inset 0 0 20px 20px var(--bg-secondary) !important;
+        }
+        
+        /* Firefox autofill override */
+        .input-field:autofill {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        /* Ensure selects also have proper text color */
+        select.input-field {
+            color: var(--text-primary);
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        /* Customer sections */
+        .customer-section {
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            padding: 12px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .enrichment-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+
+        .status-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Logo Container Styles */
+        .logo-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid var(--border-subtle);
+            transition: all 0.3s ease;
+        }
+        
+        .logo-container:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+        
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: white;
+        }
+        
+        .logo-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(102, 126, 234, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .logo-container:hover .logo-overlay {
+            opacity: 1;
+        }
+        
+        .logo-overlay span {
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        /* Logo Picker Modal */
+        .logo-picker-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-picker-modal.active {
+            display: flex;
+        }
+        
+        .logo-picker-content {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .logo-picker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo-picker-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .logo-picker-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        
+        .logo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 16px;
+        }
+        
+        .logo-option {
+            border: 2px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .logo-option:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+        
+        .logo-option.selected {
+            border-color: var(--accent-success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .logo-option img {
+            width: 100%;
+            height: 100px;
+            object-fit: contain;
+        }
+        
+        .logo-option-info {
+            margin-top: 8px;
+            text-align: center;
+        }
+        
+        .logo-provider {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        
+        .logo-type {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .enrichment-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .enrichment-item:last-child {
+            border-bottom: none;
+        }
+
+        .enrichment-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .enrichment-value {
+            font-size: 10px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Contacts */
+        .contact-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .contact-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateX(2px);
+        }
+
+        .contact-primary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .contact-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .contact-badge {
+            font-size: 9px;
+            padding: 2px 6px;
+            background: var(--accent-blue);
+            color: white;
+            border-radius: 3px;
+        }
+
+        /* Main Content */
+        .main-content {
+            grid-row: 2;
+            background: var(--bg-primary);
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        /* Metrics Row */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .metric-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-blue);
+        }
+
+        .metric-label {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--accent-electric);
+        }
+
+        .metric-change {
+            font-size: 10px;
+            color: var(--accent-success);
+            margin-top: 4px;
+        }
+
+        /* Unit Container */
+        .unit-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .unit-container.collapsed {
+            background: var(--bg-tertiary);
+        }
+
+        .unit-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .unit-header:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .unit-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .expand-toggle {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: transform 0.3s;
+        }
+
+        .unit-container.collapsed .expand-toggle {
+            transform: rotate(-90deg);
+        }
+
+        .unit-badge {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-electric));
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .unit-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .unit-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .unit-details {
+            font-size: 10px;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 12px;
+        }
+
+        .unit-header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .unit-services-count {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 8px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .service-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-success);
+        }
+
+        .unit-subtotal {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent-electric);
+            min-width: 80px;
+            text-align: right;
+        }
+
+        /* Unit Content */
+        .unit-content {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .unit-container.collapsed .unit-content {
+            max-height: 0;
+            border-top: none;
+        }
+
+        .unit-content-inner {
+            padding: 16px;
+        }
+
+        /* Generator Specs */
+        .generator-specs-section {
+            background: var(--bg-primary);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .spec-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .spec-label {
+            font-size: 9px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .spec-value {
+            padding: 5px 8px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 3px;
+            color: var(--text-primary);
+            font-size: 11px;
+            font-family: inherit;
+        }
+
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 8px;
+        }
+
+        .service-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .service-card:hover {
+            transform: translateY(-1px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+        }
+
+        .service-card.active {
+            border-color: var(--accent-blue);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0.1));
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+
+        .service-card.active::after {
+            content: '✓';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .service-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .service-price {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent-electric);
+            margin-bottom: 6px;
+        }
+
+        .frequency-selector {
+            display: flex;
+            gap: 3px;
+        }
+
+        .frequency-btn {
+            flex: 1;
+            padding: 3px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 2px;
+            font-size: 9px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+
+        .frequency-btn.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        /* Right Sidebar */
+        .sidebar-right {
+            grid-row: 2;
+            background: var(--bg-tertiary);
+            border-left: 1px solid var(--border-subtle);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .summary-label {
+            color: var(--text-secondary);
+            font-size: 11px;
+        }
+
+        .summary-value {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .total-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 2px solid var(--accent-blue);
+        }
+
+        .total-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .total-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent-electric);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: grid;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* Material Symbols styling */
+        .material-symbols-outlined {
+            font-size: 18px;
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 300,
+                'GRAD' 0,
+                'opsz' 20;
+            vertical-align: middle;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-electric));
+            color: white;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-primary);
+            border-color: var(--accent-blue);
+        }
+
+        .btn-success {
+            background: var(--accent-success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--accent-danger);
+            color: white;
+        }
+
+        /* Add Unit Button */
+        .add-unit-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border: 2px dashed var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .add-unit-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* Status Bar */
+        .status-bar {
+            grid-column: 1 / -1;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            font-size: 10px;
+            color: var(--text-tertiary);
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--border-subtle);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-subtle);
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+
+        ::-webkit-scrollbar-thumb:active {
+            background: var(--accent-blue);
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-subtle) var(--bg-secondary);
+        }
+        
+        /* Autocomplete dropdown */
+        .autocomplete-dropdown {
+            position: absolute;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            width: calc(100% - 2px);
+            margin-top: 4px;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .autocomplete-dropdown.show {
+            display: block;
+        }
+        
+        .autocomplete-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 11px;
+            border-bottom: 1px solid var(--bg-tertiary);
+            transition: background 0.2s;
+        }
+        
+        .autocomplete-item:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .autocomplete-item.selected {
+            background: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.2);
+        }
+        
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+        
+        .autocomplete-item.searching {
+            cursor: default;
+            color: var(--accent-blue);
+            font-style: italic;
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .autocomplete-item.no-results {
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+        
+        .autocomplete-item.no-results:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .autocomplete-item.error {
+            cursor: pointer;
+            color: var(--accent-warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+        
+        .autocomplete-item.error:hover {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--text-primary);
+        }
+        
+        .autocomplete-item-main {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .autocomplete-item-secondary {
+            color: var(--text-tertiary);
+            font-size: 10px;
+            margin-top: 2px;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+
+        /* =================================================================
+           MOBILE RESPONSIVENESS - MODERN TOUCH-FIRST DESIGN
+           ================================================================= */
+
+        @media (max-width: 1200px) {
+            .app-container {
+                grid-template-columns: 50px 300px 1fr 250px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 45px 280px 1fr 220px;
+            }
+            
+            .input-field, .select-field {
+                font-size: 14px;
+                padding: 12px;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                font-size: 14px;
+                min-height: 44px; /* Touch target */
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Mobile Layout - Stack vertically */
+            .app-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 60px auto auto auto 40px;
+                height: 100vh;
+                overflow-x: hidden;
+            }
+            
+            /* Hide sidebar and right panel on mobile */
+            .sidebar, .right-panel {
+                display: none;
+            }
+            
+            /* Make main content full width */
+            .main-content {
+                grid-column: 1;
+                padding: 16px;
+                overflow-y: auto;
+                max-height: calc(100vh - 100px);
+            }
+            
+            /* Mobile Navigation */
+            .nav-bar {
+                padding: 0 16px;
+                height: 60px;
+            }
+            
+            .logo {
+                width: 100px;
+                height: 32px;
+            }
+            
+            /* Mobile Forms */
+            .section {
+                margin-bottom: 24px;
+            }
+            
+            .input-row {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .input-group {
+                width: 100%;
+            }
+            
+            .input-field, .select-field {
+                font-size: 16px; /* Prevent zoom on iOS */
+                padding: 14px 16px;
+                min-height: 44px;
+                border-radius: 8px;
+            }
+            
+            /* Mobile Button Groups */
+            .button-group {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .btn {
+                width: 100%;
+                padding: 16px;
+                font-size: 16px;
+                min-height: 52px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+            }
+            
+            /* Mobile Cards */
+            .unit-card {
+                margin-bottom: 20px;
+                border-radius: 8px;
+            }
+            
+            .unit-header {
+                padding: 16px;
+            }
+            
+            /* Mobile Service Selection */
+            .services-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            
+            .service-item {
+                padding: 12px;
+                border-radius: 6px;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+            
+            .service-item input[type="checkbox"] {
+                width: 20px;
+                height: 20px;
+                margin-right: 10px;
+            }
+            
+            /* Mobile Modal Adjustments */
+            .contact-modal {
+                width: 95%;
+                margin: 20px;
+                max-height: 85vh;
+            }
+            
+            .contact-modal-body {
+                padding: 20px;
+            }
+            
+            .modal-actions {
+                flex-direction: column-reverse;
+                gap: 12px;
+            }
+            
+            .modal-actions .btn {
+                width: 100%;
+                margin: 0;
+            }
+            
+            /* Mobile Toast Notifications */
+            .toast {
+                left: 10px;
+                right: 10px;
+                width: auto;
+                min-width: auto;
+                max-width: none;
+            }
+            
+            /* Mobile Autocomplete */
+            .autocomplete-dropdown {
+                left: 0;
+                right: 0;
+                max-height: 200px;
+            }
+            
+            .autocomplete-item {
+                padding: 12px 16px;
+                min-height: 44px;
+            }
+            
+            /* Mobile Loading Overlays */
+            .loading-content {
+                padding: 20px;
+            }
+            
+            .loading-message {
+                font-size: 18px;
+                margin-top: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            /* Extra small devices */
+            body {
+                font-size: 14px;
+            }
+            
+            .main-content {
+                padding: 12px;
+            }
+            
+            .section-title {
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+            
+            .input-label {
+                font-size: 13px;
+                margin-bottom: 6px;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .service-item {
+                padding: 14px 12px;
+            }
+            
+            /* Smaller buttons for very small screens */
+            .btn {
+                padding: 14px 16px;
+                min-height: 48px;
+            }
+            
+            .contact-modal {
+                width: 98%;
+                margin: 10px;
+            }
+        }
+
+        /* Touch Improvements */
+        @media (hover: none) and (pointer: coarse) {
+            /* Touch devices - larger touch targets */
+            .btn, .input-field, .select-field, .autocomplete-item, .service-item {
+                min-height: 44px;
+            }
+            
+            .btn:hover {
+                /* Disable hover effects on touch devices */
+                background: var(--accent-blue);
+                transform: none;
+            }
+            
+            .autocomplete-item:hover {
+                background: transparent;
+            }
+            
+            /* Touch-friendly scrollbars */
+            ::-webkit-scrollbar {
+                width: 8px;
+                height: 8px;
+            }
+            
+            ::-webkit-scrollbar-thumb {
+                background: var(--text-tertiary);
+                border-radius: 4px;
+            }
+        }
+
+        /* Landscape Mobile Adjustments */
+        @media (max-width: 896px) and (orientation: landscape) and (max-height: 500px) {
+            .app-container {
+                grid-template-rows: 50px 1fr 30px;
+            }
+            
+            .main-content {
+                max-height: calc(100vh - 80px);
+                padding: 12px 16px;
+            }
+            
+            .nav-bar {
+                height: 50px;
+            }
+        }
+
+        /* Mobilization Stacking Styles */
+        .mobilization-stacking-card {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 0 20px rgba(59, 130, 246, 0.05);
+        }
+
+        .mobilization-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .mobilization-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #e5e7eb;
+        }
+
+        .mobilization-title h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .mobilization-title .icon {
+            font-size: 1.5rem;
+        }
+
+        .mobilization-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background-color: #374151;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .mobilization-toggle.active {
+            background-color: #3b82f6;
+        }
+
+        .mobilization-toggle::after {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background-color: white;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .mobilization-toggle.active::after {
+            transform: translateX(30px);
+        }
+
+        .mobilization-content {
+            transition: opacity 0.3s ease, max-height 0.3s ease;
+            max-height: 500px;
+            overflow: hidden;
+        }
+
+        .mobilization-content.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+            max-height: 0;
+        }
+
+        .slider-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .slider-label span {
+            color: #9ca3af;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .charge-display {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            color: #3b82f6;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .mobilization-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right,
+                #ef4444 0%,
+                #f59e0b 35%,
+                #10b981 65%,
+                #3b82f6 100%);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .mobilization-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 0 0 2px #3b82f6;
+            transition: transform 0.2s ease;
+        }
+
+        .mobilization-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .mobilization-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 0 0 2px #3b82f6;
+            border: none;
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .preset-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            color: #93c5fd;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .preset-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+            color: #dbeafe;
+            transform: translateY(-1px);
+        }
+
+        .preset-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .mobilization-example {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .example-title {
+            color: #10b981;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .example-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .example-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+        }
+
+        .example-label {
+            color: #9ca3af;
+        }
+
+        .example-value {
+            color: #e5e7eb;
+            font-weight: 500;
+        }
+
+        .savings-amount {
+            color: #10b981;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Early function definitions to prevent errors -->
+    <script>
+        // Define stub functions that will be overridden later
+        window.handleCompanyChange = function() {
+            console.log('handleCompanyChange stub - will be replaced');
+        };
+
+        window.handleCompanyInput = function() {
+            console.log('handleCompanyInput stub - will be replaced');
+        };
+
+        window.formatPhoneNumber = function(e) {
+            const input = e.target;
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                if (value.length <= 3) {
+                    value = value;
+                } else if (value.length <= 6) {
+                    value = `(${value.slice(0, 3)}) ${value.slice(3)}`;
+                } else {
+                    value = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6, 10)}`;
+                }
+            }
+            input.value = value;
+        };
+
+        window.calculateDistance = function() {
+            console.log('calculateDistance stub - will be replaced');
+        };
+
+        window.fetchTaxRate = function() {
+            console.log('fetchTaxRate stub - will be replaced');
+        };
+
+        // Stubs removed - real implementations are defined later in the file
+    </script>
+
+    <div class="app-container">
+        <!-- Navigation Bar -->
+        <nav class="nav-bar">
+            <div class="logo-section">
+                <div class="logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 434.6 128.31">
+                        <defs><style>.cls-1{fill:#fff;stroke-width:0px;}.cls-2{fill:#60a5fa;stroke-width:0px;}</style></defs>
+                        <g><g><g><path class="cls-1" d="M134.46,51.94v8.39h-40.18V22.68h39.59v8.39h-28.78v6.18h23.72v8.02h-23.72v6.67h29.37Z"/><path class="cls-1" d="M185.64,22.68v37.66h-9.63l-24.32-24.75v24.75h-10.6V22.68h11.62l22.33,23.02v-23.02h10.6Z"/><path class="cls-1" d="M234.68,51.94v8.39h-40.18V22.68h39.59v8.39h-28.78v6.18h23.72v8.02h-23.72v6.67h29.37Z"/><path class="cls-1" d="M273.28,60.34l-9.95-11.89h-11.08v11.89h-10.92V22.68h26.41c9.63,0,17.11,4.25,17.11,12.86,0,6.29-3.98,10.28-9.9,12l11.08,12.8h-12.75ZM266.93,40.48c3.92,0,6.78-1.08,6.78-4.74s-2.85-4.74-6.78-4.74h-14.74v9.47h14.74Z"/><path class="cls-1" d="M335.82,53.24c-4.03,5-11.46,8.34-21.52,8.34-15.44,0-25.02-7.32-25.02-20.07s9.58-20.07,25.02-20.07c9.3,0,16.03,3.29,19.96,6.94l-8.02,5.92c-3.23-2.91-6.62-4.2-11.67-4.2-9.15,0-14.15,4.03-14.15,11.4s5.16,11.46,14.31,11.46c4.63,0,8.28-.92,10.92-3.33v-3.39h-12.48v-7.69h22.65v14.69Z"/><path class="cls-1" d="M383.02,51.94v8.39h-40.18V22.68h39.59v8.39h-28.78v6.18h23.72v8.02h-23.72v6.67h29.37Z"/><path class="cls-1" d="M434.21,22.68v37.66h-9.63l-24.32-24.75v24.75h-10.6V22.68h11.62l22.33,23.02v-23.02h10.6Z"/></g><g><path class="cls-1" d="M130.29,96.43c0,6.09-6,10.43-16.89,10.43-7.51,0-14.14-2.2-19.13-6.5l3.43-3.89c4.35,3.89,9.47,5.63,15.93,5.63,7.14,0,11.08-1.88,11.08-5.22s-4.03-4.17-12.08-4.85c-8.84-.73-17.16-2.7-17.16-9.25s7.37-9.89,16.57-9.89c6.96,0,12.86,2.06,16.71,5.31l-3.48,3.75c-3.29-2.88-7.83-4.26-13.13-4.3-5.08-.04-11.12,1.19-11.12,4.76s5.36,3.98,12.36,4.53c9.98.78,16.93,2.79,16.93,9.47Z"/><path class="cls-1" d="M137.82,73.87l12.22,16.25,12.13-16.25h6.32l-15.74,20.96v11.08h-5.49v-11.08l-15.79-20.96h6.36Z"/><path class="cls-1" d="M205.53,96.43c0,6.09-6,10.43-16.89,10.43-7.51,0-14.14-2.2-19.13-6.5l3.43-3.89c4.35,3.89,9.47,5.63,15.93,5.63,7.14,0,11.08-1.88,11.08-5.22s-4.03-4.17-12.08-4.85c-8.84-.73-17.16-2.7-17.16-9.25s7.37-9.89,16.57-9.89c6.96,0,12.86,2.06,16.71,5.31l-3.48,3.75c-3.29-2.88-7.83-4.26-13.13-4.3-5.08-.04-11.12,1.19-11.12,4.76s5.36,3.98,12.36,4.53c9.98.78,16.93,2.79,16.93,9.47Z"/><path class="cls-1" d="M242.12,78.68h-14.6v27.23h-5.49v-27.23h-14.51v-4.81h34.6v4.81Z"/><path class="cls-1" d="M279.81,101.1v4.81h-31.9v-32.04h31.44v4.81h-26v8.56h21.88v4.81h-21.88v9.06h26.45Z"/><path class="cls-1" d="M328.61,73.87v32.04h-5.49v-24.58l-15.24,18.49h-.32l-15.24-18.49v24.58h-5.31v-32.04h5.95l14.88,18.35,14.87-18.35h5.9Z"/><path class="cls-1" d="M371.25,96.43c0,6.09-6,10.43-16.89,10.43-7.51,0-14.14-2.2-19.13-6.5l3.43-3.89c4.35,3.89,9.47,5.63,15.93,5.63,7.14,0,11.08-1.88,11.08-5.22s-4.03-4.17-12.08-4.85c-8.84-.73-17.16-2.7-17.16-9.25s7.37-9.89,16.57-9.89c6.96,0,12.86,2.06,16.71,5.31l-3.48,3.75c-3.29-2.88-7.83-4.26-13.13-4.3-5.08-.04-11.12,1.19-11.12,4.76s5.36,3.98,12.36,4.53c9.98.78,16.93,2.79,16.93,9.47Z"/></g><g><path class="cls-1" d="M381.82,106.39v-16.02h2.75v16.02h-2.75Z"/><path class="cls-1" d="M407,90.37v16.02h-2.43l-12.52-12.63v12.63h-2.65v-16.02h2.93l11.99,12.15v-12.15h2.68Z"/><path class="cls-1" d="M426.44,101.6l2.54,1.26c-1.51,2.33-4.44,4-8.49,4-6,0-9.77-3.23-9.77-8.49s3.77-8.49,9.89-8.49c3.94,0,6.86,1.69,8.35,3.98l-2.56,1.28c-1.19-1.97-3.23-2.84-5.84-2.84-4.23,0-7.05,2.06-7.05,6.06s2.82,6.06,7.05,6.06,4.67-.85,5.88-2.84Z"/><path class="cls-1" d="M431.09,105.08c0-.89.73-1.6,1.74-1.6s1.76.71,1.76,1.6-.73,1.56-1.76,1.56-1.74-.66-1.74-1.56Z"/></g></g><g><polygon class="cls-2" points="46.01 79.32 0 128.31 17.33 92.56 5.75 92.56 27.99 44 50.57 50.34 30.19 79.32 46.01 79.32"/><g><path class="cls-2" d="M78.49,21.12l-2.48,5.84c-7.25-5.19-15.18-9.67-23.73-13.3-8.55-3.63-17.29-6.21-26.06-7.82l2.48-5.84c8.77,1.61,17.51,4.19,26.06,7.82,8.55,3.63,16.48,8.11,23.73,13.3Z"/><path class="cls-2" d="M74.44,30.66l-2.48,5.84c-7.25-5.19-15.18-9.67-23.73-13.3-8.55-3.63-17.29-6.21-26.06-7.82l2.48-5.84c8.77,1.61,17.51,4.19,26.06,7.82,8.55,3.63,16.48,8.11,23.73,13.3Z"/><path class="cls-2" d="M46.65,26.92c-8.55-3.63-17.29-6.21-26.06-7.82l-11.45,27.01,49.79,21.12,11.45-27.01c-7.25-5.19-15.18-9.67-23.73-13.3ZM38.91,45.18c-3.53-1.5-5.18-5.57-3.68-9.10s5.57-5.18,9.10-3.68c3.53,1.5,5.18,5.57,3.68,9.10-1.50,3.53-5.57,5.18-9.10,3.68Z"/></g></g></g>
+                    </svg>
+                </div>
+                <span style="font-size: 13px; font-weight: 600;">CALCULATOR V5.0</span>
+                <span id="connection-status" style="margin-left: 20px; font-size: 10px; color: var(--text-tertiary);">
+                    <span class="status-indicator"></span> Connected
+                </span>
+            </div>
+            <div class="cmd-palette">
+                <span>Command Palette</span>
+                <span class="kbd">⌘K</span>
+            </div>
+        </nav>
+
+        <!-- Activity Bar -->
+        <aside class="activity-bar">
+            <div class="activity-item active" onclick="switchView('calculator', event)" title="Calculator"><span class="material-symbols-outlined">analytics</span></div>
+            <div class="activity-item" onclick="switchView('customers', event)" title="Customers"><span class="material-symbols-outlined">group</span></div>
+            <div class="activity-item" onclick="switchView('settings', event)" title="Settings"><span class="material-symbols-outlined">settings</span></div>
+            <div class="activity-item" onclick="switchView('documents', event)" title="Documents"><span class="material-symbols-outlined">folder</span></div>
+            <div class="activity-item" onclick="switchView('reports', event)" title="Reports"><span class="material-symbols-outlined">insights</span></div>
+        </aside>
+
+        <!-- Left Sidebar - Customer Enrichment -->
+        <aside class="sidebar-left">
+            <!-- Customer Information -->
+            <div class="customer-section">
+                <div class="section-title"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">business</span>Customer Information</div>
+                
+                <!-- Company Logo (Clickable for picker) -->
+                <div class="logo-container" id="logoContainer" onclick="showLogoPicker()" title="Click to choose logo">
+                    <img id="companyLogo" src="" alt="Company Logo" style="display: none;" onerror="this.style.display='none';document.getElementById('logoPlaceholder').style.display='flex';">
+                    <div id="logoPlaceholder" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--bg-elevated); border-radius: 8px;">
+                        <span class="material-symbols-outlined" style="font-size: 48px; color: var(--text-tertiary);">business</span>
+                    </div>
+                    <div class="logo-overlay">
+                        <span>Click to choose logo</span>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Company Name</label>
+                    <div class="input-wrapper">
+                        <input class="input-field" type="text" id="companyName" oninput="handleCompanyInput()" onblur="handleCompanyChange()" autocomplete="off">
+                        <div class="autocomplete-dropdown" id="companyDropdown"></div>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label class="input-label">Phone</label>
+                        <input class="input-field" type="tel" id="phone" oninput="formatPhoneNumber(event)">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Extension</label>
+                        <input class="input-field" type="text" id="extension" placeholder="Ext">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Website</label>
+                    <input class="input-field" type="url" id="website" onchange="handleWebsiteChange(event)">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Address</label>
+                    <input class="input-field" type="text" id="address" oninput="handleAddressInput()" onblur="calculateDistance()">
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label class="input-label">City</label>
+                        <input class="input-field" type="text" id="city" onblur="fetchTaxRate()">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">State</label>
+                        <input class="input-field" type="text" id="state" maxlength="2" onblur="fetchTaxRate()">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">ZIP Code</label>
+                    <input class="input-field" type="text" id="zip" onblur="fetchTaxRate()">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Distance (miles)</label>
+                    <input class="input-field" type="number" id="distance" placeholder="Miles from shop" onchange="handleDistanceChange()" style="background: var(--bg-secondary);">
+                </div>
+                
+                <!-- Prevailing Wage Section -->
+                <div class="section-title" style="margin-top: 16px;">
+                    <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">account_balance</span>
+                    Prevailing Wage
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" style="display: flex; align-items: center;">
+                        <input type="checkbox" id="prevailingWageRequired" onchange="handlePrevailingWageChangeEnhanced()" style="margin-right: 8px;">
+                        Public Works Project
+                    </label>
+                </div>
+                
+                <div id="prevailingWageDetails" style="display: none; background: var(--bg-elevated); padding: 12px; border-radius: 8px; margin-top: 8px;">
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 8px;">
+                        <strong style="color: var(--accent-gold);">Auto-detected rates for ZIP <span id="pwZip"></span></strong>
+                        <div style="margin-top: 4px; color: var(--accent-cyan);">
+                            Craft: Operating Engineers - Stationary Power Plant (Group 8)
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px;">
+                        <div>
+                            <label style="color: var(--text-tertiary);">Operating Engineer:</label>
+                            <span id="pwJourneyman" style="color: var(--text-primary); font-weight: 500;">$85.50/hr</span>
+                        </div>
+                        <div>
+                            <label style="color: var(--text-tertiary);">With Fringe:</label>
+                            <span id="pwTotal" style="color: var(--text-primary); font-weight: 500;">$117.50/hr</span>
+                        </div>
+                        <div>
+                            <label style="color: var(--text-tertiary);">Per Diem:</label>
+                            <span id="pwPerDiem" style="color: var(--text-primary); font-weight: 500;">$269/day</span>
+                        </div>
+                        <div>
+                            <label style="color: var(--text-tertiary);">Zone:</label>
+                            <span id="pwZone" style="color: var(--text-primary); font-weight: 500;">Zone 1</span>
+                        </div>
+                    </div>
+                    <div style="font-size: 10px; color: var(--text-tertiary); margin-top: 8px;">
+                        Rates from California DIR / GSA Per Diem
+                    </div>
+                </div>
+                
+            </div>
+
+            <!-- Contacts -->
+            <div class="customer-section">
+                <div class="section-title"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">contacts</span>Contact Management</div>
+                
+                <div id="contacts-list">
+                    <div class="contact-card">
+                        <div class="contact-primary">
+                            <span class="contact-name">Primary Contact</span>
+                            <span class="contact-badge">PRIMARY</span>
+                        </div>
+                        <div style="font-size: 9px; color: var(--text-secondary);">
+                            <div><span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">mail</span> <input type="email" id="primaryEmail" class="input-field" style="margin-top: 4px;" placeholder="email@company.com"></div>
+                            <div><span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">phone</span> <input type="tel" id="primaryPhone" class="input-field" style="margin-top: 4px;" placeholder="Phone"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="add-unit-btn" onclick="addContact()" style="margin-top: 8px;">
+                    <span class="material-symbols-outlined">person_add</span>
+                    <span>Add Contact</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Metrics Row -->
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-label">TOTAL QUOTE</div>
+                    <div class="metric-value" id="total-quote">$0</div>
+                    <div class="metric-change" id="quote-change">No previous</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">LABOR HOURS</div>
+                    <div class="metric-value" id="total-hours">0</div>
+                    <div class="metric-change">Standard rate</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">MATERIALS</div>
+                    <div class="metric-value" id="total-materials">$0</div>
+                    <div class="metric-change">20% markup</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">UNITS</div>
+                    <div class="metric-value" id="unit-count">0</div>
+                    <div class="metric-change">Generators</div>
+                </div>
+            </div>
+
+            <!-- Units Container -->
+            <div id="units-container" style="min-height: 200px; border: 2px dashed rgba(255,255,255,0.2); padding: 10px;">
+                <div style="color: var(--text-secondary); text-align: center;">Loading units...</div>
+            </div>
+
+            <!-- Mobilization Stacking Card -->
+            <div class="mobilization-stacking-card" id="mobilization-settings">
+                <div class="mobilization-header">
+                    <div class="mobilization-title">
+                        <span class="material-symbols-outlined">local_shipping</span>
+                        <span>Mobilization Stacking</span>
+                    </div>
+                    <div class="mobilization-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="mobilization-enabled" checked onchange="toggleMobilizationStacking()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mobilization-content" id="mobilization-content">
+                    <p class="mobilization-description">
+                        When multiple services occur on the same visit, charge a percentage of additional mobilization hours.
+                    </p>
+
+                    <div class="charge-slider-container">
+                        <label class="slider-label">Charge for Additional Mobilization</label>
+                        <div class="slider-wrapper">
+                            <span class="slider-value-left">Free</span>
+                            <input type="range"
+                                   id="mobilization-charge-slider"
+                                   min="0"
+                                   max="100"
+                                   value="65"
+                                   step="5"
+                                   oninput="updateMobilizationCharge(this.value)">
+                            <span class="slider-value-right">Full Price</span>
+                        </div>
+                        <div class="charge-display">
+                            <span class="charge-percentage" id="charge-percentage">65%</span>
+                            <span class="charge-label">of additional mobilization</span>
+                        </div>
+                    </div>
+
+                    <div class="preset-buttons">
+                        <button class="preset-btn" onclick="setMobilizationCharge(0)">
+                            <span class="preset-value">0%</span>
+                            <span class="preset-label">Maximum Discount</span>
+                        </button>
+                        <button class="preset-btn active" onclick="setMobilizationCharge(65)">
+                            <span class="preset-value">65%</span>
+                            <span class="preset-label">Standard</span>
+                        </button>
+                        <button class="preset-btn" onclick="setMobilizationCharge(100)">
+                            <span class="preset-value">100%</span>
+                            <span class="preset-label">Full Price</span>
+                        </button>
+                    </div>
+
+                    <div class="mobilization-example">
+                        <div class="example-label">Example with current settings:</div>
+                        <div class="example-details">
+                            <span>Service A (2 hrs) + Service B (1 hr) on same visit</span>
+                            <span class="example-result">
+                                <span class="standard-price">Standard: 3 hrs</span>
+                                <span class="arrow">→</span>
+                                <span class="stacked-price" id="example-price">With stacking: 2.65 hrs</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add New Unit Button -->
+            <button class="add-unit-btn" onclick="addNewUnit()">
+                <span class="material-symbols-outlined">add_circle</span>
+                <span>Add New Generator Unit</span>
+            </button>
+        </main>
+
+        <!-- Right Sidebar - Quote Summary -->
+        <aside class="sidebar-right">
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="calculateQuote()"><span class="material-symbols-outlined">calculate</span> Calculate Quote</button>
+                <button class="btn btn-secondary" onclick="generatePDF()"><span class="material-symbols-outlined">description</span> Generate PDF</button>
+                <button class="btn btn-secondary" onclick="syncWithZoho()"><span class="material-symbols-outlined">sync</span> Sync with Zoho</button>
+            </div>
+
+            <div>
+                <div class="section-title"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">summarize</span>QUOTE SUMMARY</div>
+                <div id="quote-summary">
+                    <div class="summary-item">
+                        <span class="summary-label">Labor Hours</span>
+                        <span class="summary-value" id="summary-hours">0 hrs</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Labor Rate</span>
+                        <span class="summary-value" id="summary-labor-rate">$180/hr</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Labor Cost</span>
+                        <span class="summary-value" id="summary-labor">$0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Mobilization Hrs</span>
+                        <span class="summary-value" id="summary-mobilization-hours">0 hrs</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Mobilization Rate</span>
+                        <span class="summary-value" id="summary-mobilization-rate">$180/hr</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Mobilization Cost</span>
+                        <span class="summary-value" id="summary-mobilization">$0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Materials</span>
+                        <span class="summary-value" id="summary-materials">$0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Material Markup</span>
+                        <span class="summary-value" id="summary-markup">$0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Tax</span>
+                        <span class="summary-value" id="summary-tax">$0</span>
+                    </div>
+                </div>
+
+                <div class="total-section">
+                    <div class="total-label">ANNUAL TOTAL</div>
+                    <div class="total-value" id="annual-total">$0</div>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">flash_on</span>ACTIONS</div>
+                <div style="display: grid; gap: 6px;">
+                    <button class="btn btn-secondary" onclick="saveQuote()"><span class="material-symbols-outlined">save</span> Save Quote</button>
+                    <button class="btn btn-secondary" onclick="emailQuote()"><span class="material-symbols-outlined">send</span> Email Quote</button>
+                    <button class="btn btn-secondary" onclick="duplicateQuote()"><span class="material-symbols-outlined">content_copy</span> Duplicate</button>
+                    <button class="btn btn-danger" onclick="clearAll()"><span class="material-symbols-outlined">delete</span> Clear All</button>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">trending_up</span>YEAR PROJECTIONS</div>
+                <div class="summary-item">
+                    <span class="summary-label">Year 1</span>
+                    <span class="summary-value" id="year1">$0</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Year 2 (3%)</span>
+                    <span class="summary-value" id="year2">$0</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Year 3 (3%)</span>
+                    <span class="summary-value" id="year3">$0</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div style="display: flex; gap: 16px; align-items: center;">
+                <span><span class="status-indicator"></span>Connected</span>
+                <span>Calculator v5.0</span>
+                <span id="status-message">Ready</span>
+            </div>
+            <div style="display: flex; gap: 16px; align-items: center;">
+                <span>Auto-save: <span id="autosave-status">On</span></span>
+                <span>Last sync: <span id="last-sync">Never</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import modular services -->
+    <script type="module" src="init.js"></script>
+    <script type="module">
+        import { logoSelector } from './services/logo-selector.js'
+        import SettingsUI from './modules/settings-proper.js'
+        import ContactManager from './js/contact-manager.js'
+        import { ValidationService } from './services/validation-service.js'
+
+        // Initialize validation service
+        const validationService = new ValidationService();
+        window.validationService = validationService;
+
+        // Make modules available globally
+        window.logoSelector = logoSelector;
+        window.SettingsUI = SettingsUI;
+
+        window.ContactManager = ContactManager;
+        window.settingsReady = false;
+        
+        // Initialize SettingsUI immediately after import
+        try {
+            window.settingsUI = new SettingsUI(null);
+            window.settingsUI.init();
+            window.settingsReady = true;
+
+        } catch (error) {
+            console.error('[SETTINGS DEBUG] Failed to initialize SettingsUI on import:', error);
+        }
+        
+        // Create ContactManager instance for inline handlers
+        if (!window.contactManager && window.ContactManager) {
+            window.contactManager = new window.ContactManager();
+        }
+        
+        // Initialize settings module with robust error handling
+        window.initializeSettingsModule = function() {
+            if (!window.settingsUI && window.SettingsUI) {
+                try {
+                    const eventBus = window.state?.eventBus || null;
+                    window.settingsUI = new SettingsUI(eventBus);
+                    window.settingsUI.init();
+                    window.settingsReady = true;
+
+                    return true;
+                } catch (error) {
+                    console.error('Failed to initialize settings:', error);
+                    window.settingsReady = false;
+                    return false;
+                }
+            }
+            return window.settingsUI !== undefined;
+        };
+        
+        // Try to initialize immediately
+        setTimeout(() => window.initializeSettingsModule(), 0);
+        
+        // Module initialization with proper sequencing
+        let modulesInitialized = false;
+        let domReady = false;
+        
+        function initializeWhenReady() {
+            if (!modulesInitialized && domReady) {
+                modulesInitialized = true;
+                
+                // Initialize modules in proper order
+                Promise.resolve()
+                    .then(() => {
+                        // Initialize ContactManager first
+                        if (!window.contactManager && window.ContactManager) {
+                            window.contactManager = new window.ContactManager();
+                        }
+                    })
+                    .then(() => {
+                        // Initialize Settings
+                        if (window.initializeSettingsModule) {
+                            window.initializeSettingsModule();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Module initialization error:', error);
+                    });
+            }
+        }
+        
+        // Check DOM readiness
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                domReady = true;
+                setTimeout(initializeWhenReady, 100); // Small delay for module loading
+            });
+        } else {
+            domReady = true;
+            setTimeout(initializeWhenReady, 100);
+        }
+    </script>
+
+    <!-- Phase 1-3: Import All Modular Components -->
+    <script type="module">
+        // Phase 1: Foundation Modules
+        import { state, stateDebugger } from './js/state.js';
+        import {
+            updateStatus,
+            showCriticalError,
+            formatMoney,
+            debounce,
+            getKwRange,
+            calculateHaversineDistance
+        } from './js/utilities.js';
+        import {
+            initializeSettings,
+            SERVICES,
+        } from './js/initialization.js';
+
+        // Phase 2: API Connectors
+        import { createCalculationAPIConnector } from './services/api-calculation.js';
+        import { createPDFAPIConnector } from './services/api-pdf.js';
+        import { createZohoAPIConnector } from './services/api-zoho.js';
+        import { createEnrichmentAPIConnector } from './services/api-enrichment.js';
+
+        // Phase 3: Business Logic Modules
+        import {
+            addNewUnit,
+            renderUnit,
+            toggleUnit,
+            updateUnit,
+            removeUnit
+        } from './modules/unit-management.js';
+
+        import {
+            updateServicePrices,
+            debouncedUpdateServicePrices,
+            calculateServicePrice
+        } from './modules/service-pricing.js';
+
+        import {
+            toggleService,
+            setFrequency,
+            toggleServiceH,
+            updateCustomService,
+            recalculateUnit
+        } from './modules/service-selection.js';
+
+        import {
+            getFluidAnalysisPrices,
+            updateServiceDLabels,
+            initializeServiceD,
+            updateServiceDFluids
+        } from './modules/service-d-fluids.js';
+
+        import {
+            toggleMobilizationStacking,
+            updateMobilizationCharge,
+            loadMobilizationSettings,
+        } from './modules/mobilization.js';
+
+        import {
+            enrichCustomer,
+            handlePrevailingWageChange,
+            fetchPrevailingWageData
+        } from './modules/customer-enrichment.js';
+
+        import {
+            updateMetrics,
+            updateSummary,
+            calculateQuote,
+            buildQuoteData
+        } from './modules/summary-calculator.js';
+
+        import {
+            generatePDF,
+            syncWithZoho,
+            saveQuote,
+            emailQuote,
+            exportQuoteJSON,
+        } from './modules/pdf-generator.js';
+
+        // Expose all modules to window for backward compatibility with inline handlers
+        // Phase 1 - Foundation
+        window.state = state;
+        window.stateDebugger = stateDebugger;
+        window.updateStatus = updateStatus;
+        window.showCriticalError = showCriticalError;
+        window.formatMoney = formatMoney;
+        window.debounce = debounce;
+        window.getKwRange = getKwRange;
+        window.calculateHaversineDistance = calculateHaversineDistance;
+        window.initializeSettings = initializeSettings;
+        window.SERVICES = SERVICES;
+
+        // Phase 2 - API Connectors
+        window.calculationAPI = createCalculationAPIConnector();
+        window.pdfAPI = createPDFAPIConnector();
+        window.zohoAPI = createZohoAPIConnector();
+        window.enrichmentAPI = createEnrichmentAPIConnector();
+
+        // Phase 3 - Unit Management
+        window.addNewUnit = addNewUnit;
+        window.renderUnit = renderUnit;
+        window.toggleUnit = toggleUnit;
+        window.updateUnit = updateUnit;
+        window.removeUnit = removeUnit;
+
+        // Phase 3 - Service Pricing
+        window.updateServicePrices = updateServicePrices;
+        window.debouncedUpdateServicePrices = debouncedUpdateServicePrices;
+        window.calculateServicePrice = calculateServicePrice;
+
+        // Phase 3 - Service Selection
+        window.toggleService = toggleService;
+        window.setFrequency = setFrequency;
+        window.toggleServiceH = toggleServiceH;
+        window.updateCustomService = updateCustomService;
+        window.recalculateUnit = recalculateUnit;
+
+        // Phase 3 - Service D Fluids
+        window.getFluidAnalysisPrices = getFluidAnalysisPrices;
+        window.updateServiceDLabels = updateServiceDLabels;
+        window.initializeServiceD = initializeServiceD;
+        window.updateServiceDFluids = updateServiceDFluids;
+
+        // Phase 3 - Mobilization
+        window.toggleMobilizationStacking = toggleMobilizationStacking;
+        window.updateMobilizationCharge = updateMobilizationCharge;
+        window.loadMobilizationSettings = loadMobilizationSettings;
+
+        // Phase 3 - Customer Enrichment
+        window.enrichCustomer = () => enrichCustomer(window.state);
+        window.handlePrevailingWageChange = () => handlePrevailingWageChange(window.state);
+        window.fetchPrevailingWageData = () => fetchPrevailingWageData(window.state);
+
+        // Phase 3 - Summary Calculator
+        window.updateMetrics = () => updateMetrics(window.state);
+        window.updateSummary = () => updateSummary(window.state);
+        window.calculateQuote = (event) => calculateQuote(window.state, event);
+        window.buildQuoteData = () => buildQuoteData(window.state);
+
+        // Phase 3 - PDF Generator
+        window.generatePDF = (event) => generatePDF(window.state, event);
+        window.syncWithZoho = (event) => syncWithZoho(window.state, event);
+        window.saveQuote = () => saveQuote(window.state);
+        window.emailQuote = () => emailQuote(window.state);
+        window.exportQuoteJSON = () => exportQuoteJSON(window.state);
+
+        // Initialize application when DOM is ready
+        async function initializeApplication() {
+            console.log('🚀 Initializing Energen Calculator v5.0 with Vite');
+
+            try {
+                // Load settings first
+                await initializeSettings();
+                console.log('✅ Settings loaded:', state.settingsSource);
+
+                // Initialize any additional setup here
+                updateStatus('Application ready', 'success');
+            } catch (error) {
+                console.error('❌ Application initialization failed:', error);
+                showCriticalError('Failed to initialize application: ' + error.message);
+            }
+        }
+
+        // Run initialization
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApplication);
+        } else {
+            initializeApplication();
+        }
+    </script>
+    
+    <!-- Logo Picker Modal -->
+    <div class="logo-picker-modal" id="logoPickerModal">
+        <div class="logo-picker-content">
+            <div class="logo-picker-header">
+                <h3 class="logo-picker-title">Choose Company Logo</h3>
+                <button class="logo-picker-close" onclick="closeLogoPicker()">✕</button>
+            </div>
+            <div class="logo-grid" id="logoGrid">
+                <!-- Logo options will be populated here -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "bug_id": "simple-quote-creation-1761190947038",
+  "workflow_id": "simple-quote-creation",
+  "category": "missing_ui_element",
+  "confidence": 75,
+  "generated_at": "2025-10-23T16:39:03.851Z",
+  "patches": [
+    {
+      "file": "MANUAL_FIX_REQUIRED.txt",
+      "type": "note",
+      "old_string": "",
+      "new_string": "Manual fix required for simple-quote-creation-1761190947038: Service selection UI element not visible or accessible"
+    }
+  ],
+  "ready_for_validation": false
+}

@@ -1,0 +1,199 @@
+{
+  "$schema": "company-data-schema",
+  "version": "1.0.0",
+  "lastUpdated": "2025-10-23",
+
+  "companyInfo": {
+    "legalName": "Energen Systems, Inc.",
+    "dbaName": "Energen Systems",
+    "address": {
+      "street": "",
+      "city": "",
+      "state": "",
+      "zip": "",
+      "country": "USA"
+    },
+    "phone": "",
+    "fax": "",
+    "email": "",
+    "website": "",
+    "ein": "",
+    "dunsNumber": "",
+    "cageCode": "",
+    "businessType": "Corporation",
+    "yearsInBusiness": 0,
+    "numberOfEmployees": 0
+  },
+
+  "licenses": {
+    "california": {
+      "c10Electrical": {
+        "number": "",
+        "expirationDate": "",
+        "holderName": ""
+      },
+      "c38Refrigeration": {
+        "number": "",
+        "expirationDate": "",
+        "holderName": ""
+      }
+    },
+    "otherStates": []
+  },
+
+  "certifications": {
+    "nfpa70e": {
+      "certified": false,
+      "certificationDate": "",
+      "expirationDate": "",
+      "certifiedTechnicians": []
+    },
+    "manufacturerAuthorizations": {
+      "cummins": {
+        "authorized": false,
+        "authorizationNumber": "",
+        "serviceLevel": ""
+      },
+      "caterpillar": {
+        "authorized": false,
+        "authorizationNumber": "",
+        "serviceLevel": ""
+      },
+      "kohler": {
+        "authorized": false,
+        "authorizationNumber": "",
+        "serviceLevel": ""
+      },
+      "generac": {
+        "authorized": false,
+        "authorizationNumber": "",
+        "serviceLevel": ""
+      }
+    }
+  },
+
+  "insurance": {
+    "generalLiability": {
+      "carrier": "",
+      "policyNumber": "",
+      "expirationDate": "",
+      "coveragePerOccurrence": 1000000,
+      "coverageAggregate": 2000000
+    },
+    "automobileLiability": {
+      "carrier": "",
+      "policyNumber": "",
+      "expirationDate": "",
+      "combinedSingleLimit": 1000000
+    },
+    "workersCompensation": {
+      "carrier": "",
+      "policyNumber": "",
+      "expirationDate": "",
+      "employersLiability": 1000000
+    },
+    "excessLiability": {
+      "carrier": "",
+      "policyNumber": "",
+      "expirationDate": "",
+      "umbrellaLimit": 5000000
+    }
+  },
+
+  "projectReferences": [
+    {
+      "clientName": "",
+      "contactName": "",
+      "contactTitle": "",
+      "contactPhone": "",
+      "contactEmail": "",
+      "projectDescription": "",
+      "contractValue": 0,
+      "startDate": "",
+      "endDate": "",
+      "servicesProvided": [],
+      "numberOfGenerators": 0,
+      "kwRange": ""
+    }
+  ],
+
+  "keyPersonnel": {
+    "projectManager": {
+      "name": "",
+      "title": "",
+      "email": "",
+      "phone": "",
+      "yearsExperience": 0,
+      "certifications": []
+    },
+    "leadTechnician": {
+      "name": "",
+      "title": "",
+      "email": "",
+      "phone": "",
+      "yearsExperience": 0,
+      "certifications": []
+    },
+    "accountManager": {
+      "name": "",
+      "title": "",
+      "email": "",
+      "phone": "",
+      "yearsExperience": 0
+    }
+  },
+
+  "signatures": {
+    "authorizedRepresentative": {
+      "name": "",
+      "title": "",
+      "signatureImagePath": "",
+      "email": "",
+      "phone": ""
+    },
+    "technicalRepresentative": {
+      "name": "",
+      "title": "",
+      "signatureImagePath": "",
+      "email": "",
+      "phone": ""
+    }
+  },
+
+  "capabilities": {
+    "serviceRadius": 100,
+    "emergencyResponse": true,
+    "emergencyResponseTime": "2 hours",
+    "twentyFourSevenCoverage": true,
+    "technicianCount": 0,
+    "serviceVehicles": 0,
+    "loadBanks": {
+      "portable": true,
+      "maxCapacity": 0,
+      "quantities": []
+    },
+    "specialEquipment": []
+  },
+
+  "pricing": {
+    "laborRates": {
+      "regularTime": {
+        "journeymanElectrician": 0,
+        "masterElectrician": 0,
+        "apprentice": 0,
+        "projectManager": 0
+      },
+      "overtime": {
+        "multiplier": 1.5
+      },
+      "emergency": {
+        "multiplier": 2.0
+      }
+    },
+    "materialsMarkup": 15,
+    "travelRates": {
+      "perMile": 0.655,
+      "perDiem": 0
+    }
+  }
+}

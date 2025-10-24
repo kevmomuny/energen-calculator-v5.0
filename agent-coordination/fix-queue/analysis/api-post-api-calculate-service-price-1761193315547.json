@@ -1,0 +1,44 @@
+{
+  "bug_id": "api-post-api-calculate-service-price-1761193315547",
+  "workflow_id": "api-post-api-calculate-service-price",
+  "category": "api_endpoint_error",
+  "priority": 75,
+  "evidence": {
+    "workflow_id": "api-post-api-calculate-service-price",
+    "started_at": "2025-10-23T04:21:55.336Z",
+    "steps": [
+      {
+        "action": "post-request",
+        "endpoint": "/api/calculate-service-price",
+        "started_at": "2025-10-23T04:21:55.336Z",
+        "success": true,
+        "status_code": 200,
+        "response": {
+          "description": {},
+          "annual": 360,
+          "monthly": 30,
+          "perInstance": 360,
+          "frequency": 1,
+          "annualLabor": 0,
+          "annualMaterials": 0,
+          "annualMobilization": 360,
+          "breakdown": {
+            "labor": 0,
+            "mobilization": 360,
+            "parts": 0,
+            "oil": 0,
+            "coolant": 0,
+            "laborHours": 0,
+            "mobilizationHours": 2
+          }
+        },
+        "completed_at": "2025-10-23T04:21:55.341Z"
+      }
+    ],
+    "requests": [],
+    "responses": [],
+    "completed_at": "2025-10-23T04:21:55.546Z",
+    "duration_ms": 210
+  },
+  "discovered_at": "2025-10-23T05:46:27.445Z"
+}
