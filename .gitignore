@@ -216,6 +216,10 @@ Windows-MCP/
 # Windows reserved filenames
 nul
 NUL
+
+# Files containing secrets (GitHub push protection)
+.claude/settings.local.json
+copilot-zoho-query.bat
 # Dependencies
 node_modules/
 npm-debug.log*
