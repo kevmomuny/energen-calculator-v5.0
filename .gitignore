@@ -220,6 +220,10 @@ NUL
 # Files containing secrets (GitHub push protection)
 .claude/settings.local.json
 copilot-zoho-query.bat
+
+# Verbose backup files (archived)
+.claude/*.backup*
+.claude/*-verbose
 # Dependencies
 node_modules/
 npm-debug.log*
