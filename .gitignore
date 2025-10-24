@@ -224,6 +224,10 @@ copilot-zoho-query.bat
 # Verbose backup files (archived)
 .claude/*.backup*
 .claude/*-verbose
+
+# MCP configuration backups (kept locally)
+.vscode/mcp*.json.full-zoho-tools
+.vscode/mcp-zoho-*.json
 # Dependencies
 node_modules/
 npm-debug.log*
