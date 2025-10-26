@@ -47,14 +47,12 @@
   },
 
   "prevailingWage": {
-    "enabled": false,
-    "electricianJourneyman": 75.00,
-    "electricianForeman": 85.00,
-    "totalWithFringe": 125.00,
-    "healthWelfare": 15.00,
-    "pension": 20.00,
-    "vacation": 10.00,
-    "training": 5.00
+    "businessOverhead": 115.00,
+    "defaultClassification": "electricianJourneyman",
+    "defaultZone": 1,
+    "lastApiRate": null,
+    "lastUpdated": null,
+    "lastZip": null
   },
 
   "perDiem": {
