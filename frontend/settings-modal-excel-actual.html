@@ -3322,7 +3322,38 @@
                 manualOverride: finalRateField.dataset.manualOverride || 'false'
             });
         }
-        
+
+        /**
+         * Track when user manually overrides the calculated rate
+         * Visual indicator shows override is active
+         */
+        function handleFinalRateOverride() {
+            const finalRate = parseFloat(document.getElementById('pwFinalRate').value);
+            const calculatedRate = parseFloat(document.getElementById('pwCalculatedRate').value);
+
+            const finalRateField = document.getElementById('pwFinalRate');
+
+            // Mark as manually overridden if different from calculated (tolerance 0.01)
+            if (Math.abs(finalRate - calculatedRate) > 0.01) {
+                finalRateField.dataset.manualOverride = 'true';
+                finalRateField.style.borderColor = '#f59e0b';
+                finalRateField.style.borderWidth = '3px';
+
+                console.log('Manual override detected:', {
+                    calculated: calculatedRate,
+                    override: finalRate,
+                    difference: finalRate - calculatedRate
+                });
+            } else {
+                // User changed it back to calculated value
+                delete finalRateField.dataset.manualOverride;
+                finalRateField.style.borderColor = '';
+                finalRateField.style.borderWidth = '';
+
+                console.log('Override cleared - using calculated rate');
+            }
+        }
+
         // Listen for per diem manual changes
         document.getElementById('perDiemLodging')?.addEventListener('input', function() {
             if (document.getElementById('perDiemLocation').value === 'custom') {
