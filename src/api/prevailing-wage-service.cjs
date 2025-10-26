@@ -22,28 +22,29 @@ class PrevailingWageService {
         
         // California prevailing wage rates (fallback data)
         // Source: DIR (Department of Industrial Relations)
+        // Updated: 2025-01-25 with 2025 DIR rates
         this.californiaRates = {
             'operatingEngineer': {
-                // Operating Engineers Classifications per California DIR
+                // Operating Engineers Classifications per California DIR 2025
                 group1: 72.00,  // Basic mobile equipment operation
                 group2: 78.00,  // Advanced mobile equipment operation
                 group3: 85.50,  // Heavy mobile equipment (cranes, dozers)
-                group8: 92.00,  // STATIONARY ENGINEERS - Power Plant/Generator Operation (CORRECT FOR ENERGEN)
-                foreman: 100.00, // Group 8 foreman rate
-                generalForeman: 105.00, // Group 8 general foreman
-                apprentice1: 46.00,  // 50% of group8
-                apprentice2: 55.20,  // 60% of group8
-                apprentice3: 64.40,  // 70% of group8
-                apprentice4: 73.60   // 80% of group8
+                group8: 92.73,  // STATIONARY ENGINEERS - Power Plant/Generator Operation (UPDATED 2025)
+                foreman: 105.00, // Group 8 foreman rate
+                generalForeman: 110.00, // Group 8 general foreman
+                apprentice1: 46.36,  // 50% of group8
+                apprentice2: 55.64,  // 60% of group8
+                apprentice3: 64.91,  // 70% of group8
+                apprentice4: 74.18   // 80% of group8
             },
             'electrician': {
-                journeyman: 85.50,  // Base hourly rate
-                foreman: 93.00,
-                generalForeman: 98.00,
-                apprentice1: 42.75,  // 50% of journeyman
-                apprentice2: 51.30,  // 60% of journeyman
-                apprentice3: 59.85,  // 70% of journeyman
-                apprentice4: 68.40   // 80% of journeyman
+                journeyman: 121.50,  // UPDATED 2025 - Electrician Inside Wireman (Alameda County)
+                foreman: 135.00,
+                generalForeman: 145.00,
+                apprentice1: 60.75,  // 50% of journeyman
+                apprentice2: 72.90,  // 60% of journeyman
+                apprentice3: 85.05,  // 70% of journeyman
+                apprentice4: 97.20   // 80% of journeyman
             },
             'laborer': {
                 skilled: 55.00,
@@ -55,14 +56,20 @@ class PrevailingWageService {
                 equipment: 65.00
             },
             'fringe': {
-                healthWelfare: 12.50,
-                pension: 15.00,
+                healthWelfare: 19.41,   // UPDATED 2025 DIR
+                pension: 22.97,          // UPDATED 2025 DIR
                 vacation: 3.50,
-                training: 1.00
+                training: 2.30,          // UPDATED 2025 DIR
+                other: 1.42             // UPDATED 2025 DIR
             }
         };
         
         // County to prevailing wage zone mapping for California
+        // Updated: 2025-01-25 based on DIR determinations
+        // Zone 1: Bay Area (Alameda, SF, etc.) - 15% higher
+        // Zone 2: LA/SD - 10% higher
+        // Zone 3: Central Valley - base rate
+        // Zone 4: Rural - 10% lower
         this.countyToZone = {
             // Northern California - Zone 1 (Higher rates)
             'Alameda': 1, 'Contra Costa': 1, 'Marin': 1, 'Napa': 1,
