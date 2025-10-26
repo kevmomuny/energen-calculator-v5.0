@@ -427,6 +427,45 @@ export function buildQuoteData(state) {
     // Build customer object with correct property names for PDF service
     const companyName = document.getElementById('companyName')?.value || '';
 
+    // Build settings object with prevailing wage override
+    const settings = {
+        laborRate: state.activeSettings?.laborRate || 180.00,
+        mobilizationRate: state.activeSettings?.mobilizationRate || 180.00,
+        oilPrice: parseFloat(document.getElementById('oilPrice')?.value) || 16.00,
+        oilMarkup: parseFloat(document.getElementById('oilMarkup')?.value) || 1.5
+    };
+
+    // Override labor rate if prevailing wage is enabled
+    if (state.prevailingWageRequired) {
+        // Try to get final rate from settings modal
+        const pwFinalRate = parseFloat(document.getElementById('pwFinalRate')?.value);
+
+        if (pwFinalRate && pwFinalRate > 0) {
+            settings.laborRate = pwFinalRate;
+            settings.mobilizationRate = pwFinalRate;
+
+            console.log('Using prevailing wage labor rate:', pwFinalRate);
+        } else {
+            console.warn('Prevailing wage enabled but no rate found, using default');
+        }
+    }
+
+    // Include prevailing wage metadata if enabled
+    let prevailingWageData = null;
+    if (state.prevailingWageRequired) {
+        prevailingWageData = {
+            enabled: true,
+            apiRate: parseFloat(document.getElementById('pwApiRate')?.value) || 0,
+            businessOverhead: parseFloat(document.getElementById('businessOverhead')?.value) || 0,
+            calculatedRate: parseFloat(document.getElementById('pwCalculatedRate')?.value) || 0,
+            finalRate: parseFloat(document.getElementById('pwFinalRate')?.value) || 0,
+            isOverridden: document.getElementById('pwFinalRate')?.dataset.manualOverride === 'true',
+            zipCode: document.getElementById('pwZipCode')?.value || '',
+            county: document.getElementById('pwCounty')?.value || '',
+            classification: document.getElementById('pwClassification')?.value || ''
+        };
+    }
+
     return {
         customer: {
             // CRITICAL FIX: PDF service expects 'company' or 'name', not 'companyName'
@@ -446,6 +485,8 @@ export function buildQuoteData(state) {
         services: Array.from(allServiceCodes), // PDF service expects ["A", "B", "C"]
         servicesData: servicesArray, // Zoho CPQ expects rich objects with perVisitPrice
         calculations: aggregatedCalculations,
+        settings: settings,
+        prevailingWageData: prevailingWageData,
         metadata: {
             createdAt: new Date().toISOString(),
             version: '5.0.0'
