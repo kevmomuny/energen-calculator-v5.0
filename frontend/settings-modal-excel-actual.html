@@ -751,6 +751,18 @@
                         </div>
                     </div>
 
+                    <!-- Business Overhead Costs -->
+                    <div style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #3b82f6;">
+                        <h4 style="color: var(--accent-electric); margin-bottom: 10px;">
+                            Business Overhead & Costs
+                        </h4>
+                        <div class="form-group">
+                            <label>Business Overhead ($/hr)</label>
+                            <input type="number" id="businessOverhead" value="115.00" step="1" min="0" onchange="calculatePrevailingWageTotal()" style="background: #1a1a2e; border: 2px solid #3b82f6;">
+                            <small style="color: #9ca3af;">Fixed costs: insurance, workers comp, overhead, profit</small>
+                        </div>
+                    </div>
+
                     <!-- Fringe Benefits Breakdown -->
                     <h4 style="color: var(--accent-electric); margin: 25px 0 15px;">Fringe Benefits Breakdown</h4>
                     <div class="form-grid" style="background: rgba(59, 130, 246, 0.05); padding: 15px; border-radius: 8px;">
