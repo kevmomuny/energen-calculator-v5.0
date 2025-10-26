@@ -795,6 +795,26 @@
                         </div>
                     </div>
 
+                    <!-- Total Labor Rate Calculation -->
+                    <div style="background: rgba(245, 158, 11, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f59e0b;">
+                        <h4 style="color: var(--accent-warning); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 18px;">⚡</span>
+                            Total Labor Billing Rate
+                        </h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Calculated Rate ($/hr)</label>
+                                <input type="number" id="pwCalculatedRate" readonly value="0.00" style="background: #0a0b0d; opacity: 0.7; font-weight: bold; cursor: not-allowed;">
+                                <small style="color: #9ca3af;" id="pwCalculatedBreakdown">= $0.00 (wage) + $0.00 (overhead)</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Final Billing Rate ($/hr) - Editable</label>
+                                <input type="number" id="pwFinalRate" value="0.00" step="0.50" min="0" onchange="handleFinalRateOverride()" style="font-weight: bold; color: #f59e0b; background: #1a1a2e; border: 2px solid #f59e0b;">
+                                <small style="color: #9ca3af;">Override if needed (e.g., $215.00)</small>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Fringe Benefits Breakdown -->
                     <h4 style="color: var(--accent-electric); margin: 25px 0 15px;">Fringe Benefits Breakdown</h4>
                     <div class="form-grid" style="background: rgba(59, 130, 246, 0.05); padding: 15px; border-radius: 8px;">
