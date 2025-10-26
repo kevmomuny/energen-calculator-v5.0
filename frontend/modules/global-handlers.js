@@ -1584,29 +1584,65 @@ window.handleWebsiteChange = function(event) {
 
 /**
  * Handle prevailing wage toggle
- * FIXED: BUG-001 - Use correct checkbox ID 'prevailingWageRequired' instead of 'prevailingWage'
+ * ENHANCED: Auto-fetch API data and switch settings mode
  */
-window.handlePrevailingWageChangeEnhanced = function() {
+window.handlePrevailingWageChangeEnhanced = async function() {
     const checkbox = document.getElementById('prevailingWageRequired');
     const details = document.getElementById('prevailingWageDetails');
-    
+
     if (!checkbox) {
         console.error('Prevailing wage checkbox not found');
         return;
     }
-    
+
     // Toggle details display
     if (details) {
         details.style.display = checkbox.checked ? 'block' : 'none';
     }
-    
+
     // Store preference in state
     if (window.state) {
         window.state.prevailingWageRequired = checkbox.checked;
     }
-    
+
+    if (checkbox.checked) {
+        // Get ZIP code from customer info
+        const zip = document.getElementById('zip')?.value;
+
+        if (zip && zip.length === 5) {
+            try {
+                // Fetch prevailing wage data
+                const response = await fetch(`/api/prevailing-wage/${zip}`);
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // Update details panel if it exists
+                    if (document.getElementById('pwZip')) {
+                        document.getElementById('pwZip').textContent = zip;
+                    }
+
+                    console.log('Prevailing wage data loaded for ZIP:', zip, data);
+                } else {
+                    console.warn('Failed to fetch prevailing wage data');
+                }
+            } catch (error) {
+                console.error('Error fetching prevailing wage:', error);
+            }
+        } else {
+            console.warn('Please enter a valid ZIP code before enabling prevailing wage');
+        }
+
+        // Switch settings modal to public works mode (if modal exists)
+        if (window.document.getElementById('rateMode')) {
+            window.document.getElementById('rateMode').value = 'public-works';
+            if (typeof window.updateRateMode === 'function') {
+                window.updateRateMode();
+            }
+        }
+    }
+
     // Recalculate if needed
-    if (checkbox.checked && window.calculateQuote) {
+    if (window.calculateQuote) {
         window.calculateQuote();
     }
 };
