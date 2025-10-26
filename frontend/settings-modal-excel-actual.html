@@ -692,7 +692,39 @@
                     <h3 style="color: var(--accent-gold); margin: 30px 0 20px; border-bottom: 2px solid #f59e0b; padding-bottom: 10px;">
                         Prevailing Wage Settings (Public Works)
                     </h3>
-                    
+
+                    <!-- Prevailing Wage API Data (Read-Only) -->
+                    <div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #10b981;">
+                        <h4 style="color: var(--accent-success); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 18px;">✓</span>
+                            DIR Prevailing Wage Rate (Auto-Detected)
+                        </h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>ZIP Code</label>
+                                <input type="text" id="pwZipCode" readonly style="background: #0a0b0d; opacity: 0.7; cursor: not-allowed;">
+                            </div>
+                            <div class="form-group">
+                                <label>County</label>
+                                <input type="text" id="pwCounty" readonly style="background: #0a0b0d; opacity: 0.7; cursor: not-allowed;">
+                            </div>
+                            <div class="form-group">
+                                <label>Classification</label>
+                                <input type="text" id="pwClassification" readonly value="Electrician Inside Wireman" style="background: #0a0b0d; opacity: 0.7; cursor: not-allowed;">
+                            </div>
+                            <div class="form-group">
+                                <label>Prevailing Wage Rate ($/hr)</label>
+                                <input type="number" id="pwApiRate" readonly value="0.00" style="background: #0a0b0d; opacity: 0.7; font-weight: bold; color: #10b981; cursor: not-allowed;">
+                            </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <button onclick="refreshPrevailingWage()" style="padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                    🔄 Refresh from DIR API
+                                </button>
+                                <small style="color: #9ca3af; margin-left: 10px;">Last updated: <span id="pwLastUpdated">--</span></small>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Operating Engineers Classification -->
                     <div style="background: rgba(245, 158, 11, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f59e0b;">
                         <h4 style="color: var(--accent-gold); margin-bottom: 10px;">Operating Engineers Classification</h4>
