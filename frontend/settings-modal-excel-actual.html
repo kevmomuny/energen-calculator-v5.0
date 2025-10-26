@@ -3238,6 +3238,90 @@
                 updateOERate();
             }
         }
+
+        /**
+         * Fetch prevailing wage data from DIR API based on ZIP code
+         * Populates read-only fields in settings modal
+         */
+        async function refreshPrevailingWage() {
+            // Get ZIP from main UI or settings modal
+            const zip = document.getElementById('zip')?.value ||
+                        document.getElementById('pwZipCode')?.value;
+
+            if (!zip || zip.length < 5) {
+                alert('Please enter a valid 5-digit ZIP code first');
+                return;
+            }
+
+            try {
+                // Show loading state
+                const button = event.target;
+                const originalText = button.innerHTML;
+                button.innerHTML = '⏳ Fetching...';
+                button.disabled = true;
+
+                const response = await fetch(`/api/prevailing-wage/${zip}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: Failed to fetch prevailing wage data`);
+                }
+
+                const data = await response.json();
+
+                // Populate API fields
+                document.getElementById('pwZipCode').value = zip;
+                document.getElementById('pwCounty').value = data.location.county || 'Unknown';
+                document.getElementById('pwClassification').value = data.location.craft || 'Electrician Inside Wireman';
+                document.getElementById('pwApiRate').value = data.prevailingWage.electricianJourneyman.toFixed(2);
+                document.getElementById('pwLastUpdated').textContent = new Date().toLocaleString();
+
+                // Trigger recalculation
+                calculatePrevailingWageTotal();
+
+                // Restore button
+                button.innerHTML = originalText;
+                button.disabled = false;
+
+            } catch (error) {
+                console.error('Error fetching prevailing wage:', error);
+                alert(`Could not fetch prevailing wage data: ${error.message}\n\nPlease check ZIP code and try again.`);
+
+                // Restore button
+                if (event.target) {
+                    event.target.innerHTML = '🔄 Refresh from DIR API';
+                    event.target.disabled = false;
+                }
+            }
+        }
+
+        /**
+         * Calculate total labor rate = API wage + business overhead
+         * Auto-updates final rate unless manually overridden
+         */
+        function calculatePrevailingWageTotal() {
+            const apiRate = parseFloat(document.getElementById('pwApiRate').value) || 0;
+            const overhead = parseFloat(document.getElementById('businessOverhead').value) || 0;
+            const calculated = apiRate + overhead;
+
+            // Update calculated rate (read-only)
+            document.getElementById('pwCalculatedRate').value = calculated.toFixed(2);
+
+            // Update final rate (editable) - only if not manually overridden
+            const finalRateField = document.getElementById('pwFinalRate');
+            if (!finalRateField.dataset.manualOverride) {
+                finalRateField.value = calculated.toFixed(2);
+            }
+
+            // Update the breakdown text
+            const breakdownText = `= $${apiRate.toFixed(2)} (wage) + $${overhead.toFixed(2)} (overhead)`;
+            document.getElementById('pwCalculatedBreakdown').textContent = breakdownText;
+
+            console.log('Prevailing wage calculation:', {
+                apiRate: apiRate,
+                overhead: overhead,
+                calculated: calculated,
+                manualOverride: finalRateField.dataset.manualOverride || 'false'
+            });
+        }
         
         // Listen for per diem manual changes
         document.getElementById('perDiemLodging')?.addEventListener('input', function() {
