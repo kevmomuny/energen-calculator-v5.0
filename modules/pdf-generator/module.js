@@ -21,18 +21,18 @@ export class PDFGeneratorModule extends EnergenModule {
       version: '4.1.0',
       ...config
     });
-    
+
     this.templates = new Map();
     this.generatedPDFs = new Map();
     this.outputPath = config.outputPath || './output/pdfs';
     this.templatePath = config.templatePath || './templates';
-    
+
     // Initialize both PDF services
     this.pdfService = new ProfessionalPDFService({
       outputPath: this.outputPath,
       logoPath: config.logoPath
     });
-    
+
     // Initialize the complete PDF generator with all assets
     this.pdfComplete = new EnergenPDFComplete({
       outputPath: this.outputPath,
@@ -46,16 +46,16 @@ export class PDFGeneratorModule extends EnergenModule {
   async onInit(config) {
     // Ensure output directory exists
     await this.ensureDirectory(this.outputPath);
-    
+
     // Load templates
     await this.loadTemplates();
-    
+
     // Set up event listeners
     this.setupEventListeners();
-    
+
     // Get calculation engine dependency if available
     this.calculationEngine = this.dependencies.get('calculation');
-    
+
     this.logger.info('PDF generator module initialized', {
       outputPath: this.outputPath,
       templates: Array.from(this.templates.keys())
@@ -78,7 +78,7 @@ export class PDFGeneratorModule extends EnergenModule {
   async loadTemplates() {
     // For now, register default templates
     // In production, these would be loaded from files
-    
+
     this.templates.set('quote', {
       name: 'Standard Quote',
       type: 'quote',
@@ -86,7 +86,7 @@ export class PDFGeneratorModule extends EnergenModule {
       layout: 'portrait',
       sections: ['header', 'customer', 'services', 'pricing', 'terms', 'footer']
     });
-    
+
     this.templates.set('invoice', {
       name: 'Standard Invoice',
       type: 'invoice',
@@ -94,7 +94,7 @@ export class PDFGeneratorModule extends EnergenModule {
       layout: 'portrait',
       sections: ['header', 'customer', 'services', 'pricing', 'payment', 'footer']
     });
-    
+
     this.templates.set('report', {
       name: 'Service Report',
       type: 'report',
@@ -102,7 +102,7 @@ export class PDFGeneratorModule extends EnergenModule {
       layout: 'portrait',
       sections: ['header', 'summary', 'details', 'recommendations', 'footer']
     });
-    
+
     this.logger.debug(`Loaded ${this.templates.size} PDF templates`);
   }
 
@@ -111,7 +111,7 @@ export class PDFGeneratorModule extends EnergenModule {
    */
   setupEventListeners() {
     const eventBus = this.getDependency('eventBus');
-    
+
     // Listen for PDF generation requests
     eventBus.on('pdf:generate', async (data) => {
       try {
@@ -127,7 +127,7 @@ export class PDFGeneratorModule extends EnergenModule {
         });
       }
     });
-    
+
     // Listen for PDF retrieval requests
     eventBus.on('pdf:get', async (data) => {
       try {
@@ -151,18 +151,18 @@ export class PDFGeneratorModule extends EnergenModule {
   async generatePDF(data) {
     this.metrics.requestCount++;
     const startTime = Date.now();
-    
+
     try {
       const { template = 'quote', content, options = {} } = data;
-      
+
       // Validate template
       if (!this.templates.has(template)) {
         throw new Error(`Template '${template}' not found`);
       }
-      
+
       // Generate unique ID
       const pdfId = this.generatePDFId();
-      
+
       // Use the complete PDF service to generate the document
       let pdfResult;
       if (template === 'quote') {
@@ -172,7 +172,7 @@ export class PDFGeneratorModule extends EnergenModule {
         const year = now.getFullYear();
         const sequence = content.quoteSequence || String(Math.floor(Math.random() * 10000)).padStart(4, '0');
         const quoteNumber = `${month}-${year}-${sequence}`;
-        
+
         // Use the complete PDF generator with all assets
         const pdfBuffer = await this.pdfComplete.generateBuffer({
           customer: content.customer,
@@ -184,12 +184,12 @@ export class PDFGeneratorModule extends EnergenModule {
             sitePrefix: content.sitePrefix
           }
         });
-        
+
         // Save PDF to file
         const filename = `Quote_${quoteNumber.replace(/-/g, '_')}.pdf`;
         const filepath = path.join(this.outputPath, filename);
         fs.writeFileSync(filepath, pdfBuffer);
-        
+
         pdfResult = { filepath, filename, buffer: pdfBuffer };
       } else {
         // For other templates, use the professional service
@@ -197,7 +197,7 @@ export class PDFGeneratorModule extends EnergenModule {
         const pdfPath = await this.createPDF(pdfId, documentData, template, options);
         pdfResult = { filepath: pdfPath, filename: `${pdfId}.pdf` };
       }
-      
+
       // Store PDF metadata
       this.generatedPDFs.set(pdfId, {
         id: pdfId,
@@ -212,18 +212,18 @@ export class PDFGeneratorModule extends EnergenModule {
           total: content.calculation?.grandTotal
         }
       });
-      
+
       // Track metrics
       const duration = Date.now() - startTime;
       this.trackMetric('generationTime', duration);
-      
+
       // Emit success event
       this.emit('pdf:complete', {
         id: pdfId,
         path: pdfResult.filepath,
         duration
       });
-      
+
       return {
         id: pdfId,
         url: `/output/pdfs/${pdfResult.filename}`,
@@ -242,18 +242,18 @@ export class PDFGeneratorModule extends EnergenModule {
    */
   async prepareDocumentData(content, template) {
     const data = { ...content };
-    
+
     // Add calculation data if available
     if (this.calculationEngine && content.calculation) {
       const calcResult = await this.calculationEngine.calculate(content.calculation);
       data.pricing = calcResult;
     }
-    
+
     // Add template-specific data
     data.template = this.templates.get(template);
     data.generatedAt = new Date();
     data.logo = this.getEnergenLogo();
-    
+
     return data;
   }
 
@@ -264,7 +264,7 @@ export class PDFGeneratorModule extends EnergenModule {
     // In production, this would use a real PDF library like PDFKit or Puppeteer
     const fileName = `${id}_${template}_${Date.now()}.pdf`;
     const filePath = path.join(this.outputPath, fileName);
-    
+
     // Mock PDF content
     const mockPDF = {
       id,
@@ -273,12 +273,12 @@ export class PDFGeneratorModule extends EnergenModule {
       options,
       createdAt: new Date().toISOString()
     };
-    
+
     // Write mock file
     fs.writeFileSync(filePath, JSON.stringify(mockPDF, null, 2));
-    
+
     this.logger.info(`Generated PDF: ${fileName}`);
-    
+
     return filePath;
   }
 
@@ -304,20 +304,20 @@ export class PDFGeneratorModule extends EnergenModule {
    */
   async getPDF(id) {
     const pdfMeta = this.generatedPDFs.get(id);
-    
+
     if (!pdfMeta) {
       throw new Error(`PDF ${id} not found`);
     }
-    
+
     // Check if file still exists
     if (!fs.existsSync(pdfMeta.path)) {
       this.generatedPDFs.delete(id);
       throw new Error(`PDF file ${id} no longer exists`);
     }
-    
+
     // Read PDF file
     const pdfContent = fs.readFileSync(pdfMeta.path);
-    
+
     return {
       ...pdfMeta,
       content: pdfContent
@@ -329,20 +329,20 @@ export class PDFGeneratorModule extends EnergenModule {
    */
   listPDFs(options = {}) {
     const { limit = 10, offset = 0, template } = options;
-    
+
     let pdfs = Array.from(this.generatedPDFs.values());
-    
+
     // Filter by template if specified
     if (template) {
       pdfs = pdfs.filter(pdf => pdf.template === template);
     }
-    
+
     // Sort by creation date (newest first)
     pdfs.sort((a, b) => b.createdAt - a.createdAt);
-    
+
     // Apply pagination
     const paginated = pdfs.slice(offset, offset + limit);
-    
+
     return {
       total: pdfs.length,
       limit,
@@ -356,20 +356,20 @@ export class PDFGeneratorModule extends EnergenModule {
    */
   async deletePDF(id) {
     const pdfMeta = this.generatedPDFs.get(id);
-    
+
     if (!pdfMeta) {
       throw new Error(`PDF ${id} not found`);
     }
-    
+
     // Delete file if exists
     if (fs.existsSync(pdfMeta.path)) {
       fs.unlinkSync(pdfMeta.path);
       this.logger.debug(`Deleted PDF file: ${pdfMeta.path}`);
     }
-    
+
     // Remove from registry
     this.generatedPDFs.delete(id);
-    
+
     return { deleted: true, id };
   }
 
@@ -379,10 +379,10 @@ export class PDFGeneratorModule extends EnergenModule {
   async cleanupOldPDFs(maxAge = 7 * 24 * 60 * 60 * 1000) { // 7 days default
     const now = Date.now();
     const deleted = [];
-    
+
     for (const [id, pdfMeta] of this.generatedPDFs) {
       const age = now - pdfMeta.createdAt.getTime();
-      
+
       if (age > maxAge) {
         try {
           await this.deletePDF(id);
@@ -392,11 +392,11 @@ export class PDFGeneratorModule extends EnergenModule {
         }
       }
     }
-    
+
     if (deleted.length > 0) {
       this.logger.info(`Cleaned up ${deleted.length} old PDFs`);
     }
-    
+
     return deleted;
   }
 
@@ -407,12 +407,12 @@ export class PDFGeneratorModule extends EnergenModule {
     const stats = {
       totalGenerated: this.metrics.requestCount,
       currentlyStored: this.generatedPDFs.size,
-      averageGenerationTime: this.metrics.generationTime 
+      averageGenerationTime: this.metrics.generationTime
         ? this.metrics.generationTime / this.metrics.requestCount
         : 0,
       templates: {}
     };
-    
+
     // Count PDFs by template
     for (const pdfMeta of this.generatedPDFs.values()) {
       if (!stats.templates[pdfMeta.template]) {
@@ -420,7 +420,7 @@ export class PDFGeneratorModule extends EnergenModule {
       }
       stats.templates[pdfMeta.template]++;
     }
-    
+
     return stats;
   }
 
@@ -432,12 +432,12 @@ export class PDFGeneratorModule extends EnergenModule {
       this.outputPath = newConfig.outputPath;
       await this.ensureDirectory(this.outputPath);
     }
-    
+
     if (newConfig.templatePath && newConfig.templatePath !== this.templatePath) {
       this.templatePath = newConfig.templatePath;
       await this.loadTemplates();
     }
-    
+
     this.logger.info('PDF generator configuration updated');
   }
 
@@ -446,7 +446,7 @@ export class PDFGeneratorModule extends EnergenModule {
    */
   runHealthChecks() {
     const checks = super.runHealthChecks();
-    
+
     // Check output directory
     checks.push({
       name: 'outputDirectory',
@@ -455,21 +455,21 @@ export class PDFGeneratorModule extends EnergenModule {
         ? `Output directory available: ${this.outputPath}`
         : `Output directory missing: ${this.outputPath}`
     });
-    
+
     // Check templates
     checks.push({
       name: 'templates',
       passed: this.templates.size > 0,
       message: `${this.templates.size} templates loaded`
     });
-    
+
     // Check disk space (simplified)
     checks.push({
       name: 'storage',
       passed: true, // Would check actual disk space
       message: `${this.generatedPDFs.size} PDFs stored`
     });
-    
+
     return checks;
   }
 
@@ -479,10 +479,10 @@ export class PDFGeneratorModule extends EnergenModule {
   async onShutdown() {
     // Optionally clean up old PDFs
     await this.cleanupOldPDFs();
-    
+
     this.templates.clear();
     this.generatedPDFs.clear();
-    
+
     this.logger.info('PDF generator module shut down');
   }
 }

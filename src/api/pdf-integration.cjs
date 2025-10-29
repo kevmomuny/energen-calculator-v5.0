@@ -130,7 +130,7 @@ class PDFIntegration {
     for (const [serviceName, details] of Object.entries(serviceBreakdown)) {
       // Extract service code from name like "A - Comprehensive Inspection" -> "A"
       const serviceCode = serviceName.charAt(0);
-      
+
       console.log(`📋 Mapping service: "${serviceName}" -> Code: "${serviceCode}", Total: $${details.totalCost}`);
 
       breakdownByService[serviceCode] = {

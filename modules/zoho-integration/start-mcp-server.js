@@ -7,6 +7,6 @@ import ZohoMCPServer from './ZohoMCPServer.js';
 
 const server = new ZohoMCPServer();
 server.start().catch((error) => {
-    console.error('Failed to start Zoho MCP Server:', error);
-    process.exit(1);
+  console.error('Failed to start Zoho MCP Server:', error);
+  process.exit(1);
 });

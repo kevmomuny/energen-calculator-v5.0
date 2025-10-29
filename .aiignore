@@ -47,3 +47,12 @@ __tests__/
 *~
 .DS_Store
 Thumbs.db
+
+# Heavy directories that slow down AI scanning
+.claude/skills/*/node_modules/
+Windows-MCP/
+zoho-proxy-mcp/
+agent-coordination/
+agent-fleet/
+archive/
+backup/

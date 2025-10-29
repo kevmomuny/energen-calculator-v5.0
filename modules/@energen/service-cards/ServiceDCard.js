@@ -2,7 +2,7 @@
  * Service D Card Module - Fuel Analysis Only (Annual)
  * @module @energen/service-cards/ServiceDCard
  * @version 4.5.0
- * 
+ *
  * IMPORTANT: Service D is FUEL ANALYSIS ONLY
  * - Oil analysis is included in Service B (Oil & Filter Service)
  * - Coolant analysis is included in Service C (Coolant Service)
@@ -18,10 +18,10 @@ export class ServiceDCard {
     this.serviceCode = 'D';
     this.serviceName = 'Fuel Analysis';
     this.description = 'Annual fuel quality analysis';
-    
+
     // FIXED COST - Fuel analysis only (no oil/coolant in Service D)
     this.fuelAnalysisCost = 60.00;
-    
+
     // NO LABOR - Sample collection happens during other services
     // Labor is already accounted for in the service that triggers the sample
   }
@@ -35,7 +35,7 @@ export class ServiceDCard {
     } catch (e) {
       console.warn('Could not load settings from storage:', e);
     }
-    
+
     // Default settings
     return {
       labor: {
@@ -59,20 +59,20 @@ export class ServiceDCard {
   calculateService() {
     // Service D is FUEL ANALYSIS ONLY - Fixed cost, no labor or mobilization
     // Oil analysis is in Service B, Coolant analysis is in Service C
-    
+
     const fuelSample = this.fuelAnalysisCost; // Fixed $60.00
-    
+
     // NO LABOR, NO MOBILIZATION, NO PARTS
     // This is a pass-through lab fee only
     const labor = 0;
     const mobilization = 0;
     const parts = 0;
     const freight = 0;
-    
+
     // Fixed cost service
     const perVisit = fuelSample;
     const annual = perVisit * this.frequency;
-    
+
     return {
       serviceCode: this.serviceCode,
       serviceName: this.serviceName,
@@ -88,7 +88,7 @@ export class ServiceDCard {
       perVisit,
       annual,
       breakdown: {
-        fuelAnalysis: `Annual fuel quality lab test (fixed cost)`
+        fuelAnalysis: 'Annual fuel quality lab test (fixed cost)'
       }
     };
   }
@@ -106,7 +106,7 @@ export class ServiceDCard {
 
   render() {
     const calc = this.calculateService();
-    
+
     return `
       <div class="service-card" data-service="${this.serviceCode}">
         <div class="service-header">

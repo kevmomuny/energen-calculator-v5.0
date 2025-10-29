@@ -18,7 +18,7 @@ export class CustomerEnrichmentModule extends EnergenModule {
       version: '4.1.0',
       ...config
     });
-    
+
     this.enrichmentService = null;
     this.providers = new Map();
   }
@@ -29,20 +29,20 @@ export class CustomerEnrichmentModule extends EnergenModule {
   async onInit(config) {
     // Initialize enrichment service
     this.enrichmentService = new CustomerEnrichmentService();
-    
+
     // Configure providers
     if (config.providers) {
       await this.configureProviders(config.providers);
     }
-    
+
     // Set up event listeners
     this.setupEventListeners();
-    
+
     // Configure caching
     if (config.cacheEnabled) {
       this.setupCaching(config);
     }
-    
+
     this.logger.info('Customer enrichment module initialized');
   }
 
@@ -59,7 +59,7 @@ export class CustomerEnrichmentModule extends EnergenModule {
       });
       this.logger.info('Google Places provider configured');
     }
-    
+
     // Brandfetch provider
     if (providers.brandfetch?.enabled) {
       this.providers.set('brandfetch', {
@@ -76,7 +76,7 @@ export class CustomerEnrichmentModule extends EnergenModule {
    */
   setupEventListeners() {
     const eventBus = this.getDependency('eventBus');
-    
+
     // Listen for enrichment requests
     eventBus.on('enrichment:request', async (data) => {
       try {
@@ -92,7 +92,7 @@ export class CustomerEnrichmentModule extends EnergenModule {
         });
       }
     });
-    
+
     // Listen for batch enrichment requests
     eventBus.on('enrichment:batchRequest', async (data) => {
       try {
@@ -119,7 +119,7 @@ export class CustomerEnrichmentModule extends EnergenModule {
       ttl: config.cacheTTL || 3600000, // 1 hour default
       maxSize: config.cacheMaxSize || 1000
     };
-    
+
     // Clear cache periodically
     setInterval(() => {
       this.enrichmentService.clearCaches();
@@ -133,28 +133,28 @@ export class CustomerEnrichmentModule extends EnergenModule {
   async enrich(customer, options = {}) {
     this.metrics.requestCount++;
     const startTime = Date.now();
-    
+
     try {
       // Check provider availability
       const availableProviders = this.getAvailableProviders(options);
-      
+
       // Perform enrichment
       const enriched = await this.enrichmentService.enrichCustomerData(customer, {
         ...options,
         providers: availableProviders
       });
-      
+
       // Track metrics
       const duration = Date.now() - startTime;
       this.trackMetric('enrichmentTime', duration);
-      
+
       // Emit success event
       this.emit('enrichment:complete', {
         customer: enriched,
         duration,
         providers: availableProviders
       });
-      
+
       return enriched;
     } catch (error) {
       this.handleError(error, 'enrich');
@@ -167,26 +167,26 @@ export class CustomerEnrichmentModule extends EnergenModule {
    */
   async batchEnrich(customers, options = {}) {
     const startTime = Date.now();
-    
+
     try {
       const results = await this.enrichmentService.batchEnrich(customers, {
         ...options,
         batchSize: options.batchSize || 5,
         delayBetweenBatches: options.delayBetweenBatches || 1000
       });
-      
+
       // Track metrics
       const duration = Date.now() - startTime;
       this.trackMetric('batchEnrichmentTime', duration);
       this.trackMetric('batchSize', customers.length);
-      
+
       // Emit completion event
       this.emit('enrichment:batchComplete', {
         count: customers.length,
         duration,
         successCount: results.filter(r => !r.enrichment?.failed).length
       });
-      
+
       return results;
     } catch (error) {
       this.handleError(error, 'batchEnrich');
@@ -199,13 +199,13 @@ export class CustomerEnrichmentModule extends EnergenModule {
    */
   getAvailableProviders(options) {
     const providers = [];
-    
+
     for (const [name, config] of this.providers) {
       if (config.enabled && (!options.providers || options.providers.includes(name))) {
         providers.push(name);
       }
     }
-    
+
     return providers;
   }
 
@@ -214,7 +214,7 @@ export class CustomerEnrichmentModule extends EnergenModule {
    */
   getStatistics() {
     const stats = this.enrichmentService.getStats();
-    
+
     return {
       ...stats,
       providers: Object.fromEntries(this.providers),
@@ -222,7 +222,7 @@ export class CustomerEnrichmentModule extends EnergenModule {
       moduleMetrics: {
         totalRequests: this.metrics.requestCount,
         errorCount: this.metrics.errorCount,
-        averageEnrichmentTime: this.metrics.enrichmentTime 
+        averageEnrichmentTime: this.metrics.enrichmentTime
           ? this.metrics.enrichmentTime / this.metrics.requestCount
           : 0
       }
@@ -237,7 +237,7 @@ export class CustomerEnrichmentModule extends EnergenModule {
     if (newConfig.providers) {
       await this.configureProviders(newConfig.providers);
     }
-    
+
     // Update caching
     if (newConfig.cacheEnabled !== undefined) {
       if (newConfig.cacheEnabled) {
@@ -247,7 +247,7 @@ export class CustomerEnrichmentModule extends EnergenModule {
         this.enrichmentService.clearCaches();
       }
     }
-    
+
     this.logger.info('Customer enrichment configuration updated');
   }
 
@@ -256,25 +256,25 @@ export class CustomerEnrichmentModule extends EnergenModule {
    */
   runHealthChecks() {
     const checks = super.runHealthChecks();
-    
+
     // Check provider availability
     for (const [name, config] of this.providers) {
       checks.push({
         name: `provider_${name}`,
         passed: config.enabled && config.apiKey,
-        message: config.enabled 
+        message: config.enabled
           ? `${name} provider configured`
           : `${name} provider disabled`
       });
     }
-    
+
     // Check enrichment service
     checks.push({
       name: 'enrichmentService',
       passed: this.enrichmentService !== null,
       message: 'Enrichment service available'
     });
-    
+
     // Check cache status
     if (this.cacheConfig?.enabled) {
       checks.push({
@@ -283,7 +283,7 @@ export class CustomerEnrichmentModule extends EnergenModule {
         message: `Cache enabled (TTL: ${this.cacheConfig.ttl}ms)`
       });
     }
-    
+
     return checks;
   }
 

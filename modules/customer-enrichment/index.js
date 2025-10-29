@@ -3,7 +3,7 @@
  * @module customer-enrichment
  * @version 2.0.0
  * @date 2025-01-09
- * 
+ *
  * Integrates logo fetching with Google Places enrichment
  * Provides unified customer data enrichment interface
  */
@@ -20,7 +20,7 @@ export class CustomerEnrichmentService {
     this.logo = logoService;
     this.places = placesService;
     this.distance = distanceService;
-    
+
     // Track enrichment performance
     this.stats = {
       totalEnrichments: 0,
@@ -44,7 +44,7 @@ export class CustomerEnrichmentService {
     try {
       // Extract domain for logo fetching
       const domain = this.extractDomain(customer.email || customer.website);
-      
+
       // Parallel enrichment tasks
       const enrichmentTasks = [];
 
@@ -97,7 +97,7 @@ export class CustomerEnrichmentService {
     } catch (error) {
       console.error('Customer enrichment error:', error);
       this.stats.failedEnrichments++;
-      
+
       return {
         ...customer,
         enrichment: {
@@ -116,14 +116,14 @@ export class CustomerEnrichmentService {
   async enrichLogos(domain, enriched) {
     const logos = await this.logo.getLogoVariations(domain);
     const brandColors = await this.logo.getBrandColors(domain);
-    
+
     enriched.branding = {
       domain,
       logos,
       colors: brandColors,
       hasCustomLogo: !logos.lightLogo?.isFallback
     };
-    
+
     return enriched;
   }
 
@@ -135,7 +135,7 @@ export class CustomerEnrichmentService {
       customer.name,
       customer.address
     );
-    
+
     if (placeData) {
       enriched.place = {
         id: placeData.place_id,
@@ -150,7 +150,7 @@ export class CustomerEnrichmentService {
         phone: placeData.formatted_phone_number
       };
     }
-    
+
     return enriched;
   }
 
@@ -158,25 +158,25 @@ export class CustomerEnrichmentService {
    * Enrich with distance calculation
    */
   async enrichDistance(customerAddress, enriched) {
-    const origin = process.env.ENERGEN_OFFICE_ADDRESS || 
+    const origin = process.env.ENERGEN_OFFICE_ADDRESS ||
                    '1520 Sheridan Ave, North Highlands, CA 95660';
-    
+
     const distanceData = await this.distance.calculateDistance(
       origin,
       customerAddress
     );
-    
+
     if (distanceData) {
       enriched.distance = {
-        miles: distanceData.distance?.value 
-          ? Math.round(distanceData.distance.value * 0.000621371 * 10) / 10 
+        miles: distanceData.distance?.value
+          ? Math.round(distanceData.distance.value * 0.000621371 * 10) / 10
           : null,
-        kilometers: distanceData.distance?.value 
-          ? Math.round(distanceData.distance.value / 1000 * 10) / 10 
+        kilometers: distanceData.distance?.value
+          ? Math.round(distanceData.distance.value / 1000 * 10) / 10
           : null,
         duration: {
-          minutes: distanceData.duration?.value 
-            ? Math.round(distanceData.duration.value / 60) 
+          minutes: distanceData.duration?.value
+            ? Math.round(distanceData.duration.value / 60)
             : null,
           text: distanceData.duration?.text
         },
@@ -184,7 +184,7 @@ export class CustomerEnrichmentService {
         destination: customerAddress
       };
     }
-    
+
     return enriched;
   }
 
@@ -194,11 +194,11 @@ export class CustomerEnrichmentService {
   async batchEnrich(customers, options = {}) {
     const batchSize = options.batchSize || 5;
     const results = [];
-    
+
     for (let i = 0; i < customers.length; i += batchSize) {
       const batch = customers.slice(i, i + batchSize);
       const batchResults = await Promise.all(
-        batch.map(customer => 
+        batch.map(customer =>
           this.enrichCustomerData(customer, options)
             .catch(error => ({
               ...customer,
@@ -207,15 +207,15 @@ export class CustomerEnrichmentService {
         )
       );
       results.push(...batchResults);
-      
+
       // Add delay between batches to avoid rate limiting
       if (i + batchSize < customers.length && options.delayBetweenBatches) {
-        await new Promise(resolve => 
+        await new Promise(resolve =>
           setTimeout(resolve, options.delayBetweenBatches)
         );
       }
     }
-    
+
     return results;
   }
 
@@ -248,44 +248,44 @@ export class CustomerEnrichmentService {
 
   extractDomain(input) {
     if (!input) return null;
-    
+
     const emailMatch = input.match(/@(.+)/);
     if (emailMatch) return emailMatch[1];
-    
+
     const urlMatch = input.match(/(?:https?:\/\/)?(?:www\.)?([^\/]+)/);
     return urlMatch ? urlMatch[1] : input;
   }
 
   getEnrichmentSources(enriched) {
     const sources = [];
-    
+
     if (enriched.branding?.logos) {
       sources.push(enriched.branding.logos.lightLogo?.provider || 'fallback');
     }
-    
+
     if (enriched.place) {
       sources.push('google_places');
     }
-    
+
     if (enriched.distance) {
       sources.push('google_distance_matrix');
     }
-    
+
     return sources;
   }
 
   updateStats(duration, success) {
     this.stats.totalEnrichments++;
-    
+
     if (success) {
       this.stats.successfulEnrichments++;
     } else {
       this.stats.failedEnrichments++;
     }
-    
+
     // Update average enrichment time
     const total = this.stats.totalEnrichments;
-    this.stats.avgEnrichmentTime = 
+    this.stats.avgEnrichmentTime =
       (this.stats.avgEnrichmentTime * (total - 1) + duration) / total;
   }
 }

@@ -88,9 +88,9 @@ class GeneratorEnrichmentService {
 
     // Determine enrichment tier
     let tier = 'basic';
-    let confidence = 0;
-    let data = {};
-    let sources = [];
+    const confidence = 0;
+    const data = {};
+    const sources = [];
 
     // Tier 1: Basic (kW only)
     if (!manufacturer || !model) {

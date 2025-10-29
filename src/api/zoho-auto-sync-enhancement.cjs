@@ -85,7 +85,7 @@ async function syncToZoho(zohoIntegration, enrichedData, accountId = null, logge
     Account_Name: enrichedData.name,
     Phone: enrichedData.formatted_phone_number || enrichedData.phone || null,
     Website: enrichedData.website || enrichedData.websiteUri || null,
-    Google_Place_ID: enrichedData.place_id || enrichedData.googlePlacesId || null,
+    Google_Place_ID: enrichedData.place_id || enrichedData.googlePlacesId || null
   };
 
   // Add parsed address fields

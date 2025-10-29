@@ -1,10 +1,10 @@
 /**
  * RFP Processor Module - Main Entry Point
  * Phase 1 - Structure Setup Complete
- * 
+ *
  * This module provides AI-powered RFP/RFQ document processing capabilities
  * for the Energen Calculator v5.0.
- * 
+ *
  * @module rfp-processor
  */
 

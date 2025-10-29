@@ -1,8 +1,8 @@
 /**
  * config.cjs
- * 
+ *
  * Configuration for RFP Processor Module
- * 
+ *
  * @module config
  * @author Energen Systems Inc.
  */

@@ -24,14 +24,14 @@ export class ConfigService {
     this.environment = options.environment || process.env.NODE_ENV || 'development';
     this.configPath = options.configPath || path.join(__dirname, '../../config');
     this.logger = options.logger || console;
-    
+
     // Load order priority
     this.loadOrder = [
       'default',
       this.environment,
       'local'
     ];
-    
+
     this.initialized = false;
   }
 
@@ -48,19 +48,19 @@ export class ConfigService {
     try {
       // Load default configuration
       await this.loadDefaults();
-      
+
       // Load configuration files
       await this.loadConfigFiles();
-      
+
       // Apply environment variables
       this.loadEnvironmentVariables();
-      
+
       // Apply initial config overrides
       this.merge(initialConfig);
-      
+
       // Validate configuration
       this.validateAll();
-      
+
       this.initialized = true;
       this.logger.info('Configuration initialized successfully');
     } catch (error) {
@@ -83,7 +83,7 @@ export class ConfigService {
         port: 3002,
         host: 'localhost'
       },
-      
+
       // API settings
       api: {
         baseUrl: 'http://localhost:3002',
@@ -94,7 +94,7 @@ export class ConfigService {
           max: 100
         }
       },
-      
+
       // Database settings
       database: {
         type: 'sqlite',
@@ -102,7 +102,7 @@ export class ConfigService {
         logging: false,
         synchronize: this.environment === 'development'
       },
-      
+
       // Module settings
       modules: {
         calculation: {
@@ -138,7 +138,7 @@ export class ConfigService {
           scope: 'ZohoCRM.modules.ALL'
         }
       },
-      
+
       // Logging settings
       logging: {
         level: this.environment === 'production' ? 'info' : 'debug',
@@ -146,7 +146,7 @@ export class ConfigService {
         transports: ['console', 'file'],
         filePath: './logs/app.log'
       },
-      
+
       // Security settings
       security: {
         cors: {
@@ -161,7 +161,7 @@ export class ConfigService {
           enabled: true
         }
       },
-      
+
       // Cache settings
       cache: {
         enabled: true,
@@ -169,7 +169,7 @@ export class ConfigService {
         ttl: 300000, // 5 minutes
         maxSize: 100
       },
-      
+
       // Feature flags
       features: {
         googlePlacesEnrichment: true,
@@ -190,7 +190,7 @@ export class ConfigService {
   async loadConfigFiles() {
     for (const fileName of this.loadOrder) {
       const filePath = path.join(this.configPath, `${fileName}.json`);
-      
+
       if (fs.existsSync(filePath)) {
         try {
           const fileConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -369,7 +369,7 @@ export class ConfigService {
    */
   objectToMap(obj) {
     const map = new Map();
-    
+
     for (const [key, value] of Object.entries(obj)) {
       if (value && typeof value === 'object' && !Array.isArray(value)) {
         map.set(key, this.objectToMap(value));
@@ -377,7 +377,7 @@ export class ConfigService {
         map.set(key, value);
       }
     }
-    
+
     return map;
   }
 
@@ -387,7 +387,7 @@ export class ConfigService {
    */
   mapToObject(map) {
     const obj = {};
-    
+
     for (const [key, value] of map) {
       if (value instanceof Map) {
         obj[key] = this.mapToObject(value);
@@ -395,7 +395,7 @@ export class ConfigService {
         obj[key] = value;
       }
     }
-    
+
     return obj;
   }
 
@@ -421,14 +421,14 @@ export class ConfigService {
    */
   validateAll() {
     const errors = [];
-    
+
     for (const [path, validator] of this.validators) {
       const value = this.get(path);
       if (!validator(value)) {
         errors.push(`Invalid configuration for ${path}: ${value}`);
       }
     }
-    
+
     if (errors.length > 0) {
       throw new Error(`Configuration validation failed:\n${errors.join('\n')}`);
     }
@@ -444,9 +444,9 @@ export class ConfigService {
     if (!this.listeners.has(path)) {
       this.listeners.set(path, new Set());
     }
-    
+
     this.listeners.get(path).add(callback);
-    
+
     // Return unsubscribe function
     return () => {
       const listeners = this.listeners.get(path);
@@ -470,7 +470,7 @@ export class ConfigService {
         callback(newValue, oldValue, path);
       }
     }
-    
+
     // Notify parent path listeners
     const parts = path.split('.');
     for (let i = parts.length - 1; i > 0; i--) {

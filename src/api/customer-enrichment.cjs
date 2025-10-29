@@ -224,7 +224,7 @@ class CustomerEnrichmentService {
     // Step 1: Text Search to find the place
     const searchResponse = await placesNew.searchText(searchQuery, {
       fields: ['places.id', 'places.displayName', 'places.formattedAddress',
-               'places.internationalPhoneNumber', 'places.websiteUri', 'places.photos']
+        'places.internationalPhoneNumber', 'places.websiteUri', 'places.photos']
     });
 
     if (!searchResponse.success || !searchResponse.data.places || searchResponse.data.places.length === 0) {
@@ -242,7 +242,7 @@ class CustomerEnrichmentService {
     // Step 2: Get Place Details with photos
     const detailsResponse = await placesNew.getPlaceDetails(placeId, {
       fields: ['id', 'displayName', 'formattedAddress', 'internationalPhoneNumber',
-               'websiteUri', 'photos']
+        'websiteUri', 'photos']
     });
 
     if (!detailsResponse.success) {

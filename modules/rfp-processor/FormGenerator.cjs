@@ -1,7 +1,7 @@
 /**
  * Form Generator
  * Phase 1 - Structure Only
- * 
+ *
  * This service generates pre-filled forms for user review and confirmation.
  * It creates JSON structures that can be rendered in the UI for editing.
  */

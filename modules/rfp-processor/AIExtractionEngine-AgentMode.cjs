@@ -109,7 +109,7 @@ class AIExtractionEngine {
     };
 
     console.log('✅ AIExtractionEngine initialized (AGENT MODE)');
-    console.log(`   Mode: Claude Code Task Agent (no API credits used)`);
+    console.log('   Mode: Claude Code Task Agent (no API credits used)');
     console.log(`   Output: ${this.config.outputDir}`);
   }
 
@@ -119,7 +119,7 @@ class AIExtractionEngine {
   async extractFromText(pdfText, metadata = {}) {
     console.log('\n🤖 Starting AI extraction (Agent Mode)...');
     console.log(`   Text length: ${pdfText.length} characters`);
-    console.log(`   📝 Writing extraction task for agent...`);
+    console.log('   📝 Writing extraction task for agent...');
 
     const startTime = Date.now();
     this.stats.totalExtractions++;
@@ -138,12 +138,12 @@ class AIExtractionEngine {
 
       console.log(`   ✅ Task file created: ${taskFile}`);
       console.log(`   📤 Expected output: ${outputFile}`);
-      console.log(`\n   ⚠️  MANUAL STEP REQUIRED:`);
-      console.log(`   Please run this extraction manually using Claude Code:`);
+      console.log('\n   ⚠️  MANUAL STEP REQUIRED:');
+      console.log('   Please run this extraction manually using Claude Code:');
       console.log(`   1. Read the task file: ${taskFile}`);
-      console.log(`   2. Extract the structured data as JSON`);
+      console.log('   2. Extract the structured data as JSON');
       console.log(`   3. Write the result to: ${outputFile}`);
-      console.log(`\n   Waiting for output file to appear...`);
+      console.log('\n   Waiting for output file to appear...');
 
       // Wait for output file (with timeout)
       const maxWait = 300000; // 5 minutes
@@ -152,7 +152,7 @@ class AIExtractionEngine {
 
       while (waited < maxWait) {
         if (fs.existsSync(outputFile)) {
-          console.log(`   ✅ Output file detected!`);
+          console.log('   ✅ Output file detected!');
           break;
         }
         await this.sleep(checkInterval);
@@ -201,7 +201,7 @@ class AIExtractionEngine {
 
       this.stats.successfulExtractions++;
 
-      console.log(`   ✅ Extraction successful!`);
+      console.log('   ✅ Extraction successful!');
       console.log(`   ⏱️  Time: ${Date.now() - startTime}ms`);
 
       return extractedData;

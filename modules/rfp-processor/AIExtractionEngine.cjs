@@ -1,20 +1,20 @@
 /**
  * AIExtractionEngine.cjs
- * 
+ *
  * AI-powered RFP/RFQ document extraction engine using Claude 3.5 Sonnet
- * 
+ *
  * Features:
  * - Extracts structured data from government RFP documents
  * - Multimodal processing (text and images)
  * - Prompt caching for cost reduction (90% savings)
  * - Confidence scoring for all extracted fields
  * - Comprehensive error handling and retry logic
- * 
+ *
  * Cost Estimation:
  * - Average 20-page RFP: ~50,000 tokens input
  * - With prompt caching: $0.16 per document (first run), $0.02 (cached)
  * - Without caching: $1.60 per document
- * 
+ *
  * @module AIExtractionEngine
  * @requires @anthropic-ai/sdk
  * @author Energen Systems Inc.
@@ -298,7 +298,7 @@ class AIExtractionEngine {
    */
   buildExtractionPrompt(text, metadata = {}) {
     let prompt = '# RFP DOCUMENT TO ANALYZE\n\n';
-    
+
     if (metadata.fileName) {
       prompt += `**Document:** ${metadata.fileName}\n`;
     }
@@ -308,12 +308,12 @@ class AIExtractionEngine {
     if (metadata.source) {
       prompt += `**Source:** ${metadata.source}\n`;
     }
-    
+
     prompt += '\n---\n\n';
     prompt += text;
     prompt += '\n\n---\n\n';
     prompt += 'Extract all relevant information from this RFP document and return the structured JSON as specified.';
-    
+
     return prompt;
   }
 
@@ -326,14 +326,14 @@ class AIExtractionEngine {
   async extractFromText(pdfText, metadata = {}) {
     console.log('\n🤖 Starting AI extraction...');
     console.log(`   Text length: ${pdfText.length} characters`);
-    
+
     const startTime = Date.now();
     this.stats.totalExtractions++;
 
     try {
       // Build the prompt
       const userPrompt = this.buildExtractionPrompt(pdfText, metadata);
-      
+
       // Prepare system message with caching
       const systemMessages = [
         {
@@ -353,7 +353,7 @@ class AIExtractionEngine {
       for (let attempt = 1; attempt <= this.config.maxRetries; attempt++) {
         try {
           console.log(`   Attempt ${attempt}/${this.config.maxRetries}...`);
-          
+
           const response = await this.client.messages.create({
             model: this.config.model,
             max_tokens: this.config.maxTokens,
@@ -370,17 +370,17 @@ class AIExtractionEngine {
           // Track usage
           const usage = response.usage;
           this.stats.totalTokensUsed += (usage.input_tokens + usage.output_tokens);
-          
+
           // Calculate cost (Claude 3.5 Sonnet pricing)
           const inputCost = (usage.input_tokens / 1000000) * 3.00;
           const outputCost = (usage.output_tokens / 1000000) * 15.00;
-          const cacheCost = usage.cache_read_input_tokens 
-            ? (usage.cache_read_input_tokens / 1000000) * 0.30 
+          const cacheCost = usage.cache_read_input_tokens
+            ? (usage.cache_read_input_tokens / 1000000) * 0.30
             : 0;
           const cacheWriteCost = usage.cache_creation_input_tokens
             ? (usage.cache_creation_input_tokens / 1000000) * 3.75
             : 0;
-          
+
           const totalCost = inputCost + outputCost + cacheCost + cacheWriteCost;
           this.stats.totalCost += totalCost;
 
@@ -389,7 +389,7 @@ class AIExtractionEngine {
           }
 
           // Log usage details
-          console.log(`   ✅ Extraction successful!`);
+          console.log('   ✅ Extraction successful!');
           console.log(`   Input tokens: ${usage.input_tokens.toLocaleString()}`);
           console.log(`   Output tokens: ${usage.output_tokens.toLocaleString()}`);
           if (usage.cache_read_input_tokens) {
@@ -404,7 +404,7 @@ class AIExtractionEngine {
           // Extract JSON from response
           const content = response.content[0].text;
           let extractedData;
-          
+
           try {
             // Try to parse directly
             extractedData = JSON.parse(content);
@@ -464,7 +464,7 @@ class AIExtractionEngine {
 
         } catch (error) {
           lastError = error;
-          
+
           if (error.status === 429) {
             // Rate limit - wait and retry
             const waitTime = Math.pow(2, attempt) * 1000; // Exponential backoff
@@ -487,7 +487,7 @@ class AIExtractionEngine {
     } catch (error) {
       this.stats.failedExtractions++;
       console.error(`   ❌ Extraction failed: ${error.message}`);
-      
+
       // Return error result
       return {
         extractionId: `ext_error_${Date.now()}`,
@@ -634,8 +634,8 @@ class AIExtractionEngine {
   getStats() {
     return {
       ...this.stats,
-      averageCostPerExtraction: this.stats.totalExtractions > 0 
-        ? this.stats.totalCost / this.stats.totalExtractions 
+      averageCostPerExtraction: this.stats.totalExtractions > 0
+        ? this.stats.totalCost / this.stats.totalExtractions
         : 0,
       successRate: this.stats.totalExtractions > 0
         ? (this.stats.successfulExtractions / this.stats.totalExtractions) * 100
@@ -672,16 +672,16 @@ module.exports = { AIExtractionEngine };
 
 /**
  * USAGE EXAMPLE:
- * 
+ *
  * const AIExtractionEngine = require('./AIExtractionEngine.cjs');
- * 
+ *
  * // Initialize
  * const engine = new AIExtractionEngine({
  *   apiKey: process.env.ANTHROPIC_API_KEY,
  *   enableCaching: true,
  *   outputDir: './output/extractions'
  * });
- * 
+ *
  * // Extract from text
  * const rfpText = await fs.readFile('rfp-document.txt', 'utf8');
  * const extracted = await engine.extractFromText(rfpText, {
@@ -689,10 +689,10 @@ module.exports = { AIExtractionEngine };
  *   pageCount: 20,
  *   source: 'California FTB'
  * });
- * 
+ *
  * // Save results
  * await engine.saveExtraction(extracted);
- * 
+ *
  * // Get stats
  * console.log(engine.getStats());
  */

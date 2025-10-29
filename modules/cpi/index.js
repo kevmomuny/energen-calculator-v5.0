@@ -22,7 +22,7 @@ export class CPIModule extends EnergenModule {
     // FRED API configuration
     this.fredApiKey = null; // Will be set from config
     this.fredBaseUrl = 'https://api.stlouisfed.org/fred/series/observations';
-    
+
     // Metropolitan area CPI series IDs
     this.metroSeriesIds = {
       'SF': 'CUURS49BSA0',      // San Francisco-Oakland-Hayward
@@ -34,11 +34,11 @@ export class CPIModule extends EnergenModule {
 
     // ZIP to metro area mapping
     this.zipToMetro = this.initializeZipToMetro();
-    
+
     // Cache for CPI data
     this.cache = new Map();
     this.cacheTimeout = 24 * 60 * 60 * 1000; // 24 hours
-    
+
     // Latest CPI values cache
     this.latestCPI = new Map();
   }
@@ -48,14 +48,14 @@ export class CPIModule extends EnergenModule {
    */
   async onInit(config) {
     this.config = config;
-    
+
     // Get API key from config
     this.fredApiKey = config.fredApiKey || process.env.FRED_API_KEY;
-    
+
     if (!this.fredApiKey) {
       this.logger.warn('FRED API key not configured - CPI adjustments will use default values');
     }
-    
+
     // Get event bus dependency
     const eventBus = this.getDependency('eventBus');
     if (!eventBus) {
@@ -64,10 +64,10 @@ export class CPIModule extends EnergenModule {
 
     // Register event listeners
     this.setupEventListeners();
-    
+
     // Initialize CPI data
     await this.initializeCPIData();
-    
+
     this.logger.info('CPI module initialized');
   }
 
@@ -76,7 +76,7 @@ export class CPIModule extends EnergenModule {
    */
   setupEventListeners() {
     const eventBus = this.getDependency('eventBus');
-    
+
     // Listen for CPI requests
     eventBus.on('cpi:request', this.handleCPIRequest.bind(this));
     eventBus.on('cpi:calculate-adjustment', this.handleAdjustmentRequest.bind(this));
@@ -92,10 +92,10 @@ export class CPIModule extends EnergenModule {
 
     try {
       this.metrics.requestCount++;
-      
+
       const metroArea = metro || this.getMetroFromZip(zip);
       const cpiData = await this.getCPIData(metroArea);
-      
+
       const eventBus = this.getDependency('eventBus');
       eventBus.emit('cpi:response', {
         requestId,
@@ -104,7 +104,7 @@ export class CPIModule extends EnergenModule {
       });
     } catch (error) {
       this.handleError(error, 'cpi:request');
-      
+
       const eventBus = this.getDependency('eventBus');
       eventBus.emit('cpi:response', {
         requestId,
@@ -123,9 +123,9 @@ export class CPIModule extends EnergenModule {
 
     try {
       this.metrics.requestCount++;
-      
+
       const adjustment = await this.calculateAdjustment(amount, fromYear, toYear, metro);
-      
+
       const eventBus = this.getDependency('eventBus');
       eventBus.emit('cpi:adjustment-response', {
         requestId,
@@ -134,7 +134,7 @@ export class CPIModule extends EnergenModule {
       });
     } catch (error) {
       this.handleError(error, 'cpi:calculate-adjustment');
-      
+
       const eventBus = this.getDependency('eventBus');
       eventBus.emit('cpi:adjustment-response', {
         requestId,
@@ -152,7 +152,7 @@ export class CPIModule extends EnergenModule {
     const { zip } = data;
 
     const metro = this.getMetroFromZip(zip);
-    
+
     const eventBus = this.getDependency('eventBus');
     eventBus.emit('cpi:metro-response', {
       requestId,
@@ -202,16 +202,16 @@ export class CPIModule extends EnergenModule {
 
     // Get series ID for metro
     const seriesId = this.metroSeriesIds[metro] || this.metroSeriesIds['US'];
-    
+
     try {
       // Fetch from FRED if API key available
       if (this.fredApiKey) {
         const observations = await this.fetchCPIFromFRED(seriesId);
-        
+
         if (observations && observations.length > 0) {
           const latest = observations[observations.length - 1];
           const yearAgo = observations[observations.length - 13] || observations[0];
-          
+
           const cpiData = {
             metro,
             seriesId,
@@ -255,7 +255,7 @@ export class CPIModule extends EnergenModule {
 
     const endDate = new Date().toISOString().split('T')[0];
     const startDate = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-    
+
     const params = new URLSearchParams({
       series_id: seriesId,
       api_key: this.fredApiKey,
@@ -266,7 +266,7 @@ export class CPIModule extends EnergenModule {
     });
 
     const response = await fetch(`${this.fredBaseUrl}?${params}`);
-    
+
     if (!response.ok) {
       throw new Error(`FRED API error: ${response.status}`);
     }
@@ -281,10 +281,10 @@ export class CPIModule extends EnergenModule {
   async calculateAdjustment(amount, fromYear, toYear, metro = 'US') {
     const fromCPI = await this.getCPIForYear(fromYear, metro);
     const toCPI = await this.getCPIForYear(toYear, metro);
-    
+
     const adjustedAmount = amount * (toCPI / fromCPI);
     const inflationRate = ((toCPI - fromCPI) / fromCPI * 100).toFixed(2);
-    
+
     return {
       originalAmount: amount,
       adjustedAmount: adjustedAmount.toFixed(2),
@@ -304,7 +304,7 @@ export class CPIModule extends EnergenModule {
     // This would fetch historical CPI data
     // For now, use approximation based on latest data
     const latest = this.latestCPI.get(metro) || this.latestCPI.get('US');
-    
+
     if (!latest) {
       // Use fallback value
       return 300; // Approximate CPI value
@@ -312,7 +312,7 @@ export class CPIModule extends EnergenModule {
 
     const currentYear = new Date().getFullYear();
     const yearDiff = currentYear - year;
-    
+
     // Assume 2.5% annual inflation for approximation
     const approximateCPI = latest.value / Math.pow(1.025, yearDiff);
     return approximateCPI;
@@ -328,16 +328,16 @@ export class CPIModule extends EnergenModule {
       '945': 'SF', '946': 'SF', '947': 'SF', '948': 'SF', '949': 'SF',
       '950': 'SF', '951': 'SF', '952': 'SF', '953': 'SF', '954': 'SF',
       '955': 'SF',
-      
+
       // Los Angeles Area
       '900': 'LA', '901': 'LA', '902': 'LA', '903': 'LA', '904': 'LA',
       '905': 'LA', '906': 'LA', '907': 'LA', '908': 'LA', '910': 'LA',
       '911': 'LA', '912': 'LA', '913': 'LA', '914': 'LA', '915': 'LA',
       '916': 'LA', '917': 'LA', '918': 'LA',
-      
+
       // San Diego
       '919': 'SD', '920': 'SD', '921': 'SD',
-      
+
       // Riverside-San Bernardino
       '922': 'RIVERSIDE', '923': 'RIVERSIDE', '924': 'RIVERSIDE',
       '925': 'RIVERSIDE', '926': 'RIVERSIDE', '927': 'RIVERSIDE',
@@ -380,7 +380,7 @@ export class CPIModule extends EnergenModule {
    */
   getFallbackCPI(metro) {
     const data = this.latestCPI.get(metro) || this.latestCPI.get('US');
-    
+
     return {
       metro,
       seriesId: this.metroSeriesIds[metro] || this.metroSeriesIds['US'],
@@ -403,7 +403,7 @@ export class CPIModule extends EnergenModule {
    */
   runHealthChecks() {
     const checks = super.runHealthChecks();
-    
+
     // Check API key configuration
     checks.push({
       name: 'apiKey',
@@ -435,7 +435,7 @@ export class CPIModule extends EnergenModule {
     // Clear caches
     this.cache.clear();
     this.latestCPI.clear();
-    
+
     this.logger.info('CPI module shutdown complete');
   }
 }

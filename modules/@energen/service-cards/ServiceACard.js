@@ -12,7 +12,7 @@ export class ServiceACard {
     this.serviceCode = 'A';
     this.serviceName = 'Comprehensive Inspection';
     this.description = 'Complete system inspection including all components';
-    
+
     // kW range mappings
     this.kwRanges = {
       '2-14': { min: 2, max: 14 },
@@ -37,7 +37,7 @@ export class ServiceACard {
     } catch (e) {
       console.warn('Could not load settings from storage:', e);
     }
-    
+
     // Default settings
     return {
       labor: {
@@ -77,26 +77,26 @@ export class ServiceACard {
     const rangeKey = this.getKwRangeKey();
     const config = this.settings.serviceA[rangeKey];
     const laborRate = parseFloat(this.settings.labor.straightTime);
-    
+
     // Calculate components
     const labor = config.laborHours * laborRate;
     const mobilization = config.mobilizationHours * laborRate;
-    
+
     // Handle calculation mode
     let parts = config.parts;
     if (this.settings.calculationMode === 'job-specific' && rangeKey === '35-150') {
       // Use simplified parts for job-specific mode
       parts = 258.00;
     }
-    
+
     // Apply markup and freight to parts
     const markedUpParts = parts * (this.settings.partsMarkup || 1);
     const freight = markedUpParts * (this.settings.freightPercent || 0);
     const totalParts = markedUpParts + freight;
-    
+
     const perVisit = labor + mobilization + totalParts;
     const annual = perVisit * this.frequency;
-    
+
     return {
       serviceCode: this.serviceCode,
       serviceName: this.serviceName,
@@ -133,7 +133,7 @@ export class ServiceACard {
 
   render() {
     const calc = this.calculateService();
-    
+
     return `
       <div class="service-card" data-service="${this.serviceCode}">
         <div class="service-header">

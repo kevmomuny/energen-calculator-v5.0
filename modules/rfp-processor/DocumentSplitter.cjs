@@ -22,7 +22,7 @@ class DocumentSplitter {
       debug: (...args) => this.config.logLevel === 'debug' && console.log('[DEBUG]', ...args),
       info: (...args) => ['debug', 'info'].includes(this.config.logLevel) && console.log('[INFO]', ...args),
       warn: (...args) => ['debug', 'info', 'warn'].includes(this.config.logLevel) && console.warn('[WARN]', ...args),
-      error: (...args) => console.error('[ERROR]', ...args),
+      error: (...args) => console.error('[ERROR]', ...args)
     };
   }
 
@@ -45,16 +45,16 @@ class DocumentSplitter {
       await fs.access(pdfPath);
       const stats = await fs.stat(pdfPath);
       if (stats.size > this.config.maxFileSize) {
-        throw new Error(`File size exceeds maximum`);
+        throw new Error('File size exceeds maximum');
       }
       const pdfBuffer = await fs.readFile(pdfPath);
       const pdfDoc = await PDFDocument.load(pdfBuffer, {
         ignoreEncryption: true,
-        updateMetadata: false,
+        updateMetadata: false
       });
       const pageCount = pdfDoc.getPageCount();
       if (pageCount > this.config.maxPages) {
-        throw new Error(`Page count exceeds maximum`);
+        throw new Error('Page count exceeds maximum');
       }
       this.logger.info(`PDF loaded: ${pageCount} pages in ${Date.now() - startTime}ms`);
       return pdfDoc;
@@ -75,7 +75,7 @@ class DocumentSplitter {
         producer: pdfDoc.getProducer() || '',
         pages: pageCount,
         creationDate: pdfDoc.getCreationDate()?.toISOString() || null,
-        modificationDate: pdfDoc.getModificationDate()?.toISOString() || null,
+        modificationDate: pdfDoc.getModificationDate()?.toISOString() || null
       };
       this.logger.debug('Metadata extracted:', metadata);
       return metadata;
@@ -89,7 +89,7 @@ class DocumentSplitter {
         creator: '',
         producer: '',
         creationDate: null,
-        modificationDate: null,
+        modificationDate: null
       };
     }
   }
@@ -106,7 +106,7 @@ class DocumentSplitter {
         numPages: data.numpages,
         info: data.info,
         metadata: data.metadata,
-        version: data.version,
+        version: data.version
       };
     } catch (error) {
       this.logger.error(`Text extraction failed: ${error.message}`);
@@ -164,7 +164,7 @@ class DocumentSplitter {
               title: line.substring(0, 100),
               type: sectionType,
               startPage: currentPage,
-              confidence: this.calculateSectionConfidence(line, keyword),
+              confidence: this.calculateSectionConfidence(line, keyword)
             });
             break;
           }
@@ -179,7 +179,7 @@ class DocumentSplitter {
     for (let i = 0; i < sectionCandidates.length; i++) {
       const candidate = sectionCandidates[i];
       if (candidate.type === lastType) continue;
-      const endPage = i < sectionCandidates.length - 1 
+      const endPage = i < sectionCandidates.length - 1
         ? sectionCandidates[i + 1].startPage - 1
         : pageCount;
 
@@ -189,7 +189,7 @@ class DocumentSplitter {
         startPage: candidate.startPage,
         endPage: endPage,
         pageCount: endPage - candidate.startPage + 1,
-        outputPath: null,
+        outputPath: null
       });
       lastType = candidate.type;
     }
@@ -201,7 +201,7 @@ class DocumentSplitter {
         startPage: 1,
         endPage: pageCount,
         pageCount: pageCount,
-        outputPath: null,
+        outputPath: null
       });
     }
 
@@ -285,7 +285,7 @@ class DocumentSplitter {
         textExtracted: true,
         textLength: textData.text.length,
         processingTime,
-        success: true,
+        success: true
       };
       this.logger.info(`Analysis complete in ${processingTime}ms`);
       return result;
@@ -298,7 +298,7 @@ class DocumentSplitter {
         textExtracted: false,
         processingTime: Date.now() - startTime,
         success: false,
-        error: error.message,
+        error: error.message
       };
     }
   }

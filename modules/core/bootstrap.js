@@ -201,12 +201,12 @@ export class Bootstrap {
 
     for (const moduleName of initOrder) {
       const moduleData = this.modules.get(moduleName);
-      
+
       try {
         this.eventBus.emit(EventTypes.MODULE_INIT, { module: moduleName });
-        
+
         await moduleData.instance.init(moduleData.config);
-        
+
         this.eventBus.emit(EventTypes.MODULE_READY, { module: moduleName });
         this.logger.info(`Module ${moduleName} initialized`);
       } catch (error) {
@@ -275,7 +275,7 @@ export class Bootstrap {
   setupShutdownHandlers() {
     const shutdown = async (signal) => {
       this.logger.info(`Received ${signal}, shutting down gracefully...`);
-      
+
       try {
         await this.shutdown();
         process.exit(0);
@@ -314,10 +314,10 @@ export class Bootstrap {
 
       // Shutdown modules in reverse order
       const shutdownOrder = this.calculateInitOrder().reverse();
-      
+
       for (const moduleName of shutdownOrder) {
         const moduleData = this.modules.get(moduleName);
-        
+
         try {
           this.eventBus.emit(EventTypes.MODULE_SHUTDOWN, { module: moduleName });
           await moduleData.instance.shutdown();
@@ -376,7 +376,7 @@ export class Bootstrap {
    */
   async reloadModule(name) {
     const moduleData = this.modules.get(name);
-    
+
     if (!moduleData) {
       throw new Error(`Module ${name} not found`);
     }

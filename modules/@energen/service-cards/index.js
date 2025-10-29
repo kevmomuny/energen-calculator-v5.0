@@ -79,11 +79,11 @@ export function calculateBundleTotal(services, enabledStates = {}) {
     D: true,
     E: true
   };
-  
+
   const states = { ...defaultStates, ...enabledStates };
   const breakdown = {};
   let total = 0;
-  
+
   Object.entries(services).forEach(([code, service]) => {
     if (service && states[code]) {
       const calc = service.calculateService();
@@ -98,7 +98,7 @@ export function calculateBundleTotal(services, enabledStates = {}) {
       total += calc.annual;
     }
   });
-  
+
   return {
     total,
     breakdown,
@@ -120,7 +120,7 @@ export function loadSettings() {
         return JSON.parse(stored);
       }
     }
-    
+
     // Try window.energenSettings (from Settings Modal)
     if (typeof window !== 'undefined' && window.energenSettings) {
       return window.energenSettings;
@@ -128,7 +128,7 @@ export function loadSettings() {
   } catch (e) {
     console.warn('Could not load settings:', e);
   }
-  
+
   // Return default settings with complete service configurations
   return {
     labor: {

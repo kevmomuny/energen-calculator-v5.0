@@ -78,17 +78,17 @@ export class EnergenModule {
 
     this.state = 'initializing';
     this.metrics.startTime = Date.now();
-    
+
     try {
       // Validate configuration
       this.validateConfig(config);
-      
+
       // Initialize dependencies
       await this.initializeDependencies();
-      
+
       // Module-specific initialization
       await this.onInit(config);
-      
+
       this.state = 'initialized';
       this.metrics.initialized = true;
       this.logger.info(`Module ${this.name} v${this.version} initialized successfully`);
@@ -131,8 +131,8 @@ export class EnergenModule {
    * @returns {HealthStatus}
    */
   getHealth() {
-    const uptime = this.metrics.startTime 
-      ? Date.now() - this.metrics.startTime 
+    const uptime = this.metrics.startTime
+      ? Date.now() - this.metrics.startTime
       : 0;
 
     const checks = this.runHealthChecks();
@@ -145,7 +145,7 @@ export class EnergenModule {
       metrics: {
         requestCount: this.metrics.requestCount,
         errorCount: this.metrics.errorCount,
-        errorRate: this.metrics.requestCount > 0 
+        errorRate: this.metrics.requestCount > 0
           ? (this.metrics.errorCount / this.metrics.requestCount * 100).toFixed(2) + '%'
           : '0%'
       },
@@ -169,10 +169,10 @@ export class EnergenModule {
     });
 
     // Error rate check
-    const errorRate = this.metrics.requestCount > 0 
-      ? this.metrics.errorCount / this.metrics.requestCount 
+    const errorRate = this.metrics.requestCount > 0
+      ? this.metrics.errorCount / this.metrics.requestCount
       : 0;
-    
+
     checks.push({
       name: 'errorRate',
       passed: errorRate < 0.1, // Less than 10% error rate
@@ -268,10 +268,10 @@ export class EnergenModule {
     try {
       // Module-specific shutdown logic
       await this.onShutdown();
-      
+
       // Clear dependencies
       this.dependencies.clear();
-      
+
       this.state = 'shutdown';
       this.emit(ModuleEvents.SHUTDOWN, { module: this.name });
       this.logger.info(`Module ${this.name} shutdown successfully`);

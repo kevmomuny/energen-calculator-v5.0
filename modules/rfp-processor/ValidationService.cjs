@@ -1,7 +1,7 @@
 /**
  * Validation Service
  * Phase 1 - Structure Only
- * 
+ *
  * This service provides validation utilities for all stages of RFP processing.
  */
 

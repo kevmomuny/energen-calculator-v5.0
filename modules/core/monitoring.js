@@ -117,12 +117,12 @@ export class MonitoringService {
       try {
         const moduleHealth = await this.checkModuleHealth(name, data);
         results.modules[name] = moduleHealth;
-        
+
         if (!moduleHealth.healthy) {
           results.healthy = false;
           results.status = 'degraded';
         }
-        
+
         data.lastCheck = Date.now();
         data.status = moduleHealth.healthy ? 'healthy' : 'unhealthy';
       } catch (error) {
@@ -158,16 +158,16 @@ export class MonitoringService {
    */
   async checkModuleHealth(name, data) {
     const { module } = data;
-    
+
     // Get module's own health status if available
     if (typeof module.getHealth === 'function') {
       const health = await module.getHealth();
-      
+
       // Update metrics
       if (health.metrics) {
         this.updateModuleMetrics(name, health.metrics);
       }
-      
+
       return {
         healthy: health.healthy,
         status: health.status,
@@ -324,12 +324,12 @@ export class MonitoringService {
    */
   addAlert(alert) {
     this.alerts.push(alert);
-    
+
     // Trim alerts if needed
     if (this.alerts.length > this.maxAlertHistory) {
       this.alerts.shift();
     }
-    
+
     this.logger.warn(`Alert: ${alert.message}`);
   }
 
@@ -367,8 +367,8 @@ export class MonitoringService {
 
     // Determine overall status
     if (dashboard.metrics.unhealthyModules > 0) {
-      dashboard.status = dashboard.metrics.unhealthyModules === dashboard.metrics.totalModules 
-        ? 'critical' 
+      dashboard.status = dashboard.metrics.unhealthyModules === dashboard.metrics.totalModules
+        ? 'critical'
         : 'degraded';
     }
 
@@ -407,7 +407,7 @@ export class MonitoringService {
 
     const data = this.modules.get(module);
     data.metrics[metric] = value;
-    
+
     // Emit metric event
     this.eventBus.emit('monitoring:metric', {
       module,
@@ -462,7 +462,7 @@ export class MonitoringService {
   async generateReport() {
     const health = await this.performHealthCheck();
     const dashboard = this.getDashboard();
-    
+
     let report = `
 # Health Report
 Generated: ${new Date().toISOString()}

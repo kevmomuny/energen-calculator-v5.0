@@ -61,7 +61,7 @@ export class PrevailingWageModule extends EnergenModule {
 
     // ZIP to county mapping (partial - would need full database)
     this.zipToCounty = this.initializeZipMapping();
-    
+
     // Cache for API responses
     this.cache = new Map();
     this.cacheTimeout = 24 * 60 * 60 * 1000; // 24 hours
@@ -72,7 +72,7 @@ export class PrevailingWageModule extends EnergenModule {
    */
   async onInit(config) {
     this.config = config;
-    
+
     // Get event bus dependency
     const eventBus = this.getDependency('eventBus');
     if (!eventBus) {
@@ -81,7 +81,7 @@ export class PrevailingWageModule extends EnergenModule {
 
     // Register event listeners
     this.setupEventListeners();
-    
+
     this.logger.info('Prevailing Wage module initialized');
   }
 
@@ -90,7 +90,7 @@ export class PrevailingWageModule extends EnergenModule {
    */
   setupEventListeners() {
     const eventBus = this.getDependency('eventBus');
-    
+
     // Listen for prevailing wage requests
     eventBus.on('prevailing-wage:request', this.handlePrevailingWageRequest.bind(this));
     eventBus.on('per-diem:request', this.handlePerDiemRequest.bind(this));
@@ -106,9 +106,9 @@ export class PrevailingWageModule extends EnergenModule {
 
     try {
       this.metrics.requestCount++;
-      
+
       const wageData = await this.getPrevailingWageData(zip, state);
-      
+
       const eventBus = this.getDependency('eventBus');
       eventBus.emit('prevailing-wage:response', {
         requestId,
@@ -117,7 +117,7 @@ export class PrevailingWageModule extends EnergenModule {
       });
     } catch (error) {
       this.handleError(error, 'prevailing-wage:request');
-      
+
       const eventBus = this.getDependency('eventBus');
       eventBus.emit('prevailing-wage:response', {
         requestId,
@@ -136,9 +136,9 @@ export class PrevailingWageModule extends EnergenModule {
 
     try {
       this.metrics.requestCount++;
-      
+
       const perDiemData = await this.getPerDiemRates(zip, state);
-      
+
       const eventBus = this.getDependency('eventBus');
       eventBus.emit('per-diem:response', {
         requestId,
@@ -147,7 +147,7 @@ export class PrevailingWageModule extends EnergenModule {
       });
     } catch (error) {
       this.handleError(error, 'per-diem:request');
-      
+
       const eventBus = this.getDependency('eventBus');
       eventBus.emit('per-diem:response', {
         requestId,
@@ -165,7 +165,7 @@ export class PrevailingWageModule extends EnergenModule {
     const { county, state = 'CA' } = data;
 
     const isRequired = this.isPrevailingWageArea(county, state);
-    
+
     const eventBus = this.getDependency('eventBus');
     eventBus.emit('prevailing-wage:check-response', {
       requestId,
@@ -192,12 +192,12 @@ export class PrevailingWageModule extends EnergenModule {
       const county = this.getCountyFromZip(zip);
       const zone = county ? this.countyToZone[county] : 3;
       const multiplier = this.zoneMultipliers[zone] || 1.0;
-      
+
       // Calculate adjusted rates based on zone
       const electricianRate = this.californiaRates.electrician.journeyman * multiplier;
       const foremanRate = this.californiaRates.electrician.foreman * multiplier;
       const totalFringe = Object.values(this.californiaRates.fringe).reduce((a, b) => a + b, 0);
-      
+
       const wageData = {
         location: {
           zip,
@@ -301,7 +301,7 @@ export class PrevailingWageModule extends EnergenModule {
       '945': 'Alameda', '946': 'Alameda', '947': 'Contra Costa', '948': 'Marin',
       '949': 'Marin', '943': 'San Mateo', '950': 'Santa Clara', '951': 'Santa Clara',
       '952': 'Contra Costa', '953': 'Solano', '954': 'Sonoma', '955': 'Sonoma',
-      
+
       // Los Angeles Area
       '900': 'Los Angeles', '901': 'Los Angeles', '902': 'Los Angeles',
       '903': 'Los Angeles', '904': 'Los Angeles', '905': 'Los Angeles',
@@ -309,13 +309,13 @@ export class PrevailingWageModule extends EnergenModule {
       '910': 'Los Angeles', '911': 'Los Angeles', '912': 'Los Angeles',
       '913': 'Los Angeles', '914': 'Los Angeles', '915': 'Los Angeles',
       '916': 'Los Angeles', '917': 'Los Angeles', '918': 'Los Angeles',
-      
+
       // San Diego
       '919': 'San Diego', '920': 'San Diego', '921': 'San Diego',
-      
+
       // Orange County
       '926': 'Orange', '927': 'Orange', '928': 'Orange',
-      
+
       // Sacramento Valley
       '956': 'Sacramento', '957': 'Sacramento', '958': 'Sacramento',
       '959': 'Nevada', '960': 'Nevada', '961': 'Nevada'
@@ -336,7 +336,7 @@ export class PrevailingWageModule extends EnergenModule {
    */
   isPrevailingWageArea(county, state) {
     if (state !== 'CA') return false;
-    
+
     // In California, public works projects always require prevailing wage
     // This is a simplified check - real implementation would check project type
     return true;
@@ -347,7 +347,7 @@ export class PrevailingWageModule extends EnergenModule {
    */
   runHealthChecks() {
     const checks = super.runHealthChecks();
-    
+
     // Check cache health
     checks.push({
       name: 'cache',
@@ -372,7 +372,7 @@ export class PrevailingWageModule extends EnergenModule {
   async onShutdown() {
     // Clear cache
     this.cache.clear();
-    
+
     this.logger.info('Prevailing Wage module shutdown complete');
   }
 }

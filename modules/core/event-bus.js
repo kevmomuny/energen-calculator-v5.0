@@ -33,11 +33,11 @@ export class EventBus {
    * @returns {Function} Unsubscribe function
    */
   on(event, handler, options = {}) {
-    const { 
-      once = false, 
-      priority = 0, 
+    const {
+      once = false,
+      priority = 0,
       async = false,
-      context = null 
+      context = null
     } = options;
 
     // Handle wildcard subscriptions
@@ -64,7 +64,7 @@ export class EventBus {
 
     const handlers = this.events.get(event);
     handlers.push(wrappedHandler);
-    
+
     // Sort by priority (higher priority first)
     handlers.sort((a, b) => b.priority - a.priority);
 
@@ -117,16 +117,16 @@ export class EventBus {
 
     const handlers = this.events.get(event);
     const index = handlers.findIndex(h => h.id === handlerId);
-    
+
     if (index !== -1) {
       const handler = handlers[index];
       this.asyncHandlers.delete(handler.id);
       handlers.splice(index, 1);
-      
+
       if (handlers.length === 0) {
         this.events.delete(event);
       }
-      
+
       this.updateMetrics('unsubscribe', event);
     }
   }
@@ -140,10 +140,10 @@ export class EventBus {
 
     const handlers = this.wildcardHandlers.get(pattern);
     const index = handlers.findIndex(h => h.id === handlerId);
-    
+
     if (index !== -1) {
       handlers.splice(index, 1);
-      
+
       if (handlers.length === 0) {
         this.wildcardHandlers.delete(pattern);
       }
@@ -169,12 +169,12 @@ export class EventBus {
     // Execute direct handlers
     if (this.events.has(event)) {
       const handlers = [...this.events.get(event)];
-      
+
       for (const handler of handlers) {
         try {
           const result = await this.executeHandler(handler, processedData, event);
           results.push(result);
-          
+
           // Remove once handlers
           if (handler.once) {
             this.off(event, handler.id);
@@ -193,7 +193,7 @@ export class EventBus {
           try {
             const result = await this.executeHandler(handler, processedData, event);
             results.push(result);
-            
+
             if (handler.once) {
               this.offWildcard(pattern, handler.id);
             }
@@ -228,12 +228,12 @@ export class EventBus {
     // Execute direct handlers
     if (this.events.has(event)) {
       const handlers = [...this.events.get(event)];
-      
+
       for (const handler of handlers) {
         try {
           const result = this.executeHandlerSync(handler, data, event);
           results.push(result);
-          
+
           if (handler.once) {
             this.off(event, handler.id);
           }
@@ -253,7 +253,7 @@ export class EventBus {
    */
   async executeHandler(handler, data, event) {
     const context = handler.context || this;
-    
+
     if (handler.async || this.asyncHandlers.has(handler.id)) {
       return await handler.handler.call(context, data, event);
     } else {
@@ -284,11 +284,11 @@ export class EventBus {
    */
   async applyMiddleware(event, data) {
     let processedData = data;
-    
+
     for (const middleware of this.middleware) {
       processedData = await middleware(event, processedData);
     }
-    
+
     return processedData;
   }
 
@@ -319,7 +319,7 @@ export class EventBus {
   removeAllListeners(event) {
     if (event) {
       this.events.delete(event);
-      
+
       // Remove matching wildcard handlers
       for (const [pattern, handlers] of this.wildcardHandlers) {
         if (pattern === event) {
@@ -340,11 +340,11 @@ export class EventBus {
    */
   listenerCount(event) {
     let count = 0;
-    
+
     if (this.events.has(event)) {
       count += this.events.get(event).length;
     }
-    
+
     // Count wildcard matches
     for (const [pattern, handlers] of this.wildcardHandlers) {
       const regex = this.patternToRegex(pattern);
@@ -352,7 +352,7 @@ export class EventBus {
         count += handlers.length;
       }
     }
-    
+
     return count;
   }
 
@@ -412,22 +412,22 @@ export class EventBus {
    */
   updateMetrics(action, event) {
     this.metrics.totalEvents++;
-    
+
     if (!this.metrics.eventCounts.has(event)) {
       this.metrics.eventCounts.set(event, 0);
     }
-    
+
     if (action === 'emit') {
       this.metrics.eventCounts.set(
-        event, 
+        event,
         this.metrics.eventCounts.get(event) + 1
       );
     }
-    
+
     if (!this.metrics.handlerCounts.has(event)) {
       this.metrics.handlerCounts.set(event, 0);
     }
-    
+
     this.metrics.handlerCounts.set(event, this.listenerCount(event));
   }
 
@@ -508,23 +508,23 @@ export const EventTypes = {
   MODULE_READY: 'module:ready',
   MODULE_ERROR: 'module:error',
   MODULE_SHUTDOWN: 'module:shutdown',
-  
+
   // Data events
   DATA_CREATED: 'data:created',
   DATA_UPDATED: 'data:updated',
   DATA_DELETED: 'data:deleted',
   DATA_SYNC: 'data:sync',
-  
+
   // Calculation events
   CALC_START: 'calc:start',
   CALC_COMPLETE: 'calc:complete',
   CALC_ERROR: 'calc:error',
-  
+
   // API events
   API_REQUEST: 'api:request',
   API_RESPONSE: 'api:response',
   API_ERROR: 'api:error',
-  
+
   // System events
   SYSTEM_ERROR: 'system:error',
   SYSTEM_WARNING: 'system:warning',

@@ -1,7 +1,7 @@
 /**
  * RFP Processing API Endpoints
  * Phase 1: Upload, status tracking, and data retrieval
- * 
+ *
  * Endpoints:
  * - POST /upload - Upload PDF file
  * - GET /status/:processingId - Check processing status
@@ -47,7 +47,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  limits: { 
+  limits: {
     fileSize: config.upload.maxFileSize
   },
   fileFilter: (req, file, cb) => {
@@ -62,7 +62,7 @@ const upload = multer({
 // Update processing status
 function updateStatus(processingId, stage, progress, error = null) {
   const status = processingStatus.get(processingId) || {};
-  
+
   processingStatus.set(processingId, {
     ...status,
     status: error ? 'failed' : (progress === 100 ? 'completed' : 'processing'),
@@ -80,7 +80,7 @@ async function processRFP(filePath, processingId, originalName) {
     updateStatus(processingId, 'loading', 10);
 
     // Step 1: Load and analyze PDF
-    console.log(`[RFP] Step 1: Analyzing PDF...`);
+    console.log('[RFP] Step 1: Analyzing PDF...');
     const splitter = new DocumentSplitter(config);
     const analysis = await splitter.analyzePDF(filePath);
 
@@ -94,24 +94,24 @@ async function processRFP(filePath, processingId, originalName) {
     updateStatus(processingId, 'extracting', 30);
 
     // Step 2: Extract structured data with AI
-    console.log(`[RFP] Step 2: Extracting with AI...`);
+    console.log('[RFP] Step 2: Extracting with AI...');
     const extractor = new AIExtractionEngine(config);
     const extraction = await extractor.extractFromText(
       textData.text,
       { sourceFile: originalName }
     );
-    console.log(`[RFP] Extraction complete. Data keys:`, Object.keys(extraction.data || {}));
+    console.log('[RFP] Extraction complete. Data keys:', Object.keys(extraction.data || {}));
     updateStatus(processingId, 'mapping', 60);
 
     // Step 3: Map services
-    console.log(`[RFP] Step 3: Mapping services...`);
+    console.log('[RFP] Step 3: Mapping services...');
     const services = extraction.data?.services || extraction.services || [];
     console.log(`[RFP] Found ${services.length} services to map`);
     const mapper = new ServiceMappingEngine(config);
     const mappedServices = await mapper.mapServices(services);
     console.log(`[RFP] Service mapping complete: ${mappedServices.length} services mapped`);
     updateStatus(processingId, 'finalizing', 80);
-    
+
     // Step 4: Save extraction results
     const result = {
       ...extraction,
@@ -120,11 +120,11 @@ async function processRFP(filePath, processingId, originalName) {
       processingId,
       originalFileName: originalName
     };
-    
+
     // Store extraction data
     const extractionId = extraction.extractionId;
     extractionData.set(extractionId, result);
-    
+
     // Save to file system
     const extractionDir = path.join(__dirname, '../../data/rfp-extractions');
     await fs.mkdir(extractionDir, { recursive: true });
@@ -132,7 +132,7 @@ async function processRFP(filePath, processingId, originalName) {
       path.join(extractionDir, `${extractionId}.json`),
       JSON.stringify(result, null, 2)
     );
-    
+
     // Update status to completed
     updateStatus(processingId, 'completed', 100);
     processingStatus.get(processingId).extractionId = extractionId;
@@ -140,7 +140,7 @@ async function processRFP(filePath, processingId, originalName) {
       services: (extraction.data?.services || []).length,
       confidence: extraction.confidence || 0
     };
-    
+
     return result;
   } catch (error) {
     updateStatus(processingId, 'failed', 0, error.message);
@@ -240,18 +240,18 @@ router.get('/status/:processingId', (req, res) => {
 router.get('/extraction/:extractionId', async (req, res) => {
   try {
     const { extractionId } = req.params;
-    
+
     // Try memory first
     let extraction = extractionData.get(extractionId);
-    
+
     // If not in memory, try loading from file
     if (!extraction) {
       const extractionPath = path.join(
-        __dirname, 
+        __dirname,
         '../../data/rfp-extractions',
         `${extractionId}.json`
       );
-      
+
       try {
         const fileContent = await fs.readFile(extractionPath, 'utf8');
         extraction = JSON.parse(fileContent);
@@ -292,14 +292,14 @@ router.post('/verify/:extractionId', async (req, res) => {
 
     // Get existing extraction
     let extraction = extractionData.get(extractionId);
-    
+
     if (!extraction) {
       const extractionPath = path.join(
         __dirname,
         '../../data/rfp-extractions',
         `${extractionId}.json`
       );
-      
+
       try {
         const fileContent = await fs.readFile(extractionPath, 'utf8');
         extraction = JSON.parse(fileContent);
@@ -440,13 +440,13 @@ router.delete('/cleanup/:processingId', async (req, res) => {
     // Delete extraction data if exists
     if (status.extractionId) {
       extractionData.delete(status.extractionId);
-      
+
       const extractionPath = path.join(
         __dirname,
         '../../data/rfp-extractions',
         `${status.extractionId}.json`
       );
-      
+
       try {
         await fs.unlink(extractionPath);
       } catch (error) {
@@ -505,7 +505,7 @@ setInterval(() => {
 
   for (const [processingId, status] of processingStatus.entries()) {
     const age = now - new Date(status.startTime).getTime();
-    
+
     if (age > maxAge) {
       processingStatus.delete(processingId);
       console.log(`Cleaned up old processing job: ${processingId}`);

@@ -38,18 +38,18 @@ export class SettingsModule extends EnergenModule {
     this.config = config;
     this.eventBus = config.eventBus;
     this.logger = config.logger;
-    
+
     // Load saved settings or use defaults
     this.settings = { ...this.defaults, ...this.loadSettings() };
-    
+
     // Register event listeners
     this.registerEventListeners();
-    
+
     this.logger?.info('Settings module initialized', { settings: this.settings });
-    
+
     // Emit ready event
     this.eventBus?.emit('settings:ready', this.settings);
-    
+
     return true;
   }
 
@@ -111,12 +111,12 @@ export class SettingsModule extends EnergenModule {
   getSetting(key) {
     const keys = key.split('.');
     let value = this.settings;
-    
+
     for (const k of keys) {
       value = value?.[k];
       if (value === undefined) break;
     }
-    
+
     return value;
   }
 
@@ -124,15 +124,15 @@ export class SettingsModule extends EnergenModule {
     const keys = key.split('.');
     const lastKey = keys.pop();
     let target = this.settings;
-    
+
     for (const k of keys) {
       if (!target[k]) target[k] = {};
       target = target[k];
     }
-    
+
     target[lastKey] = value;
     this.saveSettings();
-    
+
     // Emit specific setting change
     this.eventBus?.emit(`settings:${key}:changed`, value);
   }
@@ -149,7 +149,7 @@ export class SettingsModule extends EnergenModule {
 
   runHealthChecks() {
     const checks = [];
-    
+
     // Check settings loaded
     checks.push({
       name: 'Settings Loaded',
@@ -160,17 +160,17 @@ export class SettingsModule extends EnergenModule {
     // Check critical settings
     const criticalKeys = ['laborRate', 'markupRate', 'taxRate'];
     const missingKeys = criticalKeys.filter(key => !this.settings[key]);
-    
+
     checks.push({
       name: 'Critical Settings',
       status: missingKeys.length === 0 ? 'healthy' : 'warning',
-      message: missingKeys.length === 0 
+      message: missingKeys.length === 0
         ? 'All critical settings present'
         : `Missing: ${missingKeys.join(', ')}`
     });
 
     const healthy = checks.every(c => c.status !== 'unhealthy');
-    
+
     return {
       healthy,
       status: healthy ? 'Settings module operational' : 'Settings issues detected',

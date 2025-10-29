@@ -12,11 +12,11 @@ export class ServiceCCard {
     this.serviceCode = 'C';
     this.serviceName = 'Coolant Service';
     this.description = 'Coolant flush, replacement, and hose/belt inspection';
-    
+
     // Constants from Excel
     this.coolantCostPerGallon = 22.50; // From Excel (not the $15 shown in some places)
     this.coolantSampleCost = 16.55;
-    
+
     // kW range mappings
     this.kwRanges = {
       '2-14': { min: 2, max: 14 },
@@ -41,7 +41,7 @@ export class ServiceCCard {
     } catch (e) {
       console.warn('Could not load settings from storage:', e);
     }
-    
+
     // Default settings from monterey_mess.xlsx Ser Menu 2022 Rates
     return {
       labor: {
@@ -87,33 +87,33 @@ export class ServiceCCard {
     const rangeKey = this.getKwRangeKey();
     const config = this.settings.serviceC[rangeKey];
     const laborRate = parseFloat(this.settings.labor.straightTime);
-    
+
     // Calculate components
     const labor = config.laborHours * laborRate;
     const mobilization = config.mobilizationHours * laborRate;
-    
+
     // Parts (hoses and belts)
     const hosesBeltsCost = config.hosesBelts;
-    
+
     // Coolant cost (consumable)
     const coolantCost = config.coolantGallons * this.coolantCostPerGallon;
-    
+
     // Apply markups
     const markedUpParts = hosesBeltsCost * (this.settings.partsMarkup || 1);
     const markedUpCoolant = coolantCost * (this.settings.coolantMarkup || 1.5);
-    
+
     // Add coolant sample test
     const sampleCost = this.coolantSampleCost;
-    
+
     // Total consumables includes coolant and sample
     const totalConsumables = markedUpCoolant + sampleCost;
-    
+
     // Calculate freight on marked up parts only (not consumables)
     const freight = markedUpParts * (this.settings.freightPercent || 0);
-    
+
     const perVisit = labor + mobilization + markedUpParts + totalConsumables + freight;
     const annual = perVisit * this.frequency;
-    
+
     return {
       serviceCode: this.serviceCode,
       serviceName: this.serviceName,
@@ -138,7 +138,7 @@ export class ServiceCCard {
         mobilization: `${config.mobilizationHours} hrs × $${laborRate}`,
         hosesBelts: `$${hosesBeltsCost.toFixed(2)} × ${this.settings.partsMarkup}`,
         coolant: `${config.coolantGallons} gal × $${this.coolantCostPerGallon} × ${this.settings.coolantMarkup}`,
-        sample: `Coolant analysis sample`,
+        sample: 'Coolant analysis sample',
         freight: `${(this.settings.freightPercent * 100).toFixed(0)}% of parts`
       }
     };
@@ -156,10 +156,10 @@ export class ServiceCCard {
 
   render() {
     const calc = this.calculateService();
-    const frequencyText = this.frequency === 1 ? 'Annual' : 
-                         this.frequency === 0.5 ? 'Biannual' :
-                         `${this.frequency}x per year`;
-    
+    const frequencyText = this.frequency === 1 ? 'Annual' :
+      this.frequency === 0.5 ? 'Biannual' :
+        `${this.frequency}x per year`;
+
     return `
       <div class="service-card" data-service="${this.serviceCode}">
         <div class="service-header">

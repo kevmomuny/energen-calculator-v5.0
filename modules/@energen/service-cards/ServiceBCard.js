@@ -12,7 +12,7 @@ export class ServiceBCard {
     this.serviceCode = 'B';
     this.serviceName = 'Oil & Filter Service';
     this.description = 'Oil change and filter replacement';
-    
+
     // kW range mappings
     this.kwRanges = {
       '2-14': { min: 2, max: 14 },
@@ -26,7 +26,7 @@ export class ServiceBCard {
       '1055-1500': { min: 1055, max: 1500 },
       '1500-2050': { min: 1500, max: 2050 }
     };
-    
+
     this.oilCostPerGallon = 16.00;
   }
 
@@ -39,7 +39,7 @@ export class ServiceBCard {
     } catch (e) {
       console.warn('Could not load settings from storage:', e);
     }
-    
+
     // Default settings from monterey_mess.xlsx
     return {
       labor: {
@@ -80,38 +80,38 @@ export class ServiceBCard {
     const rangeKey = this.getKwRangeKey();
     const config = this.settings.serviceB[rangeKey];
     const laborRate = parseFloat(this.settings.labor.straightTime);
-    
+
     // Calculate components
     const labor = config.laborHours * laborRate;
     const mobilization = config.mobilizationHours * laborRate;
-    
+
     // Calculate parts (filter)
     let filterCost = config.filterCost;
     if (this.settings.calculationMode === 'job-specific' && rangeKey === '35-150') {
       // Use simplified parts for job-specific mode
       filterCost = 229.20; // Keep exact filter cost
     }
-    
+
     // Calculate oil cost
     const oilCost = config.oilGallons * this.oilCostPerGallon;
-    
+
     // Oil analysis is a fixed cost (lab fee) - no markup
     const oilAnalysisCost = 16.55;
-    
+
     // Apply markup to parts and oil
     const markedUpFilter = filterCost * (this.settings.partsMarkup || 1);
     const markedUpOil = oilCost * (this.settings.oilMarkup || 1.5);
-    
+
     // Calculate freight on marked up parts only (not on analysis lab fee)
     const totalPartsBeforeFreight = markedUpFilter + markedUpOil;
     const freight = totalPartsBeforeFreight * (this.settings.freightPercent || 0);
-    
+
     const totalParts = markedUpFilter;
     const totalConsumables = markedUpOil + oilAnalysisCost; // Include analysis in consumables
-    
+
     const perVisit = labor + mobilization + totalParts + totalConsumables + freight;
     const annual = perVisit * this.frequency;
-    
+
     return {
       serviceCode: this.serviceCode,
       serviceName: this.serviceName,
@@ -137,7 +137,7 @@ export class ServiceBCard {
         mobilization: `${config.mobilizationHours} hrs × $${laborRate}`,
         filter: `$${filterCost.toFixed(2)} × ${this.settings.partsMarkup}`,
         oil: `${config.oilGallons} gal × $${this.oilCostPerGallon} × ${this.settings.oilMarkup}`,
-        oilAnalysis: `Fixed lab fee (no markup)`,
+        oilAnalysis: 'Fixed lab fee (no markup)',
         freight: `${(this.settings.freightPercent * 100).toFixed(0)}% of parts`
       }
     };
@@ -155,7 +155,7 @@ export class ServiceBCard {
 
   render() {
     const calc = this.calculateService();
-    
+
     return `
       <div class="service-card" data-service="${this.serviceCode}">
         <div class="service-header">

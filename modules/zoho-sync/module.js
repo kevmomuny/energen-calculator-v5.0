@@ -17,7 +17,7 @@ export class ZohoSyncModule extends EnergenModule {
       version: '4.1.0',
       ...config
     });
-    
+
     this.accessToken = null;
     this.refreshToken = null;
     this.tokenExpiry = null;
@@ -32,20 +32,20 @@ export class ZohoSyncModule extends EnergenModule {
   async onInit(config) {
     // Validate configuration
     this.validateZohoConfig(config);
-    
+
     // Initialize OAuth if tokens provided
     if (config.refreshToken) {
       await this.initializeOAuth(config);
     }
-    
+
     // Set up event listeners
     this.setupEventListeners();
-    
+
     // Start sync processor if enabled
     if (config.enabled && config.autoSync) {
       this.startSyncProcessor();
     }
-    
+
     this.logger.info('Zoho sync module initialized', {
       enabled: config.enabled,
       autoSync: config.autoSync,
@@ -74,11 +74,11 @@ export class ZohoSyncModule extends EnergenModule {
     try {
       // In production, would refresh the access token
       this.refreshToken = config.refreshToken;
-      
+
       // Mock token refresh
       this.accessToken = 'mock_access_token_' + Date.now();
       this.tokenExpiry = Date.now() + 3600000; // 1 hour
-      
+
       this.logger.info('Zoho OAuth tokens initialized');
     } catch (error) {
       this.logger.error('Failed to initialize Zoho OAuth:', error);
@@ -91,7 +91,7 @@ export class ZohoSyncModule extends EnergenModule {
    */
   setupEventListeners() {
     const eventBus = this.getDependency('eventBus');
-    
+
     // Listen for sync requests
     eventBus.on('zoho:sync', async (data) => {
       try {
@@ -107,7 +107,7 @@ export class ZohoSyncModule extends EnergenModule {
         });
       }
     });
-    
+
     // Listen for customer search requests
     eventBus.on('zoho:searchCustomer', async (data) => {
       try {
@@ -123,7 +123,7 @@ export class ZohoSyncModule extends EnergenModule {
         });
       }
     });
-    
+
     // Listen for data changes to sync
     eventBus.on('data:updated', (data) => {
       if (this.config.autoSync) {
@@ -139,7 +139,7 @@ export class ZohoSyncModule extends EnergenModule {
     this.syncInterval = setInterval(async () => {
       await this.processSyncQueue();
     }, this.config.syncInterval || 30000); // 30 seconds default
-    
+
     this.logger.info('Sync processor started');
   }
 
@@ -148,9 +148,9 @@ export class ZohoSyncModule extends EnergenModule {
    */
   async processSyncQueue() {
     if (this.syncQueue.length === 0) return;
-    
+
     const batch = this.syncQueue.splice(0, 10); // Process up to 10 items
-    
+
     for (const item of batch) {
       try {
         await this.syncData(item);
@@ -158,7 +158,7 @@ export class ZohoSyncModule extends EnergenModule {
       } catch (error) {
         this.logger.error('Sync failed for item:', error);
         this.recordSyncHistory(item, 'failed', error.message);
-        
+
         // Re-queue if retryable
         if (item.retries < 3) {
           item.retries = (item.retries || 0) + 1;
@@ -177,7 +177,7 @@ export class ZohoSyncModule extends EnergenModule {
       queuedAt: new Date(),
       retries: 0
     });
-    
+
     this.logger.debug(`Queued sync for ${data.type}: ${data.id}`);
   }
 
@@ -187,18 +187,18 @@ export class ZohoSyncModule extends EnergenModule {
   async syncData(data) {
     this.metrics.requestCount++;
     const startTime = Date.now();
-    
+
     try {
       // Check token validity
       await this.ensureValidToken();
-      
+
       // Determine sync type
       const syncResult = await this.performSync(data);
-      
+
       // Track metrics
       const duration = Date.now() - startTime;
       this.trackMetric('syncTime', duration);
-      
+
       // Emit success event
       this.emit('zoho:synced', {
         type: data.type,
@@ -206,7 +206,7 @@ export class ZohoSyncModule extends EnergenModule {
         duration,
         result: syncResult
       });
-      
+
       return syncResult;
     } catch (error) {
       this.handleError(error, 'syncData');
@@ -220,17 +220,17 @@ export class ZohoSyncModule extends EnergenModule {
   async performSync(data) {
     // Mock implementation - would call actual Zoho API
     const { type, id, entity } = data;
-    
+
     switch (type) {
       case 'customer':
         return await this.syncCustomer(entity);
-      
+
       case 'quote':
         return await this.syncQuote(entity);
-      
+
       case 'invoice':
         return await this.syncInvoice(entity);
-      
+
       default:
         throw new Error(`Unknown sync type: ${type}`);
     }
@@ -251,9 +251,9 @@ export class ZohoSyncModule extends EnergenModule {
       address: customer.address,
       syncedAt: new Date()
     };
-    
+
     this.logger.info(`Synced customer to Zoho: ${zohoCustomer.id}`);
-    
+
     return zohoCustomer;
   }
 
@@ -270,9 +270,9 @@ export class ZohoSyncModule extends EnergenModule {
       status: 'draft',
       syncedAt: new Date()
     };
-    
+
     this.logger.info(`Synced quote to Zoho: ${zohoQuote.id}`);
-    
+
     return zohoQuote;
   }
 
@@ -289,9 +289,9 @@ export class ZohoSyncModule extends EnergenModule {
       status: 'pending',
       syncedAt: new Date()
     };
-    
+
     this.logger.info(`Synced invoice to Zoho: ${zohoInvoice.id}`);
-    
+
     return zohoInvoice;
   }
 
@@ -300,19 +300,19 @@ export class ZohoSyncModule extends EnergenModule {
    */
   async searchCustomer(query) {
     this.metrics.requestCount++;
-    
+
     try {
       // Check token validity
       await this.ensureValidToken();
-      
+
       // Mock search implementation
       const results = this.mockCustomerSearch(query);
-      
+
       this.emit('zoho:searchComplete', {
         query,
         resultCount: results.length
       });
-      
+
       return results;
     } catch (error) {
       this.handleError(error, 'searchCustomer');
@@ -328,7 +328,7 @@ export class ZohoSyncModule extends EnergenModule {
     if (!query || query.length < 3) {
       return [];
     }
-    
+
     return [
       {
         id: 'ZOHO_CUST_001',
@@ -357,12 +357,12 @@ export class ZohoSyncModule extends EnergenModule {
     if (!this.refreshToken) {
       throw new Error('No refresh token available');
     }
-    
+
     try {
       // Mock token refresh - would call actual Zoho OAuth endpoint
       this.accessToken = 'mock_refreshed_token_' + Date.now();
       this.tokenExpiry = Date.now() + 3600000; // 1 hour
-      
+
       this.logger.info('Zoho access token refreshed');
     } catch (error) {
       this.logger.error('Failed to refresh Zoho token:', error);
@@ -381,21 +381,21 @@ export class ZohoSyncModule extends EnergenModule {
       error,
       timestamp: new Date()
     };
-    
+
     const key = `${data.type}_${data.id}`;
-    
+
     if (!this.syncHistory.has(key)) {
       this.syncHistory.set(key, []);
     }
-    
+
     const history = this.syncHistory.get(key);
     history.push(historyEntry);
-    
+
     // Limit history size
     if (history.length > 10) {
       history.shift();
     }
-    
+
     // Limit total history size
     if (this.syncHistory.size > this.maxSyncHistorySize) {
       const firstKey = this.syncHistory.keys().next().value;
@@ -414,30 +414,30 @@ export class ZohoSyncModule extends EnergenModule {
       queueSize: this.syncQueue.length,
       syncHistory: this.syncHistory.size,
       totalSyncs: this.metrics.requestCount,
-      averageSyncTime: this.metrics.syncTime 
+      averageSyncTime: this.metrics.syncTime
         ? this.metrics.syncTime / this.metrics.requestCount
         : 0,
       errorRate: this.metrics.requestCount > 0
         ? (this.metrics.errorCount / this.metrics.requestCount * 100).toFixed(2) + '%'
         : '0%'
     };
-    
+
     // Count sync history by status
     let successCount = 0;
     let failedCount = 0;
-    
+
     for (const history of this.syncHistory.values()) {
       for (const entry of history) {
         if (entry.status === 'success') successCount++;
         else if (entry.status === 'failed') failedCount++;
       }
     }
-    
+
     stats.recentSyncs = {
       success: successCount,
       failed: failedCount
     };
-    
+
     return stats;
   }
 
@@ -450,12 +450,12 @@ export class ZohoSyncModule extends EnergenModule {
         newConfig.clientSecret !== this.config.clientSecret) {
       this.accessToken = null;
       this.tokenExpiry = null;
-      
+
       if (newConfig.refreshToken) {
         await this.initializeOAuth(newConfig);
       }
     }
-    
+
     // Update sync settings
     if (newConfig.autoSync !== this.config.autoSync) {
       if (newConfig.autoSync) {
@@ -465,7 +465,7 @@ export class ZohoSyncModule extends EnergenModule {
         this.syncInterval = null;
       }
     }
-    
+
     this.config = { ...this.config, ...newConfig };
     this.logger.info('Zoho sync configuration updated');
   }
@@ -475,16 +475,16 @@ export class ZohoSyncModule extends EnergenModule {
    */
   runHealthChecks() {
     const checks = super.runHealthChecks();
-    
+
     // Check OAuth status
     checks.push({
       name: 'oauth',
       passed: !!this.accessToken,
-      message: this.accessToken 
+      message: this.accessToken
         ? 'OAuth tokens available'
         : 'No OAuth tokens'
     });
-    
+
     // Check token validity
     if (this.accessToken) {
       const tokenValid = Date.now() < this.tokenExpiry;
@@ -496,14 +496,14 @@ export class ZohoSyncModule extends EnergenModule {
           : 'Token expired'
       });
     }
-    
+
     // Check sync queue
     checks.push({
       name: 'syncQueue',
       passed: this.syncQueue.length < 100,
       message: `${this.syncQueue.length} items in sync queue`
     });
-    
+
     return checks;
   }
 
@@ -516,17 +516,17 @@ export class ZohoSyncModule extends EnergenModule {
       clearInterval(this.syncInterval);
       this.syncInterval = null;
     }
-    
+
     // Process remaining queue items
     if (this.syncQueue.length > 0) {
       this.logger.info(`Processing ${this.syncQueue.length} remaining sync items...`);
       await this.processSyncQueue();
     }
-    
+
     // Clear sensitive data
     this.accessToken = null;
     this.refreshToken = null;
-    
+
     this.logger.info('Zoho sync module shut down');
   }
 }

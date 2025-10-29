@@ -5,8 +5,8 @@
  * @version 4.5.0
  */
 
-import { 
-  createAllServiceCards, 
+import {
+  createAllServiceCards,
   calculateBundleTotal,
   updateAllSettings,
   updateAllKW
@@ -19,7 +19,7 @@ export class EnhancedCalculatorUI {
     this.kWRange = 80;
     this.services = createAllServiceCards(this.settings, this.kWRange);
     this.enabledStates = { A: true, B: true, C: true, D: true, E: true };
-    
+
     this.init();
   }
 
@@ -30,7 +30,7 @@ export class EnhancedCalculatorUI {
     } catch (e) {
       console.warn('Could not load settings:', e);
     }
-    
+
     return {
       labor: { straightTime: 191 },
       calculationMode: 'standard',
@@ -50,7 +50,7 @@ export class EnhancedCalculatorUI {
   render() {
     const bundle = calculateBundleTotal(this.services, this.enabledStates);
     const costBreakdown = this.calculateCostBreakdown();
-    
+
     this.container.innerHTML = `
       <div class="enhanced-calculator">
         <div class="calculator-header">
@@ -339,11 +339,11 @@ export class EnhancedCalculatorUI {
     return Object.entries(this.services)
       .map(([code, service]) => {
         const calc = service.calculateService();
-        const hasFluidAnalysis = 
+        const hasFluidAnalysis =
           (code === 'B' && calc.oilAnalysisCost) ||
           (code === 'C' && calc.sampleCost) ||
           (code === 'D');
-        
+
         return `
           <div class="service-card ${hasFluidAnalysis ? 'has-fixed-cost' : ''}" data-service="${code}">
             <div class="service-header">
@@ -371,13 +371,13 @@ export class EnhancedCalculatorUI {
 
   renderFluidAnalysisInfo(code, calc) {
     if (code === 'B' && calc.oilAnalysisCost) {
-      return `<div class="fluid-note">↳ Includes $16.55 oil analysis (fixed cost)</div>`;
+      return '<div class="fluid-note">↳ Includes $16.55 oil analysis (fixed cost)</div>';
     }
     if (code === 'C' && calc.sampleCost) {
-      return `<div class="fluid-note">↳ Includes $16.55 coolant analysis (fixed cost)</div>`;
+      return '<div class="fluid-note">↳ Includes $16.55 coolant analysis (fixed cost)</div>';
     }
     if (code === 'D') {
-      return `<div class="fluid-note">↳ $60.00 fuel analysis only (no labor/mobilization)</div>`;
+      return '<div class="fluid-note">↳ $60.00 fuel analysis only (no labor/mobilization)</div>';
     }
     return '';
   }
@@ -391,7 +391,7 @@ export class EnhancedCalculatorUI {
 
     Object.entries(this.services).forEach(([code, service]) => {
       if (!this.enabledStates[code]) return;
-      
+
       const calc = service.calculateService();
       labor += (calc.labor || 0) + (calc.mobilization || 0);
       parts += (calc.markedUpParts || calc.markedUpFilter || calc.markedUpEquipment || 0);

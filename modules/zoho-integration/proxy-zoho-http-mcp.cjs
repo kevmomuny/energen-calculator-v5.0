@@ -18,9 +18,9 @@ const MCP_URL = 'https://zohomcp-8921.zohomcp.com/mcp/message?key=fY2ep5208fb6ed
 
 // Use npx to run mcp-remote with proper authentication
 const args = [
-    '-y',
-    'mcp-remote',
-    MCP_URL
+  '-y',
+  'mcp-remote',
+  MCP_URL
 ];
 
 console.error('Starting Zoho Books HTTP MCP Proxy...');
@@ -29,28 +29,28 @@ console.error('OAuth Client ID:', ZOHO_CLIENT_ID);
 
 // Set environment variables for OAuth
 const env = {
-    ...process.env,
-    ZOHO_CLIENT_ID,
-    ZOHO_CLIENT_SECRET,
-    ZOHO_REFRESH_TOKEN,
-    ZOHO_ACCOUNTS_URL
+  ...process.env,
+  ZOHO_CLIENT_ID,
+  ZOHO_CLIENT_SECRET,
+  ZOHO_REFRESH_TOKEN,
+  ZOHO_ACCOUNTS_URL
 };
 
 // Spawn mcp-remote as child process
 const child = spawn('npx', args, {
-    env,
-    stdio: 'inherit',
-    shell: true
+  env,
+  stdio: 'inherit',
+  shell: true
 });
 
 child.on('error', (error) => {
-    console.error('Failed to start HTTP MCP proxy:', error);
-    process.exit(1);
+  console.error('Failed to start HTTP MCP proxy:', error);
+  process.exit(1);
 });
 
 child.on('exit', (code) => {
-    console.error('HTTP MCP proxy exited with code:', code);
-    process.exit(code || 0);
+  console.error('HTTP MCP proxy exited with code:', code);
+  process.exit(code || 0);
 });
 
 // Forward signals

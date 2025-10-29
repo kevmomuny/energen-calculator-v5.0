@@ -18,7 +18,7 @@ export class EnhancedZohoSyncModule extends EnergenModule {
       version: '4.5.0',
       ...config
     });
-    
+
     this.catalystEndpoint = config.catalystEndpoint || process.env.CATALYST_ENDPOINT;
     this.zohoConfig = {
       clientId: config.clientId || process.env.ZOHO_CLIENT_ID,
@@ -27,7 +27,7 @@ export class EnhancedZohoSyncModule extends EnergenModule {
       accountsUrl: 'https://accounts.zoho.com',
       apiUrl: 'https://www.zohoapis.com/crm/v2'
     };
-    
+
     this.accessToken = null;
     this.tokenExpiry = null;
     this.syncQueue = [];
@@ -41,16 +41,16 @@ export class EnhancedZohoSyncModule extends EnergenModule {
   async onInit(config) {
     // Validate Zoho configuration
     this.validateConfig();
-    
+
     // Initialize OAuth through Catalyst
     await this.initializeCatalystAuth();
-    
+
     // Set up event listeners
     this.setupEventListeners();
-    
+
     // Load initial data
     await this.loadInitialData();
-    
+
     this.logger.info('Enhanced Zoho sync module initialized with Catalyst');
   }
 
@@ -79,7 +79,7 @@ export class EnhancedZohoSyncModule extends EnergenModule {
           client_id: this.zohoConfig.clientId,
           client_secret: this.zohoConfig.clientSecret
         });
-        
+
         this.accessToken = response.data.access_token;
         this.tokenExpiry = Date.now() + (response.data.expires_in * 1000);
       } else {
@@ -109,10 +109,10 @@ export class EnhancedZohoSyncModule extends EnergenModule {
           }
         }
       );
-      
+
       this.accessToken = response.data.access_token;
       this.tokenExpiry = Date.now() + (response.data.expires_in * 1000);
-      
+
       this.logger.info('Access token refreshed successfully');
     } catch (error) {
       this.logger.error('Token refresh failed:', error);
@@ -135,25 +135,25 @@ export class EnhancedZohoSyncModule extends EnergenModule {
    */
   setupEventListeners() {
     const eventBus = this.getDependency('eventBus');
-    
+
     // Quote events
     eventBus.on('zoho:createQuote', async (data) => {
       const result = await this.createQuote(data);
       eventBus.emit('zoho:quoteCreated', result);
     });
-    
+
     // Contact management events
     eventBus.on('zoho:syncContacts', async (data) => {
       const result = await this.syncContacts(data);
       eventBus.emit('zoho:contactsSynced', result);
     });
-    
+
     // Bid session snapshot events
     eventBus.on('zoho:saveBidSession', async (data) => {
       const result = await this.saveBidSessionSnapshot(data);
       eventBus.emit('zoho:bidSessionSaved', result);
     });
-    
+
     // Customer search events
     eventBus.on('zoho:searchCustomer', async (data) => {
       const result = await this.searchCustomers(data.query);
@@ -182,11 +182,11 @@ export class EnhancedZohoSyncModule extends EnergenModule {
    */
   async createQuote(quoteData) {
     const token = await this.ensureValidToken();
-    
+
     try {
       // Generate quote number
       const quoteNumber = this.generateQuoteNumber();
-      
+
       // Prepare quote data for Zoho
       const zohoQuote = {
         data: [{
@@ -195,34 +195,34 @@ export class EnhancedZohoSyncModule extends EnergenModule {
           Account_Name: quoteData.customer.name,
           Valid_Till: this.getValidTillDate(),
           Quote_Stage: 'Draft',
-          
+
           // Customer information
           Billing_Street: quoteData.customer.address,
           Billing_City: quoteData.customer.city,
           Billing_State: quoteData.customer.state,
           Billing_Code: quoteData.customer.zip,
-          
+
           // Equipment details
           Equipment_Details: this.formatEquipmentDetails(quoteData.generators),
-          
+
           // Service details
           Description: this.formatServiceDetails(quoteData.services),
-          
+
           // Pricing
           Sub_Total: quoteData.calculation.subtotal,
           Tax: quoteData.calculation.tax,
           Grand_Total: quoteData.calculation.grandTotal,
-          
+
           // Custom fields
           Travel_Distance: quoteData.travelDistance,
           Business_Type: quoteData.enrichment?.businessType,
           Industry: quoteData.enrichment?.industry,
-          
+
           // Contacts
           Contact_Details: this.formatContacts(quoteData.contacts)
         }]
       };
-      
+
       // Create quote in Zoho
       const response = await axios.post(
         `${this.zohoConfig.apiUrl}/Quotes`,
@@ -234,28 +234,28 @@ export class EnhancedZohoSyncModule extends EnergenModule {
           }
         }
       );
-      
+
       const result = response.data.data[0];
-      
+
       // Create associated records
       if (quoteData.contacts && quoteData.contacts.length > 0) {
         await this.createContacts(result.details.id, quoteData.contacts);
       }
-      
+
       // Save bid session snapshot
       await this.saveBidSessionSnapshot({
         quoteId: result.details.id,
         quoteNumber: quoteNumber,
         sessionData: quoteData
       });
-      
+
       return {
         success: true,
         quoteId: result.details.id,
         quoteNumber: quoteNumber,
         message: 'Quote created successfully in Zoho CRM'
       };
-      
+
     } catch (error) {
       this.logger.error('Failed to create quote:', error);
       throw error;
@@ -267,17 +267,17 @@ export class EnhancedZohoSyncModule extends EnergenModule {
    */
   async syncContacts(contactData) {
     const token = await this.ensureValidToken();
-    
+
     try {
       const { accountId, contacts } = contactData;
-      
+
       // Validate contact limit (max 4)
       if (contacts.length > 4) {
         throw new Error('Maximum 4 contacts allowed per customer');
       }
-      
+
       const syncedContacts = [];
-      
+
       for (const contact of contacts) {
         // Prepare contact data
         const zohoContact = {
@@ -293,10 +293,10 @@ export class EnhancedZohoSyncModule extends EnergenModule {
             Contact_Role: this.mapContactRole(contact.title)
           }]
         };
-        
+
         // Check if contact exists
         const existingContact = await this.findContact(contact.email);
-        
+
         let result;
         if (existingContact) {
           // Update existing contact
@@ -323,22 +323,22 @@ export class EnhancedZohoSyncModule extends EnergenModule {
             }
           );
         }
-        
+
         syncedContacts.push({
           ...contact,
           zohoId: result.data.data[0].details.id
         });
       }
-      
+
       // Cache contacts
       this.contactCache.set(accountId, syncedContacts);
-      
+
       return {
         success: true,
         contacts: syncedContacts,
         message: `${syncedContacts.length} contacts synced successfully`
       };
-      
+
     } catch (error) {
       this.logger.error('Failed to sync contacts:', error);
       throw error;
@@ -350,7 +350,7 @@ export class EnhancedZohoSyncModule extends EnergenModule {
    */
   async saveBidSessionSnapshot(snapshotData) {
     const token = await this.ensureValidToken();
-    
+
     try {
       // Create custom module record for bid session
       const bidSession = {
@@ -359,12 +359,12 @@ export class EnhancedZohoSyncModule extends EnergenModule {
           Quote_ID: snapshotData.quoteId,
           Quote_Number: snapshotData.quoteNumber,
           Session_Date: new Date().toISOString(),
-          
+
           // Session settings
           Generator_Config: JSON.stringify(snapshotData.sessionData.generators),
           Service_Selection: JSON.stringify(snapshotData.sessionData.services),
           Calculation_Details: JSON.stringify(snapshotData.sessionData.calculation),
-          
+
           // Customer data at time of bid
           Customer_Data: JSON.stringify({
             name: snapshotData.sessionData.customer.name,
@@ -375,22 +375,22 @@ export class EnhancedZohoSyncModule extends EnergenModule {
             businessType: snapshotData.sessionData.enrichment?.businessType,
             industry: snapshotData.sessionData.enrichment?.industry
           }),
-          
+
           // Travel and tax data
           Travel_Distance: snapshotData.sessionData.travelDistance,
           Tax_Rate: snapshotData.sessionData.taxRate,
-          
+
           // Pricing snapshot
           Subtotal: snapshotData.sessionData.calculation.subtotal,
           Tax_Amount: snapshotData.sessionData.calculation.tax,
           Total: snapshotData.sessionData.calculation.grandTotal,
-          
+
           // User and timestamp
           Created_By: snapshotData.sessionData.userId || 'System',
           Created_Time: new Date().toISOString()
         }]
       };
-      
+
       // Save to custom module (Bid_Sessions)
       const response = await axios.post(
         `${this.zohoConfig.apiUrl}/Bid_Sessions`,
@@ -402,16 +402,16 @@ export class EnhancedZohoSyncModule extends EnergenModule {
           }
         }
       );
-      
+
       return {
         success: true,
         sessionId: response.data.data[0].details.id,
         message: 'Bid session snapshot saved successfully'
       };
-      
+
     } catch (error) {
       this.logger.error('Failed to save bid session:', error);
-      
+
       // Fallback: Save as attachment to quote
       return this.saveBidSessionAsAttachment(snapshotData);
     }
@@ -422,16 +422,16 @@ export class EnhancedZohoSyncModule extends EnergenModule {
    */
   async saveBidSessionAsAttachment(snapshotData) {
     const token = await this.ensureValidToken();
-    
+
     try {
       // Create JSON file content
       const jsonContent = JSON.stringify(snapshotData.sessionData, null, 2);
       const blob = new Blob([jsonContent], { type: 'application/json' });
-      
+
       // Create form data
       const formData = new FormData();
       formData.append('file', blob, `bid_session_${snapshotData.quoteNumber}.json`);
-      
+
       // Upload as attachment
       const response = await axios.post(
         `${this.zohoConfig.apiUrl}/Quotes/${snapshotData.quoteId}/Attachments`,
@@ -443,13 +443,13 @@ export class EnhancedZohoSyncModule extends EnergenModule {
           }
         }
       );
-      
+
       return {
         success: true,
         attachmentId: response.data.data[0].details.id,
         message: 'Bid session saved as attachment'
       };
-      
+
     } catch (error) {
       this.logger.error('Failed to save bid session as attachment:', error);
       throw error;
@@ -461,7 +461,7 @@ export class EnhancedZohoSyncModule extends EnergenModule {
    */
   async searchCustomers(query) {
     const token = await this.ensureValidToken();
-    
+
     try {
       const response = await axios.get(
         `${this.zohoConfig.apiUrl}/Accounts/search`,
@@ -475,7 +475,7 @@ export class EnhancedZohoSyncModule extends EnergenModule {
           }
         }
       );
-      
+
       if (response.data.data) {
         return response.data.data.map(account => ({
           id: account.id,
@@ -490,9 +490,9 @@ export class EnhancedZohoSyncModule extends EnergenModule {
           contacts: [] // Will be loaded separately if needed
         }));
       }
-      
+
       return [];
-      
+
     } catch (error) {
       if (error.response?.status === 204) {
         // No results found
@@ -508,12 +508,12 @@ export class EnhancedZohoSyncModule extends EnergenModule {
    */
   async getAccountContacts(accountId) {
     const token = await this.ensureValidToken();
-    
+
     // Check cache first
     if (this.contactCache.has(accountId)) {
       return this.contactCache.get(accountId);
     }
-    
+
     try {
       const response = await axios.get(
         `${this.zohoConfig.apiUrl}/Contacts/search`,
@@ -527,7 +527,7 @@ export class EnhancedZohoSyncModule extends EnergenModule {
           }
         }
       );
-      
+
       if (response.data.data) {
         const contacts = response.data.data.map(contact => ({
           id: contact.id,
@@ -540,15 +540,15 @@ export class EnhancedZohoSyncModule extends EnergenModule {
           phoneMobile: contact.Mobile,
           decisionMaker: contact.Decision_Maker || false
         }));
-        
+
         // Cache contacts
         this.contactCache.set(accountId, contacts);
-        
+
         return contacts;
       }
-      
+
       return [];
-      
+
     } catch (error) {
       if (error.response?.status === 204) {
         return [];
@@ -563,11 +563,11 @@ export class EnhancedZohoSyncModule extends EnergenModule {
    */
   async upsertAccount(accountData) {
     const token = await this.ensureValidToken();
-    
+
     try {
       // Search for existing account
       const existing = await this.searchCustomers(accountData.name);
-      
+
       const zohoAccount = {
         data: [{
           Account_Name: accountData.name,
@@ -581,7 +581,7 @@ export class EnhancedZohoSyncModule extends EnergenModule {
           Account_Type: accountData.businessType || 'Customer'
         }]
       };
-      
+
       let result;
       if (existing.length > 0) {
         // Update existing account
@@ -608,13 +608,13 @@ export class EnhancedZohoSyncModule extends EnergenModule {
           }
         );
       }
-      
+
       return {
         success: true,
         accountId: result.data.data[0].details.id,
         isNew: existing.length === 0
       };
-      
+
     } catch (error) {
       this.logger.error('Failed to upsert account:', error);
       throw error;
@@ -637,7 +637,7 @@ export class EnhancedZohoSyncModule extends EnergenModule {
    */
   async getLastQuoteNumber() {
     const token = await this.ensureValidToken();
-    
+
     try {
       const response = await axios.get(
         `${this.zohoConfig.apiUrl}/Quotes`,
@@ -653,13 +653,13 @@ export class EnhancedZohoSyncModule extends EnergenModule {
           }
         }
       );
-      
+
       if (response.data.data && response.data.data.length > 0) {
         return response.data.data[0].Quote_Number;
       }
-      
+
       return null;
-      
+
     } catch (error) {
       this.logger.warn('Could not get last quote number:', error);
       return null;
@@ -671,7 +671,7 @@ export class EnhancedZohoSyncModule extends EnergenModule {
    */
   async findContact(email) {
     const token = await this.ensureValidToken();
-    
+
     try {
       const response = await axios.get(
         `${this.zohoConfig.apiUrl}/Contacts/search`,
@@ -685,13 +685,13 @@ export class EnhancedZohoSyncModule extends EnergenModule {
           }
         }
       );
-      
+
       if (response.data.data && response.data.data.length > 0) {
         return response.data.data[0];
       }
-      
+
       return null;
-      
+
     } catch (error) {
       if (error.response?.status === 204) {
         return null;
@@ -717,8 +717,8 @@ export class EnhancedZohoSyncModule extends EnergenModule {
    */
   mapContactRole(title) {
     const titleLower = (title || '').toLowerCase();
-    
-    if (titleLower.includes('ceo') || titleLower.includes('president') || 
+
+    if (titleLower.includes('ceo') || titleLower.includes('president') ||
         titleLower.includes('owner')) {
       return 'Decision Maker';
     }
@@ -731,7 +731,7 @@ export class EnhancedZohoSyncModule extends EnergenModule {
     if (titleLower.includes('finance') || titleLower.includes('accounting')) {
       return 'Finance';
     }
-    
+
     return 'Contact';
   }
 
@@ -740,8 +740,8 @@ export class EnhancedZohoSyncModule extends EnergenModule {
    */
   formatEquipmentDetails(generators) {
     if (!generators || generators.length === 0) return '';
-    
-    return generators.map((gen, index) => 
+
+    return generators.map((gen, index) =>
       `Unit ${index + 1}: ${gen.size}kW ${gen.type} ${gen.model || ''}`
     ).join('\n');
   }
@@ -751,8 +751,8 @@ export class EnhancedZohoSyncModule extends EnergenModule {
    */
   formatServiceDetails(services) {
     if (!services || services.length === 0) return '';
-    
-    return services.map(service => 
+
+    return services.map(service =>
       `${service.description}: ${service.frequency || 'As needed'}`
     ).join('\n');
   }
@@ -762,8 +762,8 @@ export class EnhancedZohoSyncModule extends EnergenModule {
    */
   formatContacts(contacts) {
     if (!contacts || contacts.length === 0) return '';
-    
-    return contacts.map(contact => 
+
+    return contacts.map(contact =>
       `${contact.name} (${contact.title}): ${contact.email} / ${contact.phoneOffice || contact.phoneMobile}`
     ).join('\n');
   }
@@ -782,28 +782,28 @@ export class EnhancedZohoSyncModule extends EnergenModule {
    */
   runHealthChecks() {
     const checks = [];
-    
+
     // Check OAuth token
     checks.push({
       name: 'oauth_token',
       status: this.accessToken ? 'healthy' : 'unhealthy',
       message: this.accessToken ? 'Token valid' : 'No access token'
     });
-    
+
     // Check Catalyst connection
     checks.push({
       name: 'catalyst_connection',
       status: this.catalystEndpoint ? 'healthy' : 'warning',
       message: this.catalystEndpoint ? 'Catalyst configured' : 'Direct OAuth mode'
     });
-    
+
     // Check sync queue
     checks.push({
       name: 'sync_queue',
       status: this.syncQueue.length < 100 ? 'healthy' : 'warning',
       message: `${this.syncQueue.length} items in queue`
     });
-    
+
     return checks;
   }
 }

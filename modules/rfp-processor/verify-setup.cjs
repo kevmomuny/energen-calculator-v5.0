@@ -87,7 +87,7 @@ checkModule('express');
 console.log('\n6. Module Loading Test:');
 try {
   const rfpProcessor = require('./index.cjs');
-  if (rfpProcessor.RFPProcessingService && 
+  if (rfpProcessor.RFPProcessingService &&
       rfpProcessor.AIExtractionEngine &&
       rfpProcessor.config) {
     console.log('✓ Module exports working correctly');

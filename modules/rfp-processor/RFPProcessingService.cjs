@@ -1,7 +1,7 @@
 /**
  * RFP Processing Service - Main Orchestrator
  * Phase 1 - Structure Only
- * 
+ *
  * This service orchestrates the entire RFP processing workflow:
  * 1. Document upload and validation
  * 2. AI extraction

@@ -22,10 +22,10 @@ export class CalculatorUI {
       D: false, // Not implemented yet
       E: true
     };
-    
+
     this.calculationTimeout = null;
     this.isCalculating = false;
-    
+
     this.init();
   }
 
@@ -34,13 +34,13 @@ export class CalculatorUI {
     this.services.A = new ServiceACard(this.settings, this.kWInput);
     this.services.B = new ServiceBCard(this.settings, this.kWInput);
     this.services.E = new ServiceECard(this.settings, this.kWInput);
-    
+
     // Listen for settings updates
     this.attachEventListeners();
-    
+
     // Initial render
     this.render();
-    
+
     // Initial calculation
     this.recalculateAll();
   }
@@ -54,7 +54,7 @@ export class CalculatorUI {
     } catch (e) {
       console.warn('Could not load settings:', e);
     }
-    
+
     // Default settings
     return {
       labor: { straightTime: 191 },
@@ -71,7 +71,7 @@ export class CalculatorUI {
         this.handleSettingsUpdate(event.data.settings || event.data.data);
       }
     });
-    
+
     // Listen for localStorage changes
     window.addEventListener('storage', (event) => {
       if (event.key === 'energenSettings') {
@@ -84,24 +84,24 @@ export class CalculatorUI {
   handleSettingsUpdate(newSettings) {
     this.settings = { ...this.settings, ...newSettings };
     localStorage.setItem('energenSettings', JSON.stringify(this.settings));
-    
+
     // Update all service cards with new settings
     Object.values(this.services).forEach(service => {
       if (service && service.updateSettings) {
         service.updateSettings(this.settings);
       }
     });
-    
+
     this.recalculateAll();
   }
 
   handleKwChange(value) {
     this.kWInput = parseFloat(value) || 80;
     this.isCalculating = true;
-    
+
     // Show calculating state
     this.showCalculatingState();
-    
+
     // Debounce calculation for performance
     clearTimeout(this.calculationTimeout);
     this.calculationTimeout = setTimeout(() => {
@@ -122,7 +122,7 @@ export class CalculatorUI {
         service.updateKW(this.kWInput);
       }
     });
-    
+
     // Update display
     this.updateServiceCards();
     this.updateBundleTotal();
@@ -135,13 +135,13 @@ export class CalculatorUI {
         const cardElement = document.querySelector(`[data-service="${code}"]`);
         if (cardElement) {
           const calc = service.calculateService();
-          
+
           // Update annual total
           const totalElement = cardElement.querySelector('.total-value');
           if (totalElement) {
             totalElement.textContent = `$${calc.annual.toFixed(2)}`;
           }
-          
+
           // Update per visit
           const perVisitElement = cardElement.querySelector('.detail-value.highlight');
           if (perVisitElement) {
@@ -154,37 +154,37 @@ export class CalculatorUI {
 
   updateBundleTotal() {
     let total = 0;
-    
+
     Object.entries(this.services).forEach(([code, service]) => {
       if (service && this.serviceStates[code]) {
         const calc = service.calculateService();
         total += calc.annual;
       }
     });
-    
+
     // Update bundle total display
     const bundleTotalElement = document.getElementById('bundle-total');
     if (bundleTotalElement) {
       bundleTotalElement.textContent = `$${total.toFixed(2)}`;
-      
+
       // Add animation effect
       bundleTotalElement.classList.add('updating');
       setTimeout(() => {
         bundleTotalElement.classList.remove('updating');
       }, 300);
     }
-    
+
     // Emit event for other components
     window.dispatchEvent(new CustomEvent('bundleTotalUpdated', {
       detail: { total, services: this.getServiceBreakdown() }
     }));
-    
+
     return total;
   }
 
   getServiceBreakdown() {
     const breakdown = {};
-    
+
     Object.entries(this.services).forEach(([code, service]) => {
       if (service) {
         breakdown[code] = {
@@ -193,7 +193,7 @@ export class CalculatorUI {
         };
       }
     });
-    
+
     return breakdown;
   }
 
@@ -214,7 +214,7 @@ export class CalculatorUI {
 
   render() {
     if (!this.container) return;
-    
+
     this.container.innerHTML = `
       <div class="calculator-ui">
         <div class="calculator-header">
@@ -434,7 +434,7 @@ export class CalculatorUI {
         }
       </style>
     `;
-    
+
     // Attach event handlers after rendering
     this.attachDOMEventHandlers();
   }
@@ -447,7 +447,7 @@ export class CalculatorUI {
         this.handleKwChange(e.target.value);
       });
     }
-    
+
     // Service toggle handlers
     document.querySelectorAll('.service-toggle').forEach(checkbox => {
       checkbox.addEventListener('change', (e) => {

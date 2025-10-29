@@ -12,7 +12,7 @@ export class ServiceECard {
     this.serviceCode = 'E';
     this.serviceName = 'Load Bank Testing';
     this.description = 'Full load testing to verify generator capacity';
-    
+
     // kW range mappings
     this.kwRanges = {
       '2-14': { min: 2, max: 14 },
@@ -37,7 +37,7 @@ export class ServiceECard {
     } catch (e) {
       console.warn('Could not load settings from storage:', e);
     }
-    
+
     // Default settings from monterey_mess.xlsx
     return {
       labor: {
@@ -77,26 +77,26 @@ export class ServiceECard {
     const rangeKey = this.getKwRangeKey();
     const config = this.settings.serviceE[rangeKey];
     const laborRate = parseFloat(this.settings.labor.straightTime);
-    
+
     // Calculate components
     const labor = config.laborHours * laborRate;
     const mobilization = config.mobilizationHours * laborRate;
-    
+
     // Equipment rental (treated as parts for markup purposes)
     let equipment = config.equipmentRental;
     if (this.settings.calculationMode === 'job-specific' && rangeKey === '35-150') {
       // Keep standard equipment cost even in job-specific mode
       equipment = 350;
     }
-    
+
     // Apply markup and freight to equipment
     const markedUpEquipment = equipment * (this.settings.partsMarkup || 1);
     const freight = markedUpEquipment * (this.settings.freightPercent || 0);
     const totalEquipment = markedUpEquipment + freight;
-    
+
     const perVisit = labor + mobilization + totalEquipment;
     const annual = perVisit * this.frequency;
-    
+
     return {
       serviceCode: this.serviceCode,
       serviceName: this.serviceName,
@@ -133,7 +133,7 @@ export class ServiceECard {
 
   render() {
     const calc = this.calculateService();
-    
+
     return `
       <div class="service-card" data-service="${this.serviceCode}">
         <div class="service-header">
