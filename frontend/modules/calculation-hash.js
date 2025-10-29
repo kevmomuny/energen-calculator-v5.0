@@ -117,7 +117,11 @@ function buildCalculationState(state, customerData = null) {
             prevailingWage: settings.prevailingWage || null,
 
             // Rate Mode
-            rateMode: settings.rateMode || 'private'
+            rateMode: settings.rateMode || 'private',
+
+            // PHASE 3: Service-specific data (labor hours, parts costs per kW range)
+            // This allows per-quote customization to be saved with the quote hash
+            services: settings.services || null
         },
 
         // CUSTOMER: Location-based pricing factors

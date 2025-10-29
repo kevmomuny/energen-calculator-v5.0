@@ -6,16 +6,16 @@
 | Service | Description | Frequencies | Template |
 |---------|-------------|-------------|----------|
 | A | Comprehensive Inspection | Q, SA, A | default |
-| B | Air & Fuel System Service | Q, SA, A | default |
-| C | Cooling System Service | Q, SA, A | default |
-| D | DPF Service | SA, A only | service-card-d |
-| E | Oil & Filter Service | Q, SA, A | default |
-| F | Fuel System Service | Q, SA, A | service-card-fg |
-| G | Governor/Actuator Service | Q, SA, A | service-card-fg |
-| H | Load Bank Test | A only | service-card-h |
-| I | Valve Lash Adjustment | A only | default |
-| J | Vibration Dampener Inspection | Q, SA, A | default |
-| K | SCR/DEF System Service | Q, SA, A | service-card-k |
+| B | Oil & Filter Service | Q, SA, A | default |
+| C | Coolant Service | Q, SA, A | default |
+| D | Oil & Fuel Analysis | Q, SA, A | service-card-d |
+| E | Load Bank Testing | Q, SA, A | default |
+| F | Diesel Engine Tune-Up | Q, SA, A | service-card-fg |
+| G | Gaseous Engine Tune-Up | Q, SA, A | service-card-fg |
+| H | Electrical Testing | 5-year | service-card-h |
+| I | Transfer Switch Service | Q, SA, A | default |
+| J | Thermal Imaging | Q, SA, A | default |
+| K | DEF System Service | Q, SA, A | service-card-k |
 | CUSTOM | Custom Service | Any | service-card-custom |
 
 **Test Sequence for Each Service:**
@@ -43,10 +43,15 @@
 7. Verify can add multiple custom services
 
 **Critical Validation:**
-- Service D: MUST NOT show Quarterly option (annual service only)
-- Service H: MUST NOT show Quarterly/Semi-Annual (annual only)
+- Service D: MUST show fluid checkboxes (Oil $16.55, Coolant $16.55, Fuel $60.00)
+- Service D: MUST show subtotal when fluids are checked (e.g., Oil+Coolant = $33.10/yr)
+- Service D: Price display must persist through recalculations (custom pricing, not overwritten by generic service-pricing.js code)
+- Service D: Uses `updateServiceDFluids()` for custom pricing logic
+- Service H: 5-year service (not quarterly/semi-annual/annual)
 - Each service: Pricing updates when frequency changes
 - Each service: Selected services appear in summary
+- All services: Consistent opacity dimming when no kW rating entered
+- All services: Consistent text color styling using `var(--text-tertiary)`
 
 **Evidence Required:**
 - Screenshot of each service card (12 total)

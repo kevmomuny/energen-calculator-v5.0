@@ -117,21 +117,34 @@ export function renderUnit(unit) {
             <div class="generator-specs-section">
                 <div class="specs-grid">
                     <div class="spec-group">
-                        <label class="spec-label">kW Rating <span style="font-size: 9px; color: var(--text-secondary);">(optional for custom bids)</span></label>
+                        <label class="spec-label">kW Rating</label>
                         <input type="number" class="spec-value" id="${unit.id}-kw"
                                onchange="updateUnit('${unit.id}', 'kw', this.value); if(window.checkEnrichmentEligibility) window.checkEnrichmentEligibility('${unit.id}')"
-                               value="${unit.kw || ''}" placeholder="Optional" min="0" max="2050">
+                               value="${unit.kw || ''}" placeholder="Enter kW" min="0" max="2050">
                     </div>
                     <div class="spec-group">
                         <label class="spec-label">Brand</label>
                         <select class="spec-value" id="${unit.id}-brand"
-                                onchange="updateUnit('${unit.id}', 'brand', this.value); if(window.checkEnrichmentEligibility) window.checkEnrichmentEligibility('${unit.id}')">
+                                onchange="handleBrandChange('${unit.id}', this.value)">
                             <option value="">Select Brand</option>
-                            <option ${unit.brand === 'Generac' ? 'selected' : ''}>Generac</option>
-                            <option ${unit.brand === 'Cummins' ? 'selected' : ''}>Cummins</option>
-                            <option ${unit.brand === 'Kohler' ? 'selected' : ''}>Kohler</option>
                             <option ${unit.brand === 'CAT' ? 'selected' : ''}>CAT</option>
+                            <option ${unit.brand === 'Caterpillar' ? 'selected' : ''}>Caterpillar</option>
+                            <option ${unit.brand === 'Cummins' ? 'selected' : ''}>Cummins</option>
+                            <option ${unit.brand === 'Detroit Diesel' ? 'selected' : ''}>Detroit Diesel</option>
+                            <option ${unit.brand === 'Generac' ? 'selected' : ''}>Generac</option>
+                            <option ${unit.brand === 'Katolight' ? 'selected' : ''}>Katolight</option>
+                            <option ${unit.brand === 'Kohler' ? 'selected' : ''}>Kohler</option>
+                            <option ${unit.brand === 'MTU' ? 'selected' : ''}>MTU</option>
+                            <option ${unit.brand === 'Multiquip' ? 'selected' : ''}>Multiquip</option>
+                            <option ${unit.brand === 'Stamford' ? 'selected' : ''}>Stamford</option>
+                            <option ${unit.brand === 'Sullivan-Palatek' ? 'selected' : ''}>Sullivan-Palatek</option>
+                            <option ${unit.brand === 'Volvo' ? 'selected' : ''}>Volvo</option>
+                            <option value="Other">Other</option>
                         </select>
+                        <input type="text" class="spec-value" id="${unit.id}-brand-custom"
+                               style="display: none; margin-top: 4px;"
+                               placeholder="Enter custom brand"
+                               onchange="updateUnit('${unit.id}', 'brand', this.value); if(window.checkEnrichmentEligibility) window.checkEnrichmentEligibility('${unit.id}')">
                     </div>
                     <div class="spec-group">
                         <label class="spec-label">Model</label>
@@ -328,22 +341,18 @@ export function renderUnit(unit) {
         if (!unit.serviceFrequencies) unit.serviceFrequencies = {};
 
         Object.entries(SERVICES).forEach(([code, service]) => {
-            const defaultFreq = service.defaultFreq || 1;
+            // NEW POLICY: All services start unselected (defaultFreq is for frequency buttons only)
+            const defaultFreq = service.defaultFreq || 0;
             unit.serviceFrequencies[code] = defaultFreq;
 
-            // CRITICAL FIX: Initialize unit.services array with services that have positive default frequency
-            // Services A-E, I-J default to Annual (freq=1), so they should be in services array
-            // Services F, G default to "Not Included" (freq=0), so they start unselected
-            // Service D requires checkbox interaction (handled by updateServiceDFluids)
-            // Service H requires checkbox (handled separately)
-            // Service K, CUSTOM require explicit user selection
-            if (defaultFreq > 0 && !['D', 'H', 'K', 'CUSTOM'].includes(code)) {
-                if (!unit.services.includes(code)) {
-                    unit.services.push(code);
-                    logger.debug(`✅ Initialized service ${code} with default frequency ${defaultFreq}`);
-                }
-            }
+            // CHANGED: No services are auto-initialized anymore
+            // Users must explicitly select services by clicking on service cards
+            // This ensures clean starting state with no pre-selected services
 
+            // Note: Service D and H checkboxes are handled by their respective update functions
+            // when user clicks to activate those services
+
+            // Remove 'active' class from all service cards (ensures clean state)
             if (unit.services.includes(code)) {
                 const serviceCard = document.getElementById(`${unit.id}-service-${code}`);
                 if (serviceCard) serviceCard.classList.add('active');
@@ -395,6 +404,34 @@ export function toggleUnit(unitId) {
     const unitElement = document.getElementById(unitId);
     if (unitElement) {
         unitElement.classList.toggle('collapsed');
+    }
+}
+
+/**
+ * Handle brand dropdown change - show custom input if "Other" selected
+ * @param {string} unitId - The unit ID
+ * @param {string} value - The selected brand value
+ * @returns {void}
+ */
+export function handleBrandChange(unitId, value) {
+    const customInput = document.getElementById(`${unitId}-brand-custom`);
+
+    if (value === 'Other') {
+        // Show custom input field
+        if (customInput) {
+            customInput.style.display = 'block';
+            customInput.focus();
+        }
+    } else {
+        // Hide custom input and update with selected brand
+        if (customInput) {
+            customInput.style.display = 'none';
+            customInput.value = '';
+        }
+        updateUnit(unitId, 'brand', value);
+        if (window.checkEnrichmentEligibility) {
+            window.checkEnrichmentEligibility(unitId);
+        }
     }
 }
 

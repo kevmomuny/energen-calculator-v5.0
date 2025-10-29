@@ -40,14 +40,15 @@ Each phase file contains:
 |-------|------|-------|--------|
 | **Phase 0** | [phase-0-preflight.md](phases/phase-0-preflight.md) | Pre-Flight (server, page load) | 7 checks |
 | **Phase 1** | [phase-1-customer.md](phases/phase-1-customer.md) | Customer entry, logo, enrichment | 15 checks |
-| **Phase 1.5** | [phase-1.5-settings.md](phases/phase-1.5-settings.md) | Settings modal configuration | 8 checks |
+| **Phase 1.5** | [phase-1.5-settings.md](phases/phase-1.5-settings.md) | Settings modal + prevailing wage | 14 checks |
+| **Phase 1.6** | [phase-1.6-prevailing-wage-api.md](phases/phase-1.6-prevailing-wage-api.md) | Prevailing wage API integration | 12 checks |
 | **Phase 2** | [phase-2-contact.md](phases/phase-2-contact.md) | Contact information entry | 11 checks |
 | **Phase 3** | [phase-3-generator.md](phases/phase-3-generator.md) | Generator specifications | 18 checks |
 | **Phase 4** | [phase-4-services.md](phases/phase-4-services.md) | Service selection (A-K + Custom) | 36 checks |
-| **Phase 5** | [phase-5-calculation.md](phases/phase-5-calculation.md) | Quote calculation API | 22 checks |
-| **Phase 6** | [phase-6-results.md](phases/phase-6-results.md) | Results validation | 15 checks |
+| **Phase 5** | [phase-5-calculation.md](phases/phase-5-calculation.md) | Quote calc + prevailing wage | 25 checks |
+| **Phase 6** | [phase-6-results.md](phases/phase-6-results.md) | Results + prevailing wage impact | 18 checks |
 | **Phase 7** | [phase-7-pdf.md](phases/phase-7-pdf.md) | PDF generation | 12 checks |
-| **Phase 8** | [phase-8-zoho.md](phases/phase-8-zoho.md) | Complete Zoho transfer | 24 checks |
+| **Phase 8** | [phase-8-zoho.md](phases/phase-8-zoho.md) | Complete Zoho transfer + prevailing wage | 29 checks |
 | **Phase 9** | [phase-9-integration.md](phases/phase-9-integration.md) | End-to-end integration | All phases |
 | **Phase 10** | [phase-10-views.md](phases/phase-10-views.md) | View switching navigation | 6 checks |
 | **Phase 11** | [phase-11-bottom-controls.md](phases/phase-11-bottom-controls.md) | Bottom-of-page controls | 8 checks |
@@ -57,7 +58,7 @@ Each phase file contains:
 | **Phase 15** | [phase-15-ocr.md](phases/phase-15-ocr.md) | Business card OCR | 9 checks |
 | **Phase 16** | [phase-16-rfp.md](phases/phase-16-rfp.md) | RFP upload & processing | 11 checks |
 
-**Total:** 16 phases, 220+ verification checks
+**Total:** 17 phases, 241 verification checks
 
 ---
 
@@ -163,6 +164,17 @@ Exit code 0 (PASS) requires ALL of the following:
 
 ## Changelog
 
+### v1.2.0 (2025-10-27)
+- ✅ Added Phase 1.6: Prevailing Wage API Integration (12 checks)
+- ✅ Enhanced Phase 1.5: Prevailing wage settings verification (+6 checks)
+- ✅ Enhanced Phase 5: Prevailing wage calculation validation (+3 checks)
+- ✅ Enhanced Phase 6: Prevailing wage results verification (+3 checks)
+- ✅ Enhanced Phase 8: Zoho prevailing wage data transfer (+5 checks)
+- ✅ Total verification checks: 220 → 241 (+21 checks)
+- ✅ Supports DIR 2025 prevailing wage rates with zone-based adjustments
+- ✅ Validates business overhead integration ($115.00 default)
+- ✅ Verifies manual override functionality with visual feedback
+
 ### v1.1.0 (2025-10-18)
 - ✅ Split SKILL.md into 25 phase-specific files (progressive disclosure)
 - ✅ Reduced initial context load from 1,893 to 220 lines
@@ -177,7 +189,8 @@ Exit code 0 (PASS) requires ALL of the following:
 
 ---
 
-**Version:** 1.1.0
-**Last Updated:** October 18, 2025
+**Version:** 1.2.0
+**Last Updated:** October 27, 2025
 **Status:** Production Ready
 **Architecture:** Progressive Disclosure (Anthropic 2025 Best Practice)
+**Latest Enhancement:** Prevailing Wage Integration (DIR 2025 Compliance)

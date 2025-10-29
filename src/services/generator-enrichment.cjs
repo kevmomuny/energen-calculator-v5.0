@@ -155,52 +155,24 @@ class GeneratorEnrichmentService {
       };
     }
 
-    // Step 3: Manufacturer + kW interpolation
-    const interpolated = this.interpolateByManufacturer(manufacturer, kw, fuelType);
-    if (interpolated) {
-      this.logger.info('Generator enrichment: Interpolation used', { manufacturer, kw });
-      confidence = 0.75;
-      sources.push('manufacturer_interpolation');
-      return {
-        success: true,
-        tier: 'ai_enrichment',
-        confidence,
-        data: interpolated,
-        sources
-      };
-    }
+    // Step 3: Model not in database - signal that AI agent search is needed
+    // The frontend "AI Web Search" button will trigger Claude Code AI agent via MCP
+    this.logger.info('Generator enrichment: Model not in database, requires AI agent search', { manufacturer, model, kw });
 
-    // Step 4: Claude API fallback (if enabled)
-    if (this.useClaudeAPI) {
-      try {
-        const claudeResult = await this.queryClaudeAPI(kw, manufacturer, model, fuelType);
-        if (claudeResult && claudeResult.confidence >= 0.70) {
-          this.logger.info('Generator enrichment: Claude API used', { manufacturer, model, kw });
-          return {
-            success: true,
-            tier: 'ai_enrichment',
-            confidence: claudeResult.confidence,
-            data: claudeResult.data,
-            sources: ['claude_api', ...sources]
-          };
-        }
-      } catch (error) {
-        this.logger.warn('Claude API query failed, falling back:', error.message);
-      }
-    }
-
-    // Step 5: Generic fallback based on kW and fuel type
-    const genericData = this.generateGenericSpecs(kw, manufacturer, model, fuelType);
-    confidence = 0.60;
-    sources.push('generic_estimation');
-
+    // Return minimal data to indicate AI search is needed
     return {
       success: true,
       tier: 'ai_enrichment',
-      confidence,
-      data: genericData,
-      sources,
-      warning: 'Low confidence - specifications are estimated'
+      confidence: 0.0,
+      requiresAISearch: true,
+      data: {
+        manufacturer,
+        model,
+        kw,
+        fuelType: fuelType || 'Diesel',
+        message: 'Model not found in database. Click "AI Web Search" to search manufacturer websites.'
+      },
+      sources: ['requires_ai_search']
     };
   }
 

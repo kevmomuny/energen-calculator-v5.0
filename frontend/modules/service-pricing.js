@@ -65,7 +65,18 @@ async function updateServicePrices(unitId) {
             coolantAnalysisCost: window.state.activeSettings.coolantAnalysisCost,
             fuelAnalysisCost: window.state.activeSettings.fuelAnalysisCost,
             shopPrepRate: window.state.activeSettings.shopPrepRate,
-            taxRate: window.state.activeSettings.taxRate
+            taxRate: window.state.activeSettings.taxRate,
+            // Include service data structures for calculation engine
+            serviceA: window.state.activeSettings.serviceA,
+            serviceB: window.state.activeSettings.serviceB,
+            serviceC: window.state.activeSettings.serviceC,
+            serviceD: window.state.activeSettings.serviceD,
+            serviceE: window.state.activeSettings.serviceE,
+            serviceF: window.state.activeSettings.serviceF,
+            serviceG: window.state.activeSettings.serviceG,
+            serviceH: window.state.activeSettings.serviceH,
+            serviceI: window.state.activeSettings.serviceI,
+            serviceJ: window.state.activeSettings.serviceJ
         };
 
         // DIAGNOSTIC: Check services array right before API call
@@ -213,6 +224,12 @@ async function updateServicePrices(unitId) {
                     console.log(`[PHASE 3] Service total cost: $${service.totalCost}`);
 
                     if (serviceCode) {
+                        // Skip Service D (handled by fluid checkboxes with custom pricing)
+                        if (serviceCode === 'D') {
+                            console.log(`[PHASE 3] Skipping Service D - uses custom pricing`);
+                            return; // Return instead of continue in forEach
+                        }
+
                         // Update price display for this service
                         const elementId = `${unitId}-service-${serviceCode}-price`;
                         console.log(`[PHASE 3] Looking for element ID: "${elementId}"`);

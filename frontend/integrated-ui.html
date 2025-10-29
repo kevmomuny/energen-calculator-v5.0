@@ -771,6 +771,17 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
+        /* Show Service D checkboxes and frequency selector only when active */
+        .service-card.active .service-d-checkboxes,
+        .service-card.active .frequency-selector-d {
+            display: block !important;
+        }
+
+        .service-card[style*="opacity: 0.5"] {
+            opacity: 0.5 !important;
+            pointer-events: none !important;
+        }
+
         .service-name {
             font-size: 11px;
             font-weight: 600;
@@ -2780,6 +2791,26 @@
             </div>
 
             <div>
+                <div class="section-title"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">calendar_month</span>QUARTERLY BREAKDOWN</div>
+                <div class="summary-item">
+                    <span class="summary-label">Q1 (Oct-Dec)</span>
+                    <span class="summary-value" id="q1-total">$0</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Q2 (Jan-Mar)</span>
+                    <span class="summary-value" id="q2-total">$0</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Q3 (Apr-Jun)</span>
+                    <span class="summary-value" id="q3-total">$0</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Q4 (Jul-Sep)</span>
+                    <span class="summary-value" id="q4-total">$0</span>
+                </div>
+            </div>
+
+            <div>
                 <div class="section-title"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">trending_up</span>YEAR PROJECTIONS</div>
                 <div class="summary-item">
                     <span class="summary-label">Year 1</span>
@@ -3285,9 +3316,15 @@ n        // Initialize Documents View Module
             </div>
 
             <div class="zoho-modal-body">
-                <div class="input-group">
-                    <label class="input-label">Generator Model</label>
-                    <input type="text" class="input-field" id="newGenModel" placeholder="e.g., CAT C18">
+                <div class="input-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="input-group">
+                        <label class="input-label">Manufacturer</label>
+                        <input type="text" class="input-field" id="newGenBrand" placeholder="e.g., Caterpillar, Cummins, Kohler">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Generator Model</label>
+                        <input type="text" class="input-field" id="newGenModel" placeholder="e.g., CAT C18">
+                    </div>
                 </div>
 
                 <div class="input-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -3410,35 +3447,72 @@ n        // Initialize Documents View Module
 
         async function handleAddContact(e) {
             e.preventDefault();
-            
+
+            const fullName = document.getElementById('contactName').value;
+            const nameParts = fullName.trim().split(/\s+/);
+            const firstName = nameParts[0] || fullName;
+            const lastName = nameParts.slice(1).join(' ') || firstName;
+
             const contactData = {
-                name: document.getElementById('contactName').value,
+                name: fullName,
                 title: document.getElementById('contactTitle').value,
                 email: document.getElementById('contactEmail').value,
                 phone: document.getElementById('contactPhone').value,
                 company: document.getElementById('contactCompany').value
             };
-            
+
+            const accountId = window.state?.customer?.id || window.zohoState?.currentAccountId;
+
             try {
                 // Enrich with photo
                 const enrichedContact = await contactService.enrichContact(contactData);
-                
-                // Add to contact manager
+
+                // Add to contact manager (local storage)
                 const contact = await window.contactManager.addContact({
                     ...enrichedContact,
-                    zohoAccountId: window.state?.customer?.zohoAccountId || window.zohoState?.currentAccountId
+                    zohoAccountId: accountId
                 });
-                
+
+                // Sync to Zoho CRM if we have an account ID
+                if (accountId) {
+                    console.log('💾 Syncing contact to Zoho CRM...', { accountId, firstName, lastName, email: contactData.email });
+
+                    const zohoResponse = await fetch('/api/zoho/create-contact', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            accountId,
+                            firstName,
+                            lastName,
+                            email: contactData.email,
+                            phone: contactData.phone,
+                            title: contactData.title
+                        })
+                    });
+
+                    const zohoResult = await zohoResponse.json();
+
+                    if (zohoResult.success) {
+                        console.log('✅ Contact synced to Zoho CRM:', zohoResult.contactId);
+                        showNotification('Contact added and synced to Zoho!', 'success');
+                    } else {
+                        console.warn('⚠️ Contact added locally but Zoho sync failed:', zohoResult.error);
+                        showNotification('Contact added locally (Zoho sync failed)', 'warning');
+                    }
+                } else {
+                    console.log('ℹ️ No Zoho account ID, contact saved locally only');
+                    showNotification('Contact added successfully!', 'success');
+                }
+
                 // Close form and refresh contact list
                 window.closeAddContactForm();
                 document.getElementById('addContactForm').reset();
-                
+
                 // Refresh contact selector
                 if (window.state?.customer || window.zohoState?.currentAccountId) {
                     window.showContactPicker();
                 }
-                
-                showNotification('Contact added successfully!', 'success');
+
             } catch (error) {
                 console.error('Error adding contact:', error);
                 alert('Failed to add contact: ' + error.message);
@@ -3471,8 +3545,8 @@ n        // Initialize Documents View Module
             document.getElementById('contactPickerModal').style.display = 'none';
         };
 
-        // C3 FIX: Alias addContact to showContactPicker for button onclick compatibility
-        window.addContact = window.showContactPicker;
+        // C3 FIX: Alias addContact to showAddContactForm for button onclick compatibility
+        window.addContact = showAddContactForm;
 
         function updateUIWithPrimaryContact(contact) {
             // Update UI to show primary contact
@@ -3981,12 +4055,68 @@ n        // Initialize Documents View Module
         }
 
         async function selectZohoAccount(customerId) {
-            // Fetch full customer data
-            const customers = await searchZohoCustomers(document.getElementById('companyName').value);
-            const customer = customers.find(c => c.id === customerId);
+            // Fetch FULL customer data from Zoho (not search results)
+            console.log('🔍 Fetching full account details for ID:', customerId);
 
-            if (!customer) {
-                console.error('Customer not found:', customerId);
+            let customer;
+            try {
+                const response = await fetch(`/api/customers/${customerId}`);
+                const data = await response.json();
+
+                if (!data.success || !data.account) {
+                    console.error('Failed to fetch account details:', data.error);
+                    return;
+                }
+
+                const account = data.account;
+                console.log('✅ Received full account data:', account);
+
+                // Transform Zoho account format to customer format
+                // PRIORITY: Physical address (equipment location) > Billing > Mailing
+                // Parse Physical_Address_Name if present (e.g., "Berkeley, CA" or "150 Main St, Berkeley, CA 94720")
+                const physicalAddress = account.Physical_Address_Name || '';
+                let parsedStreet = '', parsedCity = '', parsedState = '', parsedZip = '';
+
+                if (physicalAddress) {
+                    // Try to parse: "Street, City, State ZIP" or "City, State" formats
+                    const parts = physicalAddress.split(',').map(p => p.trim());
+
+                    if (parts.length >= 2) {
+                        const lastPart = parts[parts.length - 1]; // "CA" or "CA 94720"
+                        const stateZip = lastPart.match(/^([A-Z]{2})(\s+(\d{5}(-\d{4})?))?$/);
+
+                        if (stateZip) {
+                            parsedState = stateZip[1]; // "CA"
+                            parsedZip = stateZip[3] || ''; // "94720" or ""
+                        }
+
+                        if (parts.length === 2) {
+                            // Format: "City, State" or "City, State ZIP"
+                            parsedCity = parts[0];
+                        } else if (parts.length >= 3) {
+                            // Format: "Street, City, State ZIP"
+                            parsedStreet = parts[0];
+                            parsedCity = parts[1];
+                        }
+                    }
+                }
+
+                customer = {
+                    id: account.id,
+                    name: account.Account_Name,
+                    phone: account.Phone || '',
+                    email: account.Email || '',
+                    website: account.Website || '',
+                    // Physical address takes priority for equipment service (check all possible field names)
+                    address: account.Physical_Street || account.Physical_Address_Line_1 || parsedStreet || account.Billing_Street || account.Mailing_Street || '',
+                    city: account.Physical_City || account.Physical_Address_City || parsedCity || account.Billing_City || account.Mailing_City || '',
+                    state: account.Physical_State || account.Physical_Address_State || parsedState || account.Billing_State || account.Mailing_State || '',
+                    zip: account.Physical_Zip || account.Physical_Code || account.Physical_Address_Zip || parsedZip || account.Billing_Code || account.Mailing_Zip || '',
+                    logo: account.Company_Logo_URL || account.Logo_URL || account.Logo || '',
+                    rawData: account
+                };
+            } catch (error) {
+                console.error('Error fetching account details:', error);
                 return;
             }
 
@@ -4033,6 +4163,26 @@ n        // Initialize Documents View Module
 
             // Show success indicator
             console.log('✅ Customer data auto-populated:', customer.name);
+            console.log('🖼️ Logo URL:', customer.logo);
+            console.log('📍 Address:', customer.address, customer.city, customer.state, customer.zip);
+            console.log('📊 Raw Zoho Account Data:', customer.rawData || customer);
+
+            // Display logo from Zoho if available
+            if (customer.logo) {
+                console.log('🎨 Attempting to display logo:', customer.logo);
+                const companyLogoEl = document.getElementById('companyLogo');
+                const logoPlaceholder = document.getElementById('logoPlaceholder');
+                console.log('🎨 Logo element:', companyLogoEl);
+                console.log('🎨 Placeholder element:', logoPlaceholder);
+                if (companyLogoEl) {
+                    companyLogoEl.src = customer.logo;
+                    companyLogoEl.style.display = 'block';
+                    if (logoPlaceholder) logoPlaceholder.style.display = 'none';
+                    console.log('✅ Logo set to:', companyLogoEl.src);
+                }
+            } else {
+                console.log('⚠️ No logo URL in customer data');
+            }
 
             // Trigger address enrichment if available
             if (customer.city && customer.state && customer.zip) {
@@ -4043,17 +4193,59 @@ n        // Initialize Documents View Module
                 }
             }
 
-            // Optionally trigger distance calculation
-            // This would require the handleCompanyChange function to be updated
+            // Auto-calculate distance from shop
+            if (customer.address || customer.city) {
+                const shopAddress = window.settings?.shopAddress || '150 Mason Circle, Concord, CA 94520';
+                const customerAddress = [customer.address, customer.city, customer.state, customer.zip]
+                    .filter(Boolean)
+                    .join(', ');
+
+                if (customerAddress) {
+                    console.log('📏 Calculating distance from shop...', { shopAddress, customerAddress });
+
+                    try {
+                        const response = await fetch('/api/enrichment/distance', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                origin: shopAddress,
+                                destination: customerAddress
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success && data.distance !== undefined) {
+                            // Backend returns distance already in miles
+                            const distanceMiles = Math.round(data.distance * 10) / 10;  // Round to 1 decimal
+
+                            document.getElementById('distance').value = distanceMiles;
+                            console.log('✅ Distance calculated:', distanceMiles, 'miles');
+                            console.log('   Duration:', data.durationText || 'N/A');
+                            console.log('   Round trip mileage cost:', data.roundTrip?.mileageCost || 'N/A');
+                        } else {
+                            console.warn('⚠️ Distance calculation failed:', data.error || 'Unknown error');
+                        }
+                    } catch (error) {
+                        console.error('❌ Distance calculation error:', error);
+                    }
+                }
+            }
+
+            // Update window.state.customer so contact picker can find contacts
+            if (!window.state) window.state = {};
+            window.state.customer = customer;
 
             // Load contacts from Zoho CRM for this account
             if (window.contactManager && typeof window.contactManager.loadContactsFromZoho === 'function') {
                 await window.contactManager.loadContactsFromZoho(customerId);
+                console.log('✅ Contacts loaded from Zoho, now showing contact picker...');
             }
 
             // Auto-open contact picker after customer selection
             setTimeout(() => {
                 if (window.showContactPicker) {
+                    console.log('📋 Opening contact picker with customer:', window.state.customer?.name);
                     window.showContactPicker();
                 }
             }, 500);
@@ -4268,6 +4460,7 @@ n        // Initialize Documents View Module
         function closeAddGeneratorUnitModal() {
             document.getElementById('addGeneratorUnitModal').classList.remove('active');
             // Clear form
+            document.getElementById('newGenBrand').value = '';
             document.getElementById('newGenModel').value = '';
             document.getElementById('newGenSerial').value = '';
             document.getElementById('newGenKw').value = '';
@@ -4306,6 +4499,7 @@ n        // Initialize Documents View Module
         async function saveGeneratorUnit() {
             const formData = new FormData();
             formData.append('accountId', window.zohoState.currentAccountId);
+            formData.append('manufacturer', document.getElementById('newGenBrand').value);
             formData.append('model', document.getElementById('newGenModel').value);
             formData.append('serialNumber', document.getElementById('newGenSerial').value);
             formData.append('kwRating', document.getElementById('newGenKw').value);
@@ -4644,22 +4838,22 @@ n        // Initialize Documents View Module
             <form id="addContactForm" class="contact-form">
                 <div class="form-group">
                     <label>Full Name *</label>
-                    <input type="text" id="contactName" class="input-field" required placeholder="John Doe">
+                    <input type="text" id="contactName" name="contactName" class="input-field" required placeholder="John Doe">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Title/Position</label>
-                    <input type="text" id="contactTitle" class="input-field" placeholder="Facilities Manager">
+                    <input type="text" id="contactTitle" name="contactTitle" class="input-field" placeholder="Facilities Manager">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Email *</label>
-                    <input type="email" id="contactEmail" class="input-field" required placeholder="jdoe@company.com">
+                    <input type="email" id="contactEmail" name="contactEmail" class="input-field" required placeholder="jdoe@company.com">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Phone *</label>
-                    <input type="tel" id="contactPhone" class="input-field" required placeholder="(555) 123-4567">
+                    <input type="tel" id="contactPhone" name="contactPhone" class="input-field" required placeholder="(555) 123-4567">
                 </div>
                 
                 <div class="form-group">

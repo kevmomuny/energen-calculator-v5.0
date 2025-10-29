@@ -196,7 +196,10 @@ class ZohoDirectIntegration {
                 city: account.Billing_City || account.Mailing_City || '',
                 state: account.Billing_State || account.Mailing_State || '',
                 zip: account.Billing_Code || account.Mailing_Zip || '',
-                website: account.Website || ''
+                website: account.Website || '',
+                // Include all Zoho fields for logo and other data
+                logo: account.Logo || account.Logo_URL || account.Company_Logo || '',
+                rawData: account // Include raw data for debugging and future use
             }));
 
             this.logger.info(`Found ${results.length} accounts matching "${query}"`);
@@ -223,7 +226,10 @@ class ZohoDirectIntegration {
                     city: account.Billing_City || account.Mailing_City || '',
                     state: account.Billing_State || account.Mailing_State || '',
                     zip: account.Billing_Code || account.Mailing_Zip || '',
-                    website: account.Website || ''
+                    website: account.Website || '',
+                    // Include all Zoho fields for logo and other data
+                    logo: account.Logo || account.Logo_URL || account.Company_Logo || '',
+                    rawData: account // Include raw data for debugging and future use
                 }));
 
                 this.logger.info(`Fallback search found ${results.length} accounts`);
@@ -233,6 +239,42 @@ class ZohoDirectIntegration {
                 this.logger.error('Word search also failed:', wordError);
                 return [];
             }
+        }
+    }
+
+    /**
+     * Get full account details by ID
+     * @param {string} accountId - Zoho account ID
+     * @returns {Promise<Object>} Full account data
+     */
+    async getAccountById(accountId) {
+        try {
+            this.logger.info(`Fetching full account details for ID: ${accountId}`);
+
+            // Request all address fields explicitly (Physical, Billing, Mailing)
+            const fields = [
+                'id', 'Account_Name', 'Phone', 'Email', 'Website',
+                // Physical address fields (PRIORITY for equipment location)
+                'Physical_Address_Name', 'Physical_Address_Line_1', 'Physical_Address_Line_2',
+                'Physical_Address_City', 'Physical_Address_State', 'Physical_Address_Zip', 'Physical_Address_Country',
+                // Billing address fields
+                'Billing_Street', 'Billing_City', 'Billing_State', 'Billing_Code', 'Billing_Country',
+                // Mailing address fields
+                'Mailing_Street', 'Mailing_City', 'Mailing_State', 'Mailing_Zip', 'Mailing_Country',
+                // Logo and other data
+                'Company_Logo_URL', 'Logo_URL', 'Logo'
+            ].join(',');
+
+            const response = await this.makeApiRequest(`/Accounts/${accountId}?fields=${fields}`);
+
+            if (response.data && response.data.length > 0) {
+                return response.data[0];
+            }
+
+            throw new Error('Account not found');
+        } catch (error) {
+            this.logger.error('Failed to fetch account details:', error);
+            throw error;
         }
     }
 

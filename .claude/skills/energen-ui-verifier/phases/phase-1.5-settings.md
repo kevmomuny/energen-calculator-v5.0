@@ -13,6 +13,12 @@
 | Mileage Rate Input | Settings modal `input[name='mileageRate']` | Exists, Visible, Enabled | Current rate ($2.50 default) |
 | Tax Rate Input | Settings modal `input[name='taxRate']` | Exists, Visible, Enabled | Current rate (% format) |
 | Shop Address Input | Settings modal `input[name='shopAddress']` | Exists, Visible, Enabled | Base location for mileage |
+| Prevailing Wage Checkbox | `#prevailingWageRequired` | Exists, Visible, Clickable | Toggles prevailing wage mode |
+| Prevailing Wage Details | `#prevailingWageDetails` | Hidden when unchecked | Shows when checkbox checked |
+| Business Overhead Input | Inside prevailing wage section | Exists, Editable | Default: $115.00 |
+| API Rate Display | Inside prevailing wage section | Shows after ZIP lookup | DIR rate for location |
+| Manual Override Checkbox | Inside prevailing wage section | Exists, Toggleable | Allows custom rate entry |
+| Manual Rate Input | Inside prevailing wage section | Enabled when override checked | Custom rate input field |
 | Save Button | Settings modal `button:has-text('Save')` | Exists, Enabled | Save and close |
 | Cancel Button | Settings modal `button:has-text('Cancel')` | Exists, Enabled | Close without saving |
 
@@ -30,10 +36,32 @@
    - Enter location-specific tax rate (e.g., 9.5%)
    - Verify input accepts percentage format
 7. Verify shop address field (for mileage calculations)
-8. Click "Save" button
-9. Verify modal closes
-10. Verify settings persist in window.state.settings or localStorage
-11. Verify new rates apply to subsequent calculations
+8. Test prevailing wage settings:
+   - Locate "Prevailing Wage Required" checkbox
+   - Verify checkbox is unchecked by default
+   - Check the prevailing wage checkbox
+   - Verify `#prevailingWageDetails` section appears
+   - Enter customer ZIP code (e.g., 94520 for Concord, CA)
+   - Click "Refresh Prevailing Wage" or trigger auto-fetch
+   - Verify API call to `/api/prevailing-wage/{zip}` succeeds
+   - Verify API-fetched rate displays (e.g., $121.50 for Alameda County electrician)
+   - Verify business overhead field shows $115.00
+   - Calculate: Final Rate = API Rate + Business Overhead
+   - Verify manual override checkbox exists
+   - Check manual override checkbox
+   - Enter custom rate (e.g., $250.00)
+   - Verify manual override visual feedback (different styling)
+9. Click "Save" button
+10. Verify modal closes
+11. Verify settings persist in window.state.settings or localStorage
+12. Verify prevailing wage settings persist to `frontend/config/default-settings.json`
+13. Verify `window.state.settings.prevailingWage` object contains:
+    - `businessOverhead`: 115.00
+    - `defaultClassification`: "electricianJourneyman"
+    - `lastApiRate`: (fetched rate)
+    - `lastUpdated`: (timestamp)
+    - `lastZip`: (ZIP code)
+14. Verify new rates apply to subsequent calculations
 
 **Settings Persistence Test:**
 1. Change a setting and save
@@ -41,6 +69,21 @@
 3. Open settings modal
 4. Verify changed setting still reflects new value
 5. Verify calculation uses new setting value
+
+**Prevailing Wage Persistence Verification:**
+```javascript
+// Check settings object structure
+console.log(window.state.settings.prevailingWage);
+// Expected:
+{
+  businessOverhead: 115.00,
+  defaultClassification: "electricianJourneyman",
+  defaultZone: 1,
+  lastApiRate: 121.50,
+  lastUpdated: "2025-10-27T...",
+  lastZip: "94520"
+}
+```
 
 **Evidence Required:**
 - Screenshot of Settings button/icon location
@@ -66,5 +109,12 @@
 - Modal can't be dismissed with Cancel
 - Console errors during settings interaction
 - Settings lost on page reload
+- Prevailing wage checkbox doesn't toggle details section
+- API call fails or times out (>5s)
+- Fetched rate doesn't display
+- Business overhead field missing or not editable
+- Manual override doesn't override API rate
+- Prevailing wage settings don't persist on save
+- Calculations don't use prevailing wage when enabled
 
 ---

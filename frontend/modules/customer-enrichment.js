@@ -482,9 +482,11 @@ function updatePrevailingWageDisplay(data, state) {
  * Update labor rate display in quote summary
  * @param {Object} state - Application state
  */
-function updateLaborRateDisplay(state) {
-    const settings = window.calculatorSettings || {};
-    let effectiveLaborRate = settings.laborRate;
+export function updateLaborRateDisplay(state) {
+    // FIXED: Get settings from state.activeSettings (correct source)
+    const settings = state.activeSettings || window.state?.activeSettings || {};
+    let effectiveLaborRate = settings.laborRate || 180.00;
+    let effectiveMobilizationRate = settings.mobilizationRate || effectiveLaborRate;
     const checkbox = document.getElementById('prevailingWageRequired');
 
     if (checkbox && checkbox.checked && state.prevailingWageData) {
@@ -492,6 +494,7 @@ function updateLaborRateDisplay(state) {
         effectiveLaborRate = state.prevailingWageData.prevailingWage?.totalHourly ||
                            state.prevailingWageData.prevailingWage?.electricianJourneyman ||
                            effectiveLaborRate;
+        effectiveMobilizationRate = effectiveLaborRate; // Mobilization uses same rate as labor
     }
 
     // Update the labor rate display
@@ -508,6 +511,21 @@ function updateLaborRateDisplay(state) {
             laborRateElement.title = 'Standard Rate';
         }
     }
+
+    // FIXED: Update the mobilization rate display (was missing)
+    const mobilizationRateElement = document.getElementById('summary-mobilization-rate');
+    if (mobilizationRateElement) {
+        mobilizationRateElement.textContent = `$${effectiveMobilizationRate.toFixed(2)}/hr`;
+
+        // Add visual indicator if using prevailing wage
+        if (checkbox && checkbox.checked) {
+            mobilizationRateElement.style.color = 'var(--accent-green)';
+            mobilizationRateElement.title = 'Prevailing Wage Rate';
+        } else {
+            mobilizationRateElement.style.color = '';
+            mobilizationRateElement.title = 'Standard Rate';
+        }
+    }
 }
 
 // Helper functions imported from utilities.js
@@ -517,6 +535,7 @@ if (typeof window !== 'undefined') {
     window.customerEnrichment = {
         enrichCustomer,
         handlePrevailingWageChange,
-        fetchPrevailingWageData
+        fetchPrevailingWageData,
+        updateLaborRateDisplay
     };
 }

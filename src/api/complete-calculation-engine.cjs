@@ -344,7 +344,8 @@ class EnergenCalculationEngine {
      * Service C - Coolant Service (Annual/Biannual)
      */
     getServiceC(kwRange) {
-        const serviceData = this.settings.serviceDataC;
+        // FIXED: Check serviceC.data first (matches frontend format), then fallback to serviceDataC
+        const serviceData = this.settings.serviceC?.data || this.settings.serviceDataC;
 
         // Handle both formats: direct object or nested in .data array
         if (serviceData && typeof serviceData === 'object' && !Array.isArray(serviceData)) {

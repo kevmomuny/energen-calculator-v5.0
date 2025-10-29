@@ -3,7 +3,7 @@
 Write-Host "Starting Energen v5.0 Server with Google Custom Search..." -ForegroundColor Cyan
 
 # Set Google API credentials
-$env:GOOGLE_API_KEY = "AIzaSyDb53fLbY1I2QklfEkX_gMIHaziEk4FERE"
+$env:GOOGLE_API_KEY = "AIzaSyChw8FaZaHzfm0MMLi0o_PvHnHEXm1QTaI"
 $env:GOOGLE_SEARCH_ENGINE_ID = "8578917a3152c4259"
 
 Write-Host "✓ Google Custom Search API configured" -ForegroundColor Green

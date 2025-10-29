@@ -1,0 +1,69 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/Kevin/.vscode/**)",
+      "Read(//c/Users/Kevin/Downloads/**)",
+      "Read(//c/energen-mobile-bid-tool/**)",
+      "Read(//g/Shared drives/Energen Ops/2-Sales & Marketing/1-Sales/Bids/**)",
+      "Bash(test:*)",
+      "Bash(code --version:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(tasklist:*)",
+      "Bash(taskkill:*)",
+      "Bash(Get-Process:*)",
+      "Bash(Select-Object:*)",
+      "Bash(Format-Table:*)",
+      "Bash(timeout:*)",
+      "Bash(where:*)",
+      "Bash(set:*)",
+      "Bash(start chrome:*)",
+      "Bash(mv:*)",
+      "Skill(pdf)",
+      "Skill(xlsx)",
+      "Skill(energen-code-investigator)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "desktop-commander",
+    "kapture"
+  ],
+  "mcpServers": {
+    "desktop-commander": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@wonderwhy-er/desktop-commander"
+      ],
+      "env": {
+        "DEFAULT_SHELL": "powershell.exe",
+        "ALLOWED_DIRECTORIES": "",
+        "FILE_WRITE_LINE_LIMIT": "100",
+        "FILE_READ_LINE_LIMIT": "2000",
+        "TELEMETRY_ENABLED": "false"
+      }
+    },
+    "kapture": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "kapture-mcp",
+        "bridge"
+      ]
+    }
+  },
+  "contextManagement": {
+    "enabled": true,
+    "strategy": "selective",
+    "autoCompact": true
+  }
+}

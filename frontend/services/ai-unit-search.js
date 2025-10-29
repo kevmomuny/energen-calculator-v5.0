@@ -97,13 +97,16 @@ class AIUnitSearchService {
             console.log('Search query:', searchQuery);
 
             // Perform web search (this would use the WebSearch MCP tool via backend)
-            const searchResults = await this.performWebSearch(searchQuery);
+            const searchResults = await this.performWebSearch(searchQuery, unitData);
 
             // Parse results and extract maintenance data
             const maintenanceData = await this.parseSearchResults(searchResults, unitData);
 
             // Apply confidence filtering
             const filteredData = this.filterByConfidence(maintenanceData);
+
+            // Include raw search results so UI can display document links if needed
+            filteredData.searchResults = searchResults;
 
             // Cache the results
             this.cache.set(cacheKey, {
@@ -122,6 +125,22 @@ class AIUnitSearchService {
             return filteredData;
 
         } catch (error) {
+            // Check if this is a Claude Code AI required error
+            if (error.message.startsWith('CLAUDE_CODE_AI_REQUIRED:')) {
+                const data = JSON.parse(error.message.replace('CLAUDE_CODE_AI_REQUIRED:', ''));
+                console.log('⚠️ Claude Code AI required for this search');
+
+                // Return special datasheet indicating Claude Code AI is needed
+                const datasheet = this.getEmptyDatasheet();
+                datasheet.requiresClaudeCodeAI = true;
+                datasheet.claudePrompt = data.claudePrompt;
+                datasheet.message = data.message;
+                datasheet.searchQuery = data.searchQuery;
+                datasheet.source = 'Model not in database - Claude Code AI search required';
+
+                return datasheet;
+            }
+
             console.error('❌ AI unit search failed:', error);
             return this.getEmptyDatasheet('Search failed: ' + error.message);
         }
@@ -156,18 +175,25 @@ class AIUnitSearchService {
     }
 
     /**
-     * Perform web search (calls backend API that uses WebSearch tool)
-     * @param {string} query - Search query
-     * @returns {Promise<Array>} Search results
+     * Perform web search (calls backend API with Google Custom Search)
+     * @param {string} query - Search query (not used in new implementation)
+     * @param {Object} unitData - Unit information for search
+     * @returns {Promise<Array>} Search results from Google Custom Search API
      */
-    async performWebSearch(query) {
+    async performWebSearch(query, unitData) {
         try {
             const response = await fetch('/api/ai-search-unit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ query })
+                body: JSON.stringify({
+                    manufacturer: unitData.brand,
+                    model: unitData.model,
+                    kw: unitData.kw,
+                    serialNumber: unitData.serial,
+                    fuelType: unitData.fuelType || 'Diesel'
+                })
             });
 
             if (!response.ok) {
@@ -175,7 +201,34 @@ class AIUnitSearchService {
             }
 
             const data = await response.json();
-            return data.results || [];
+
+            // Check if Claude Code AI is required (fallback when Google API not configured)
+            if (data.requiresClaudeCodeAI) {
+                // Return special result that indicates user needs to use Claude Code AI
+                throw new Error('CLAUDE_CODE_AI_REQUIRED:' + JSON.stringify({
+                    message: data.message,
+                    claudePrompt: data.claudePrompt,
+                    searchQuery: data.searchQuery
+                }));
+            }
+
+            // Check if search failed with no results
+            if (!data.success) {
+                console.warn('Search returned no results:', data.error);
+                return [];
+            }
+
+            // Normalize Google Custom Search results to expected format
+            // Google returns: { title, link, snippet, displayLink }
+            // Parser expects: { title, url, snippet }
+            const normalizedResults = (data.results || []).map(result => ({
+                title: result.title,
+                url: result.link,  // Google uses 'link', parser expects 'url'
+                snippet: result.snippet
+            }));
+
+            console.log(`✓ Received ${normalizedResults.length} search results from Google`);
+            return normalizedResults;
 
         } catch (error) {
             console.error('Web search failed:', error);

@@ -187,12 +187,21 @@ function parseFrequency(frequency) {
 }
 
 /**
- * Calculate estimated annual cost (if pricing data available)
+ * Calculate estimated annual cost (DEPRECATED - USE CALCULATOR API INSTEAD)
+ *
+ * ⚠️ WARNING: This function uses hardcoded estimates and should NOT be used
+ * for actual bid pricing. Use generate-accurate-bid-pricing.cjs instead,
+ * which calls the calculator API for verified pricing.
+ *
+ * This function is kept only for rough estimation during initial RFP review.
  */
 function estimateAnnualCost(mapping, hourlyRate = 125) {
+  console.warn('⚠️  WARNING: Using hardcoded pricing estimates. For accurate pricing, use calculator API.');
+
   const hoursPerService = mapping.estimatedLaborHours || 3;
   const frequency = mapping.frequencyPerYear || 1;
 
+  // ROUGH ESTIMATE ONLY - NOT FOR ACTUAL BIDS
   return hoursPerService * frequency * hourlyRate;
 }
 

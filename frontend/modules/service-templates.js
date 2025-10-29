@@ -114,39 +114,58 @@ function renderFrequencyButtons(unitId, code, defaultFreq) {
  */
 function renderServiceD(unitId, serviceDef, unit) {
   const fluidPrices = getFluidPrices();
-  const priceText = unit.kw
-    ? '<span style="color: var(--text-tertiary)">Select fluids to test</span>'
-    : '<span style="color: var(--text-tertiary)">Enter kW first</span>';
+
+  // Calculate price based on selected fluids (if any)
+  let priceText;
+  if (!unit.kw) {
+    priceText = '<span style="color: var(--text-tertiary)">Enter kW first</span>';
+  } else if (unit.serviceDFluids && (unit.serviceDFluids.oil || unit.serviceDFluids.coolant || unit.serviceDFluids.fuel)) {
+    // Calculate total from selected fluids
+    let customPrice = 0;
+    if (unit.serviceDFluids.oil) customPrice += fluidPrices.oil;
+    if (unit.serviceDFluids.coolant) customPrice += fluidPrices.coolant;
+    if (unit.serviceDFluids.fuel) customPrice += fluidPrices.fuel;
+
+    const frequency = unit.frequencies?.D || 1;
+    const totalPrice = customPrice * frequency;
+    priceText = `$${totalPrice.toFixed(2)} <span style="font-size: 9px; color: var(--text-secondary)">/ year</span>`;
+  } else {
+    priceText = '<span style="color: var(--text-tertiary)">Select to add</span>';
+  }
+
+  const disabled = !unit.kw ? 'opacity: 0.5; pointer-events: none;' : '';
 
   return `
-    <div class="service-card" id="${unitId}-service-D" onclick="toggleServiceD('${unitId}')">
+    <div class="service-card" id="${unitId}-service-D" style="${disabled}" onclick="toggleServiceD('${unitId}')">
       <div class="service-name">${serviceDef.name}</div>
       <div style="font-size: 9px; color: var(--text-secondary); margin-bottom: 8px;">${serviceDef.description}</div>
       <div class="service-price" id="${unitId}-service-D-price">${priceText}</div>
       <div class="service-breakdown" id="${unitId}-service-D-breakdown" style="font-size: 9px; color: var(--text-secondary); margin-top: 4px;"></div>
 
-      <div style="padding: 8px 0; border-top: 1px solid var(--border-subtle); margin-top: 8px;">
+      <div class="service-d-checkboxes" style="padding: 8px 0; border-top: 1px solid var(--border-subtle); margin-top: 8px; ">
         <div style="margin-bottom: 6px;">
           <label style="display: flex; align-items: center; cursor: pointer; font-size: 10px;">
-            <input type="checkbox" id="${unitId}-service-D-oil" checked onchange="updateServiceDFluids('${unitId}')" onclick="event.stopPropagation()" style="margin-right: 6px;">
+            <input type="checkbox" id="${unitId}-service-D-oil" onchange="updateServiceDFluids('${unitId}')" onclick="event.stopPropagation()" style="margin-right: 6px;">
             <span id="${unitId}-service-D-oil-label">Oil Analysis - $${fluidPrices.oil.toFixed(2)}</span>
           </label>
         </div>
         <div style="margin-bottom: 6px;">
           <label style="display: flex; align-items: center; cursor: pointer; font-size: 10px;">
-            <input type="checkbox" id="${unitId}-service-D-coolant" checked onchange="updateServiceDFluids('${unitId}')" onclick="event.stopPropagation()" style="margin-right: 6px;">
+            <input type="checkbox" id="${unitId}-service-D-coolant" onchange="updateServiceDFluids('${unitId}')" onclick="event.stopPropagation()" style="margin-right: 6px;">
             <span id="${unitId}-service-D-coolant-label">Coolant Analysis - $${fluidPrices.coolant.toFixed(2)}</span>
           </label>
         </div>
         <div style="margin-bottom: 6px;">
           <label style="display: flex; align-items: center; cursor: pointer; font-size: 10px;">
-            <input type="checkbox" id="${unitId}-service-D-fuel" checked onchange="updateServiceDFluids('${unitId}')" onclick="event.stopPropagation()" style="margin-right: 6px;">
+            <input type="checkbox" id="${unitId}-service-D-fuel" onchange="updateServiceDFluids('${unitId}')" onclick="event.stopPropagation()" style="margin-right: 6px;">
             <span id="${unitId}-service-D-fuel-label">Fuel Analysis - $${fluidPrices.fuel.toFixed(2)}</span>
           </label>
         </div>
       </div>
 
-      ${renderFrequencyButtons(unitId, 'D', serviceDef.defaultFreq || 1)}
+      <div class="frequency-selector-d" style="">
+        ${renderFrequencyButtons(unitId, 'D', serviceDef.defaultFreq || 1)}
+      </div>
     </div>
   `;
 }
@@ -159,7 +178,9 @@ function renderServiceD(unitId, serviceDef, unit) {
  * @returns {string} HTML
  */
 function renderServiceH(unitId, serviceDef, unit) {
-  const priceText = unit.kw ? 'Every 5 Years' : 'Enter kW first';
+  const priceText = unit.kw
+    ? '<span style="color: var(--text-tertiary)">Select to add</span>'
+    : '<span style="color: var(--text-tertiary)">Enter kW first</span>';
   const disabled = !unit.kw ? 'opacity: 0.5; pointer-events: none;' : '';
 
   return `
@@ -230,7 +251,9 @@ function renderServiceI(unitId, serviceDef, unit) {
  * @returns {string} HTML
  */
 function renderServiceFG(unitId, code, serviceDef, unit) {
-  const priceText = unit.kw ? 'By Recommendation' : 'Enter kW first';
+  const priceText = unit.kw
+    ? '<span style="color: var(--text-tertiary)">Select to add</span>'
+    : '<span style="color: var(--text-tertiary)">Enter kW first</span>';
   const disabled = !unit.kw ? 'opacity: 0.5; pointer-events: none;' : '';
 
   return `

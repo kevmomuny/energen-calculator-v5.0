@@ -10,10 +10,16 @@ console.log('🔍 DEBUG: init.js file loading...');
 import { addNewUnit } from './modules/unit-management.js';
 // Import global handlers FIRST to ensure window functions are available
 import './modules/global-handlers.js';
+// Import summary calculator for top-level totals
+import './modules/summary-calculator.js';
 // Import service selection handlers (including custom service functions)
 import './modules/service-selection.js';
+// Import Service D fluid analysis handlers
+import './modules/service-d-fluids.js';
 // Import unit details modal handlers
 import './modules/unit-details-modal.js';
+// Import PDF generator for bid creation and document generation
+import './modules/pdf-generator.js';
 // Import quote data builder for PDF generation
 import { buildQuoteData } from './services/quote-data-builder.js';
 // Application namespace to prevent global pollution
@@ -364,6 +370,24 @@ async function loadInitialData(modules) {
             modules.state.settingsLoaded = true;
             modules.state.settingsSource = 'localStorage';
             console.log('Loaded saved settings from localStorage');
+
+            // FIXED: Update labor rate displays after loading settings
+            if (settings.laborRate) {
+                // Wait for DOM to be ready, then update displays
+                setTimeout(() => {
+                    const laborEl = document.getElementById('summary-labor-rate');
+                    const mobilizationEl = document.getElementById('summary-mobilization-rate');
+                    if (laborEl) {
+                        laborEl.textContent = `$${settings.laborRate.toFixed(2)}/hr`;
+                        console.log('[INIT] Updated labor rate display to', settings.laborRate);
+                    }
+                    if (mobilizationEl) {
+                        const mobRate = settings.mobilizationRate || settings.laborRate;
+                        mobilizationEl.textContent = `$${mobRate.toFixed(2)}/hr`;
+                        console.log('[INIT] Updated mobilization rate display to', mobRate);
+                    }
+                }, 100);
+            }
         } else {
             // Load default settings from config file
             try {
@@ -758,9 +782,32 @@ window.addEventListener('message', (event) => {
         // Update global settings reference
         window.currentSettings = newSettings;
 
+        // FIXED: Update state.activeSettings so labor rate displays pull correct values
+        if (window.state) {
+            window.state.activeSettings = newSettings;
+            console.log('[SETTINGS] Updated state.activeSettings:', window.state.activeSettings);
+        }
+
         // Update settingsUI if it exists
         if (modules.settingsUI) {
             modules.settingsUI.settings = newSettings;
+        }
+
+        // FIXED: Update ALL labor rate displays immediately when settings change
+        if (newSettings.laborRate) {
+            const laborEl = document.getElementById('summary-labor-rate');
+            const mobilizationEl = document.getElementById('summary-mobilization-rate');
+
+            if (laborEl) {
+                laborEl.textContent = `$${newSettings.laborRate.toFixed(2)}/hr`;
+                console.log('[SETTINGS] Updated labor rate display to:', newSettings.laborRate);
+            }
+
+            if (mobilizationEl) {
+                const mobRate = newSettings.mobilizationRate || newSettings.laborRate;
+                mobilizationEl.textContent = `$${mobRate.toFixed(2)}/hr`;
+                console.log('[SETTINGS] Updated mobilization rate display to:', mobRate);
+            }
         }
 
         // Trigger recalculation of all services

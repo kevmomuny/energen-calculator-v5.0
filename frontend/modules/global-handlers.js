@@ -31,12 +31,112 @@ window.safeAlert = function(message) {
         console.log('[TEST MODE] Suppressing alert:', message);
         return; // Suppress in test mode
     }
-    alert(message);
+
+    // Use non-blocking custom modal instead of alert()
+    showNonBlockingModal(message);
 };
+
+// Non-blocking modal for validation messages (Kapture-friendly)
+function showNonBlockingModal(message) {
+    // Remove existing modal if present
+    const existingModal = document.getElementById('non-blocking-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Create modal overlay
+    const modalOverlay = document.createElement('div');
+    modalOverlay.id = 'non-blocking-modal';
+    modalOverlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+    `;
+
+    // Create modal content
+    const modalContent = document.createElement('div');
+    modalContent.style.cssText = `
+        background: var(--surface-color, #1e1e1e);
+        border: 1px solid var(--border-color, #333);
+        border-radius: 8px;
+        padding: 24px;
+        max-width: 500px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    `;
+
+    // Create title
+    const title = document.createElement('div');
+    title.textContent = 'localhost:3002 says';
+    title.style.cssText = `
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary, #fff);
+        margin-bottom: 16px;
+    `;
+
+    // Create message
+    const messageEl = document.createElement('div');
+    messageEl.textContent = message;
+    messageEl.style.cssText = `
+        font-size: 13px;
+        color: var(--text-secondary, #ccc);
+        margin-bottom: 20px;
+        white-space: pre-line;
+        line-height: 1.5;
+    `;
+
+    // Create OK button
+    const okButton = document.createElement('button');
+    okButton.textContent = 'OK';
+    okButton.id = 'modal-ok-button';
+    okButton.style.cssText = `
+        background: var(--primary, #3b82f6);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 40px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        float: right;
+    `;
+
+    okButton.onclick = function() {
+        modalOverlay.remove();
+    };
+
+    // Assemble modal
+    modalContent.appendChild(title);
+    modalContent.appendChild(messageEl);
+    modalContent.appendChild(okButton);
+    modalOverlay.appendChild(modalContent);
+
+    // Add to page
+    document.body.appendChild(modalOverlay);
+
+    // Focus OK button for keyboard access
+    okButton.focus();
+
+    // Allow ESC key to close
+    const escHandler = function(e) {
+        if (e.key === 'Escape') {
+            modalOverlay.remove();
+            document.removeEventListener('keydown', escHandler);
+        }
+    };
+    document.addEventListener('keydown', escHandler);
+}
 
 // Import all required modules
 import { state } from '../js/state.js';
-import { addNewUnit, renderUnit, removeUnit, updateUnit as updateUnitFromModule } from './unit-management.js';
+import { addNewUnit, renderUnit, removeUnit, updateUnit as updateUnitFromModule, handleBrandChange } from './unit-management.js';
 import { updateStatus, formatMoney, debounce } from '../js/utilities.js';
 import { EnrichmentService } from '../services/enrichment.js';
 import { CalculationService } from '../services/calculation.js';
@@ -131,6 +231,11 @@ window.toggleUnit = function(unitId) {
         servicesContainer.classList.toggle('collapsed');
     }
 };
+
+/**
+ * Handle brand dropdown change - show custom input if "Other" selected
+ */
+window.handleBrandChange = handleBrandChange;
 
 /**
  * Update unit property (kW, brand, model, fuel, etc.)

@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "zoho-invoicing": {
+      "type": "http",
+      "url": "https://energen-lean-897662416.zohomcp.com/mcp/message?key=9f15f41fdd1a73dba505c3be6857016d",
+      "tools": [
+        "create_contact",
+        "list_contacts",
+        "get_contact",
+        "update_contact",
+        "create_invoice",
+        "list_invoices",
+        "get_invoice",
+        "update_invoice",
+        "email_invoice",
+        "create_customer_payment",
+        "list_customer_payments",
+        "get_customer_payment",
+        "create_item",
+        "list_items",
+        "get_item"
+      ]
+    }
+  },
+  "description": "Invoicing workflow: contacts, invoices, payments, items",
+  "estimated_tokens": 2200,
+  "tools_count": 15,
+  "use_case": "Creating quotes, converting to invoices, emailing to customers, tracking payments"
+}

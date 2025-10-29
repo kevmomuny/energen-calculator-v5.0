@@ -28,6 +28,7 @@
     "pdfkit": "^0.13.0",
     "sanitize-html": "^2.17.0",
     "sharp": "^0.34.4",
+    "svg-to-pdfkit": "^0.1.8",
     "uuid": "^13.0.0",
     "validator": "^13.15.15",
     "winston": "^3.11.0",

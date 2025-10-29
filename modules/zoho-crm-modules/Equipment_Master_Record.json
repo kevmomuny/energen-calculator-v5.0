@@ -1,0 +1,480 @@
+{
+  "module": {
+    "api_name": "Equipment_Master_Record",
+    "singular_label": "Equipment Master Record",
+    "plural_label": "Equipment Master Records",
+    "module_name": "Equipment_Master_Record",
+    "description": "Master record for verified equipment with OCR/AI extracted data, photos, and GPS coordinates",
+    "generated_type": "custom",
+    "show_as_tab": true,
+    "sequence_number": 10,
+    "enable_activities": true,
+    "enable_notes": true,
+    "enable_attachments": true
+  },
+  "fields": [
+    {
+      "api_name": "Field_Record_ID",
+      "field_label": "Field Record ID",
+      "data_type": "text",
+      "length": 50,
+      "required": true,
+      "unique": true,
+      "tooltip": "Unique identifier from field data collection",
+      "field_read_only": true
+    },
+    {
+      "api_name": "Equipment_Name",
+      "field_label": "Equipment Name",
+      "data_type": "text",
+      "length": 255,
+      "required": true,
+      "tooltip": "Human-readable name for equipment"
+    },
+    {
+      "api_name": "Manufacturer",
+      "field_label": "Manufacturer",
+      "data_type": "text",
+      "length": 100,
+      "required": true,
+      "tooltip": "Equipment manufacturer (e.g., Cummins, Caterpillar, Kohler)"
+    },
+    {
+      "api_name": "Model_Number",
+      "field_label": "Model Number",
+      "data_type": "text",
+      "length": 100,
+      "required": true,
+      "tooltip": "Exact model number from nameplate"
+    },
+    {
+      "api_name": "Serial_Number",
+      "field_label": "Serial Number",
+      "data_type": "text",
+      "length": 100,
+      "required": true,
+      "unique": true,
+      "tooltip": "Unique serial number from nameplate"
+    },
+    {
+      "api_name": "kW_Rating_Standby",
+      "field_label": "kW Rating (Standby)",
+      "data_type": "decimal",
+      "decimal_place": 2,
+      "required": false,
+      "tooltip": "Standby power rating in kilowatts"
+    },
+    {
+      "api_name": "kW_Rating_Prime",
+      "field_label": "kW Rating (Prime)",
+      "data_type": "decimal",
+      "decimal_place": 2,
+      "required": false,
+      "tooltip": "Prime power rating in kilowatts"
+    },
+    {
+      "api_name": "Voltage",
+      "field_label": "Voltage",
+      "data_type": "text",
+      "length": 50,
+      "tooltip": "Voltage rating (e.g., 480V, 208V)"
+    },
+    {
+      "api_name": "Phase",
+      "field_label": "Phase",
+      "data_type": "picklist",
+      "pick_list_values": [
+        {"display_value": "Single Phase", "actual_value": "1"},
+        {"display_value": "Three Phase", "actual_value": "3"}
+      ],
+      "tooltip": "Electrical phase configuration"
+    },
+    {
+      "api_name": "Fuel_Type",
+      "field_label": "Fuel Type",
+      "data_type": "picklist",
+      "pick_list_values": [
+        {"display_value": "Diesel", "actual_value": "Diesel"},
+        {"display_value": "Natural Gas", "actual_value": "Natural_Gas"},
+        {"display_value": "Propane", "actual_value": "Propane"},
+        {"display_value": "Bi-Fuel", "actual_value": "Bi_Fuel"}
+      ],
+      "tooltip": "Primary fuel type"
+    },
+    {
+      "api_name": "Year_Manufactured",
+      "field_label": "Year Manufactured",
+      "data_type": "number",
+      "tooltip": "Year equipment was manufactured"
+    },
+    {
+      "api_name": "Installation_Date",
+      "field_label": "Installation Date",
+      "data_type": "date",
+      "tooltip": "Date equipment was installed at current location"
+    },
+    {
+      "api_name": "Nameplate_Photo_URL",
+      "field_label": "Nameplate Photo URL",
+      "data_type": "url",
+      "tooltip": "URL to nameplate/data plate photo"
+    },
+    {
+      "api_name": "Battery_Photo_URL",
+      "field_label": "Battery Photo URL",
+      "data_type": "url",
+      "tooltip": "URL to battery configuration photo"
+    },
+    {
+      "api_name": "Equipment_Photo_URL",
+      "field_label": "Equipment Photo URL",
+      "data_type": "url",
+      "tooltip": "URL to overall equipment photo"
+    },
+    {
+      "api_name": "Additional_Photos_URLs",
+      "field_label": "Additional Photos URLs",
+      "data_type": "textarea",
+      "tooltip": "JSON array of additional photo URLs"
+    },
+    {
+      "api_name": "OCR_Confidence_Score",
+      "field_label": "OCR Confidence Score",
+      "data_type": "decimal",
+      "decimal_place": 2,
+      "tooltip": "AI confidence score for OCR extraction (0-100)"
+    },
+    {
+      "api_name": "OCR_Extracted_Text",
+      "field_label": "OCR Extracted Text",
+      "data_type": "textarea",
+      "tooltip": "Raw text extracted from nameplate photo"
+    },
+    {
+      "api_name": "Battery_Count_AI",
+      "field_label": "Battery Count (AI)",
+      "data_type": "number",
+      "tooltip": "Number of batteries detected by AI"
+    },
+    {
+      "api_name": "Battery_Count_Tech",
+      "field_label": "Battery Count (Tech Verified)",
+      "data_type": "number",
+      "tooltip": "Number of batteries verified by technician"
+    },
+    {
+      "api_name": "Battery_Voltage_Each",
+      "field_label": "Battery Voltage (Each)",
+      "data_type": "decimal",
+      "decimal_place": 1,
+      "tooltip": "Voltage of each battery (typically 12V)"
+    },
+    {
+      "api_name": "Battery_Configuration",
+      "field_label": "Battery Configuration",
+      "data_type": "picklist",
+      "pick_list_values": [
+        {"display_value": "12V (Single)", "actual_value": "12V_Single"},
+        {"display_value": "24V (2x12V Series)", "actual_value": "24V_Series"},
+        {"display_value": "24V (2x12V Parallel)", "actual_value": "24V_Parallel"},
+        {"display_value": "48V (4x12V Series)", "actual_value": "48V_Series"},
+        {"display_value": "Custom", "actual_value": "Custom"}
+      ],
+      "tooltip": "Battery bank configuration"
+    },
+    {
+      "api_name": "Battery_Voltage_Total",
+      "field_label": "Battery Voltage (Total)",
+      "data_type": "decimal",
+      "decimal_place": 1,
+      "tooltip": "Total system battery voltage"
+    },
+    {
+      "api_name": "Oil_Capacity_Gallons",
+      "field_label": "Oil Capacity (Gallons)",
+      "data_type": "decimal",
+      "decimal_place": 2,
+      "tooltip": "Engine oil capacity in gallons"
+    },
+    {
+      "api_name": "Coolant_Capacity_Gallons",
+      "field_label": "Coolant Capacity (Gallons)",
+      "data_type": "decimal",
+      "decimal_place": 2,
+      "tooltip": "Coolant capacity in gallons"
+    },
+    {
+      "api_name": "GPS_Latitude",
+      "field_label": "GPS Latitude",
+      "data_type": "decimal",
+      "decimal_place": 8,
+      "tooltip": "Latitude coordinate from photo EXIF"
+    },
+    {
+      "api_name": "GPS_Longitude",
+      "field_label": "GPS Longitude",
+      "data_type": "decimal",
+      "decimal_place": 8,
+      "tooltip": "Longitude coordinate from photo EXIF"
+    },
+    {
+      "api_name": "GPS_Coordinates",
+      "field_label": "GPS Coordinates",
+      "data_type": "text",
+      "length": 50,
+      "tooltip": "Combined GPS coordinates (latitude,longitude)"
+    },
+    {
+      "api_name": "GPS_Accuracy_Meters",
+      "field_label": "GPS Accuracy (Meters)",
+      "data_type": "decimal",
+      "decimal_place": 1,
+      "tooltip": "GPS accuracy in meters from EXIF metadata"
+    },
+    {
+      "api_name": "GPS_Source",
+      "field_label": "GPS Source",
+      "data_type": "picklist",
+      "pick_list_values": [
+        {"display_value": "Photo EXIF", "actual_value": "Photo_EXIF"},
+        {"display_value": "Google Maps", "actual_value": "Google_Maps"},
+        {"display_value": "GPS Device", "actual_value": "GPS_Device"},
+        {"display_value": "Manual Entry", "actual_value": "Manual_Entry"}
+      ],
+      "tooltip": "Source of GPS coordinates"
+    },
+    {
+      "api_name": "GPS_Last_Updated",
+      "field_label": "GPS Last Updated",
+      "data_type": "datetime",
+      "tooltip": "When GPS coordinates were last updated"
+    },
+    {
+      "api_name": "Indoor_Location",
+      "field_label": "Indoor Location",
+      "data_type": "text",
+      "length": 200,
+      "tooltip": "Floor, room, or bay number for indoor equipment"
+    },
+    {
+      "api_name": "Installation_Address",
+      "field_label": "Installation Address",
+      "data_type": "textarea",
+      "tooltip": "Physical address where equipment is installed"
+    },
+    {
+      "api_name": "Customer_Account",
+      "field_label": "Customer Account",
+      "data_type": "lookup",
+      "lookup_module": {"api_name": "Accounts"},
+      "tooltip": "Lookup to customer account"
+    },
+    {
+      "api_name": "Manufacturer_Master_Lookup",
+      "field_label": "Manufacturer Master Database",
+      "data_type": "lookup",
+      "lookup_module": {"api_name": "Manufacturer_Master_Database"},
+      "tooltip": "Lookup to manufacturer master database record"
+    },
+    {
+      "api_name": "Validation_Status",
+      "field_label": "Validation Status",
+      "data_type": "picklist",
+      "pick_list_values": [
+        {"display_value": "Pending Validation", "actual_value": "Pending"},
+        {"display_value": "Validated - Exact Match", "actual_value": "Exact_Match"},
+        {"display_value": "Validated - Partial Match", "actual_value": "Partial_Match"},
+        {"display_value": "Manual Review Required", "actual_value": "Manual_Review"},
+        {"display_value": "Unknown Equipment", "actual_value": "Unknown"},
+        {"display_value": "Validation Failed", "actual_value": "Failed"}
+      ],
+      "default_value": "Pending",
+      "required": true,
+      "tooltip": "Cross-validation status against manufacturer database"
+    },
+    {
+      "api_name": "Match_Percentage",
+      "field_label": "Match Percentage",
+      "data_type": "decimal",
+      "decimal_place": 2,
+      "tooltip": "Percentage match to manufacturer database (0-100)"
+    },
+    {
+      "api_name": "Data_Source",
+      "field_label": "Data Source",
+      "data_type": "picklist",
+      "pick_list_values": [
+        {"display_value": "Field Technician", "actual_value": "Field_Tech"},
+        {"display_value": "AI Extraction", "actual_value": "AI_Extraction"},
+        {"display_value": "Manual Entry", "actual_value": "Manual_Entry"},
+        {"display_value": "Import", "actual_value": "Import"}
+      ],
+      "tooltip": "How this record was created"
+    },
+    {
+      "api_name": "Extraction_Timestamp",
+      "field_label": "Extraction Timestamp",
+      "data_type": "datetime",
+      "tooltip": "When data was extracted from photo"
+    },
+    {
+      "api_name": "Last_Verified_Date",
+      "field_label": "Last Verified Date",
+      "data_type": "date",
+      "tooltip": "Date record was last verified by human"
+    },
+    {
+      "api_name": "Verified_By",
+      "field_label": "Verified By",
+      "data_type": "lookup",
+      "lookup_module": {"api_name": "Users"},
+      "tooltip": "User who verified this record"
+    },
+    {
+      "api_name": "Equipment_Notes",
+      "field_label": "Equipment Notes",
+      "data_type": "textarea",
+      "tooltip": "Additional notes about this equipment"
+    },
+    {
+      "api_name": "Asset_Status",
+      "field_label": "Asset Status",
+      "data_type": "picklist",
+      "pick_list_values": [
+        {"display_value": "Active", "actual_value": "Active"},
+        {"display_value": "Inactive", "actual_value": "Inactive"},
+        {"display_value": "Under Service", "actual_value": "Under_Service"},
+        {"display_value": "Decommissioned", "actual_value": "Decommissioned"}
+      ],
+      "default_value": "Active",
+      "required": true,
+      "tooltip": "Current operational status of equipment"
+    }
+  ],
+  "layouts": [
+    {
+      "name": "Standard",
+      "sections": [
+        {
+          "name": "Equipment Identification",
+          "display_label": "Equipment Identification",
+          "column_count": 2,
+          "fields": [
+            "Field_Record_ID",
+            "Equipment_Name",
+            "Manufacturer",
+            "Model_Number",
+            "Serial_Number",
+            "Year_Manufactured",
+            "Installation_Date",
+            "Asset_Status"
+          ]
+        },
+        {
+          "name": "Technical Specifications",
+          "display_label": "Technical Specifications",
+          "column_count": 2,
+          "fields": [
+            "kW_Rating_Standby",
+            "kW_Rating_Prime",
+            "Voltage",
+            "Phase",
+            "Fuel_Type",
+            "Oil_Capacity_Gallons",
+            "Coolant_Capacity_Gallons"
+          ]
+        },
+        {
+          "name": "Battery Information",
+          "display_label": "Battery Information",
+          "column_count": 2,
+          "fields": [
+            "Battery_Count_AI",
+            "Battery_Count_Tech",
+            "Battery_Voltage_Each",
+            "Battery_Configuration",
+            "Battery_Voltage_Total"
+          ]
+        },
+        {
+          "name": "Photo Documentation",
+          "display_label": "Photo Documentation",
+          "column_count": 1,
+          "fields": [
+            "Nameplate_Photo_URL",
+            "Battery_Photo_URL",
+            "Equipment_Photo_URL",
+            "Additional_Photos_URLs"
+          ]
+        },
+        {
+          "name": "GPS Location",
+          "display_label": "GPS & Location",
+          "column_count": 2,
+          "fields": [
+            "GPS_Latitude",
+            "GPS_Longitude",
+            "GPS_Coordinates",
+            "GPS_Accuracy_Meters",
+            "GPS_Source",
+            "GPS_Last_Updated",
+            "Indoor_Location",
+            "Installation_Address"
+          ]
+        },
+        {
+          "name": "OCR AI Extraction",
+          "display_label": "OCR & AI Extraction",
+          "column_count": 2,
+          "fields": [
+            "OCR_Confidence_Score",
+            "OCR_Extracted_Text",
+            "Data_Source",
+            "Extraction_Timestamp"
+          ]
+        },
+        {
+          "name": "Validation",
+          "display_label": "Validation & Verification",
+          "column_count": 2,
+          "fields": [
+            "Validation_Status",
+            "Match_Percentage",
+            "Manufacturer_Master_Lookup",
+            "Last_Verified_Date",
+            "Verified_By"
+          ]
+        },
+        {
+          "name": "Relationships",
+          "display_label": "Relationships",
+          "column_count": 2,
+          "fields": [
+            "Customer_Account",
+            "Equipment_Notes"
+          ]
+        }
+      ]
+    }
+  ],
+  "permissions": {
+    "Administrator": {
+      "view": true,
+      "create": true,
+      "edit": true,
+      "delete": true
+    },
+    "Field_Technician": {
+      "view": true,
+      "create": true,
+      "edit": true,
+      "delete": false
+    },
+    "Sales": {
+      "view": true,
+      "create": false,
+      "edit": false,
+      "delete": false
+    }
+  }
+}

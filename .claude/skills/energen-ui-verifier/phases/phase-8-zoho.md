@@ -112,6 +112,10 @@
 | Grand Total | Calculator | Grand_Total | Match annual total |
 | Quarterly Total | Calculator | Quarterly_Total | Match Q1 total |
 | Valid Until | Auto-generated | Valid_Till | 30 days from now |
+| Prevailing Wage Required | Settings | Prevailing_Wage_Required | Checkbox (true/false) |
+| Prevailing Wage Rate | Settings | Prevailing_Wage_Rate | Currency ($236.50 if enabled) |
+| Prevailing Wage Source | Settings | Prevailing_Wage_Source | "DIR API" or "Manual Override" |
+| Business Overhead | Settings | Business_Overhead | Currency ($115.00 default) |
 
 **Product Line Items (CRITICAL):**
 For each selected service:
@@ -131,14 +135,21 @@ For each selected service:
 **Test Sequence:**
 1. Verify quote creation after account/asset
 2. Verify quote header fields populated
-3. Verify ALL selected services appear as line items
-4. Verify each line item has:
+3. Verify prevailing wage fields (if enabled):
+   - `Prevailing_Wage_Required` = true
+   - `Prevailing_Wage_Rate` = $236.50 (or calculated value)
+   - `Prevailing_Wage_Source` = "DIR API" or "Manual Override"
+   - `Business_Overhead` = $115.00
+4. Verify ALL selected services appear as line items
+5. Verify each line item has:
    - Valid product ID (not null, not 0)
    - Correct quantity (frequency: 4=quarterly, 2=semi-annual, 1=annual)
-   - Correct list price (per-visit price)
+   - Correct list price (per-visit price reflecting prevailing wage if enabled)
    - Correct total (list_price × quantity)
-5. Verify grand total matches calculator
-6. Verify quote status (Draft, Pending, etc.)
+6. Verify grand total matches calculator
+7. Verify quote status (Draft, Pending, etc.)
+8. Verify quote notes/description includes prevailing wage disclosure (if enabled):
+   - "This quote uses California prevailing wage rates per DIR requirements."
 
 **Critical Product Workflow:**
 1. For each service, find or create product in Zoho
@@ -151,9 +162,12 @@ For each selected service:
 - Quote line items array in response
 - Verification: Quote exists in Zoho
 - Verification: All services appear as line items
-- Verification: Line item pricing correct
+- Verification: Line item pricing correct (with prevailing wage if enabled)
 - Verification: Grand total matches
-- Screenshot of Zoho quote page
+- Verification: Prevailing wage fields populated (if enabled)
+- Screenshot of Zoho quote page showing prevailing wage data
+- Verification: Quote notes include prevailing wage disclosure
+- Verification: Attached PDF reflects prevailing wage rates
 
 **Known Issues:**
 - E2E-007: Quote creation requires product IDs, not names (FIXED per E2E_BUGS_TRACKING.json)
@@ -171,5 +185,10 @@ For each selected service:
 - Console errors during Zoho calls
 - API returns error response
 - Quote not searchable in Zoho
+- Prevailing wage fields missing when enabled
+- Prevailing wage rate incorrect in Zoho
+- Line item prices don't reflect prevailing wage when enabled
+- Quote notes missing prevailing wage disclosure
+- Attached PDF doesn't match prevailing wage settings
 
 ---

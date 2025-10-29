@@ -1,0 +1,233 @@
+{
+  "success": true,
+  "calculation": {
+    "laborTotal": "155294.75",
+    "partsTotal": "117592.13",
+    "mobilizationTotal": "13356.00",
+    "mobilizationSavings": "0.00",
+    "subtotal": "286242.88",
+    "tax": "12053.19",
+    "taxRate": "10.250%",
+    "total": "298296.07",
+    "yearlyTotals": [
+      {
+        "year": 1,
+        "total": "298296.07"
+      }
+    ],
+    "serviceBreakdown": {
+      "A - Comprehensive Inspection": {
+        "laborCost": 26415.25,
+        "partsCost": 29633.630000000005,
+        "totalCost": 60332.88000000001,
+        "laborHours": 78.5,
+        "mobilizationHours": 23.799999999999986,
+        "frequency": 1,
+        "details": []
+      },
+      "B - Oil & Filter Service": {
+        "laborCost": 44081.5,
+        "partsCost": 25493.100000000002,
+        "totalCost": 74362.59999999999,
+        "laborHours": 131,
+        "mobilizationHours": 26.599999999999984,
+        "frequency": 1,
+        "details": [],
+        "oilCost": 13632,
+        "filterCost": 11860
+      },
+      "D - Oil & Fuel Analysis": {
+        "laborCost": 0,
+        "partsCost": 3165.3999999999983,
+        "totalCost": 3165.3999999999983,
+        "laborHours": 0,
+        "mobilizationHours": 0,
+        "frequency": 1,
+        "details": []
+      },
+      "E - Load Bank Testing": {
+        "laborCost": 84798,
+        "partsCost": 59300,
+        "totalCost": 148382,
+        "laborHours": 252,
+        "mobilizationHours": 23.799999999999986,
+        "frequency": 1,
+        "details": []
+      }
+    },
+    "quarterlyTotals": {
+      "q1": {
+        "labor": 155294.75,
+        "materials": 117592.13,
+        "mobilization": 13355.999999999993,
+        "total": 289256.17833125
+      },
+      "q2": {
+        "labor": 0,
+        "materials": 0,
+        "mobilization": 0,
+        "total": 3013.298331249999
+      },
+      "q3": {
+        "labor": 0,
+        "materials": 0,
+        "mobilization": 0,
+        "total": 3013.298331249999
+      },
+      "q4": {
+        "labor": 0,
+        "materials": 0,
+        "mobilization": 0,
+        "total": 3013.298331249999
+      }
+    },
+    "mobilization": {
+      "total": 13356,
+      "savings": 0,
+      "hours": 74.20000000000014,
+      "rate": 180
+    },
+    "generators": [
+      {
+        "kw": 300,
+        "kwRange": "251-400"
+      },
+      {
+        "kw": 350,
+        "kwRange": "251-400"
+      },
+      {
+        "kw": 350,
+        "kwRange": "251-400"
+      },
+      {
+        "kw": 150,
+        "kwRange": "35-150"
+      },
+      {
+        "kw": 300,
+        "kwRange": "251-400"
+      },
+      {
+        "kw": 230,
+        "kwRange": "151-250"
+      },
+      {
+        "kw": 230,
+        "kwRange": "151-250"
+      },
+      {
+        "kw": 230,
+        "kwRange": "151-250"
+      },
+      {
+        "kw": 1300,
+        "kwRange": "1051-1500"
+      },
+      {
+        "kw": 175,
+        "kwRange": "151-250"
+      },
+      {
+        "kw": 20,
+        "kwRange": "15-30"
+      },
+      {
+        "kw": 150,
+        "kwRange": "35-150"
+      },
+      {
+        "kw": 250,
+        "kwRange": "151-250"
+      },
+      {
+        "kw": 400,
+        "kwRange": "251-400"
+      },
+      {
+        "kw": 31,
+        "kwRange": "35-150"
+      },
+      {
+        "kw": 250,
+        "kwRange": "151-250"
+      },
+      {
+        "kw": 550,
+        "kwRange": "501-670"
+      },
+      {
+        "kw": 125,
+        "kwRange": "35-150"
+      },
+      {
+        "kw": 80,
+        "kwRange": "35-150"
+      },
+      {
+        "kw": 200,
+        "kwRange": "151-250"
+      },
+      {
+        "kw": 200,
+        "kwRange": "151-250"
+      },
+      {
+        "kw": 275,
+        "kwRange": "251-400"
+      },
+      {
+        "kw": 275,
+        "kwRange": "251-400"
+      },
+      {
+        "kw": 275,
+        "kwRange": "251-400"
+      },
+      {
+        "kw": 125,
+        "kwRange": "35-150"
+      },
+      {
+        "kw": 400,
+        "kwRange": "251-400"
+      },
+      {
+        "kw": 500,
+        "kwRange": "401-500"
+      },
+      {
+        "kw": 350,
+        "kwRange": "251-400"
+      },
+      {
+        "kw": 180,
+        "kwRange": "151-250"
+      },
+      {
+        "kw": 600,
+        "kwRange": "501-670"
+      },
+      {
+        "kw": 2000,
+        "kwRange": "1501-2050"
+      },
+      {
+        "kw": 55,
+        "kwRange": "35-150"
+      },
+      {
+        "kw": 99,
+        "kwRange": "35-150"
+      },
+      {
+        "kw": 99,
+        "kwRange": "35-150"
+      }
+    ],
+    "prevailingWageData": null,
+    "laborRateMultiplier": 1,
+    "effectiveLaborRate": "336.50",
+    "cpiRate": 3
+  }
+}

@@ -1,0 +1,7 @@
+create_contact
+list_contacts
+update_contact
+Search Records
+Create Records
+Get Fields
+import_customer_using_crm_account_id

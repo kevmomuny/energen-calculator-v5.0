@@ -7,6 +7,7 @@
 
 // Import dependencies
 import { showNotification } from '../js/utilities.js';
+import { SERVICES } from '../js/initialization.js';
 
 /**
  * Toggle service selection - WITH LIVE UPDATES
@@ -42,10 +43,33 @@ function toggleService(unitId, serviceCode) {
         // BUG-023 FIX: Use immutable array operation instead of direct mutation
         unit.services = [...unit.services, serviceCode];
         if (serviceCard) serviceCard.classList.add('active');
+
+        // BUG-FIX: Set default frequency when adding service via checkmark
+        // Services A-K need a frequency to calculate properly
+        // Use default from service definition or Quarterly (4x/year) as fallback
+        unit.serviceFrequencies = unit.serviceFrequencies || {};
+        if (!unit.serviceFrequencies[serviceCode]) {
+            const servicesDef = SERVICES || window.SERVICES || {};
+            const defaultFreq = servicesDef[serviceCode]?.defaultFreq || 4;
+            unit.serviceFrequencies[serviceCode] = defaultFreq;
+
+            // Also update the UI to show the default frequency as active
+            const frequencyButtons = document.querySelectorAll(`#${unitId}-service-${serviceCode} .frequency-btn`);
+            frequencyButtons.forEach(btn => {
+                const btnFreq = parseInt(btn.getAttribute('data-freq'));
+                if (btnFreq === defaultFreq) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
         console.log('%c✅ DIAGNOSTIC: ADDED service', 'background: green; color: white', {
             serviceCode,
             servicesArrayAfter: [...unit.services],
-            servicesLength: unit.services.length
+            servicesLength: unit.services.length,
+            frequency: unit.serviceFrequencies[serviceCode]
         });
     } else {
         // BUG-023 FIX: Use immutable array operation instead of direct mutation

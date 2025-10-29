@@ -213,6 +213,47 @@ export async function performAISearch() {
 
         console.log('AI search results:', searchResults);
 
+        // Check if Claude Code AI is required
+        if (searchResults.requiresClaudeCodeAI) {
+            statusDiv.style.display = 'block';
+            statusDiv.style.backgroundColor = 'rgba(96, 165, 250, 0.1)';
+            statusDiv.style.borderLeft = '3px solid var(--accent-electric)';
+            statusDiv.style.padding = '16px';
+
+            statusText.innerHTML = `
+                <div style="margin-bottom: 12px;">
+                    <strong style="color: var(--accent-electric);">⚡ Claude Code AI Search Required</strong>
+                </div>
+                <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">
+                    Model <strong>${searchResults.searchQuery.model}</strong> not found in database.
+                </div>
+                <div style="background: var(--bg-primary); border-radius: 6px; padding: 12px; margin-bottom: 12px; font-family: 'Courier New', monospace; font-size: 10px; color: var(--text-primary); cursor: pointer;" onclick="navigator.clipboard.writeText(this.textContent.trim()); this.style.background='rgba(16, 185, 129, 0.2)'; setTimeout(() => this.style.background='var(--bg-primary)', 1000);" title="Click to copy">
+                    ${searchResults.claudePrompt}
+                </div>
+                <div style="font-size: 10px; color: var(--text-secondary); line-height: 1.6;">
+                    <strong>Instructions:</strong><br>
+                    1. Click the prompt above to copy it<br>
+                    2. Open Claude Code AI interface (this chat)<br>
+                    3. Paste and send the prompt<br>
+                    4. Claude will search manufacturer websites<br>
+                    5. Copy the specifications returned by Claude<br>
+                    6. Manually enter them in the fields below
+                </div>
+            `;
+
+            searchBtn.textContent = '📋 Copy Claude Prompt';
+            searchBtn.onclick = () => {
+                navigator.clipboard.writeText(searchResults.claudePrompt);
+                searchBtn.textContent = '✓ Copied!';
+                setTimeout(() => {
+                    searchBtn.textContent = '📋 Copy Claude Prompt';
+                    searchBtn.onclick = () => performAISearch();
+                }, 2000);
+            };
+
+            return;
+        }
+
         if (searchResults.found) {
             statusText.textContent = 'Found specifications! Populating fields...';
 
@@ -225,6 +266,10 @@ export async function performAISearch() {
                 statusDiv.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
                 statusDiv.style.borderLeft = '3px solid var(--accent-success)';
             }, 500);
+        } else if (searchResults.searchResults && searchResults.searchResults.length > 0) {
+            // We found documents but couldn't auto-extract specs
+            // Show the documents to the user so they can manually review them
+            displaySpecificationDocuments(searchResults.searchResults, statusDiv, statusText);
         } else {
             statusText.textContent = 'No high-confidence data found. You can enter specifications manually.';
             statusDiv.style.backgroundColor = 'rgba(245, 158, 11, 0.1)';
@@ -305,6 +350,51 @@ function populateFromAIResults(results) {
         document.getElementById('dataSourceText').textContent = data.source;
         dataSourceDiv.style.display = 'block';
     }
+}
+
+/**
+ * Display specification documents found by Google search
+ * @param {Array} documents - Search results with specification documents
+ * @param {HTMLElement} statusDiv - Status div element
+ * @param {HTMLElement} statusText - Status text element
+ */
+function displaySpecificationDocuments(documents, statusDiv, statusText) {
+    statusDiv.style.display = 'block';
+    statusDiv.style.backgroundColor = 'rgba(96, 165, 250, 0.1)';
+    statusDiv.style.borderLeft = '3px solid var(--accent-electric)';
+    statusDiv.style.padding = '16px';
+
+    const documentLinks = documents.map((doc, index) => {
+        const isPDF = doc.link && doc.link.toLowerCase().endsWith('.pdf');
+        const icon = isPDF ? '📄' : '🔗';
+        return `
+            <div style="margin-bottom: 8px; padding: 8px; background: var(--bg-primary); border-radius: 4px;">
+                <a href="${doc.link}" target="_blank" style="color: var(--accent-electric); text-decoration: none; font-size: 11px; display: flex; align-items: start; gap: 8px;">
+                    <span style="flex-shrink: 0;">${icon}</span>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; margin-bottom: 4px;">${doc.title}</div>
+                        <div style="color: var(--text-secondary); font-size: 10px; line-height: 1.4;">${doc.snippet}</div>
+                        <div style="color: var(--accent-electric); font-size: 9px; margin-top: 4px;">${doc.displayLink || new URL(doc.link).hostname}</div>
+                    </div>
+                </a>
+            </div>
+        `;
+    }).join('');
+
+    statusText.innerHTML = `
+        <div style="margin-bottom: 12px;">
+            <strong style="color: var(--accent-electric);">✓ Found ${documents.length} Specification Document${documents.length > 1 ? 's' : ''}</strong>
+        </div>
+        <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">
+            Could not automatically extract specifications from snippets. Click documents below to view full specifications and manually enter them in the fields.
+        </div>
+        <div style="max-height: 300px; overflow-y: auto;">
+            ${documentLinks}
+        </div>
+        <div style="font-size: 10px; color: var(--text-secondary); margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color);">
+            <strong>💡 Tip:</strong> Look for sections labeled "Specifications", "Maintenance", "Fluids & Lubricants", or "Service Intervals" in the documents.
+        </div>
+    `;
 }
 
 /**

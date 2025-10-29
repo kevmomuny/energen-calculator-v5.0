@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "zoho-contacts": {
+      "type": "http",
+      "url": "https://energen-lean-897662416.zohomcp.com/mcp/message?key=9f15f41fdd1a73dba505c3be6857016d",
+      "tools": [
+        "create_contact",
+        "list_contacts",
+        "get_contact",
+        "update_contact",
+        "delete_contact",
+        "add_contact_address",
+        "update_contact_address",
+        "create_contact_person",
+        "list_contact_persons"
+      ]
+    }
+  },
+  "description": "Contact management only",
+  "estimated_tokens": 1300,
+  "tools_count": 9,
+  "use_case": "Managing customer/vendor contacts and addresses"
+}

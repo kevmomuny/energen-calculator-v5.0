@@ -28,6 +28,7 @@ export class ContactSelectorService {
 
     // Show modal with loading state
     this.modalElement.classList.add('active')
+    this.modalElement.style.display = 'flex' // Override inline style
     const grid = document.getElementById('contactGrid')
     grid.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-secondary);">Loading contacts...</div>'
 

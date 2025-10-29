@@ -3,6 +3,9 @@
  * Implements all security best practices for 2025
  */
 
+// Load environment variables from .env file
+require('dotenv').config();
+
 const express = require('express')
 const helmet = require('helmet')
 const compression = require('compression')
@@ -213,7 +216,7 @@ const limiter = rateLimit({
 
 const strictLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 10, // limit each IP to 10 requests per minute
+  max: 100, // limit each IP to 100 requests per minute (increased for batch RFP processing)
   message: 'Rate limit exceeded for this endpoint'
 })
 
@@ -1723,43 +1726,93 @@ app.post('/api/enrichment/generator', async (req, res) => {
 // AI Unit Search endpoint - uses web search to find generator specifications
 app.post('/api/ai-search-unit', async (req, res) => {
   try {
-    const { query } = req.body
-    logger.info('AI unit search request:', query)
+    const { manufacturer, model, kw, serialNumber, fuelType } = req.body
+    logger.info('AI unit search request:', { manufacturer, model, kw })
 
-    if (!query) {
+    if (!manufacturer || !model) {
       return res.json({
         success: false,
-        error: 'Search query required',
-        results: []
+        error: 'Manufacturer and model required',
+        confidence: 0.0
       })
     }
 
-    // Perform web search using Claude's WebSearch capability
-    // This is a placeholder - in production, this would use Claude MCP WebSearch tool
-    // For now, we'll simulate search results structure
-    logger.info('Performing web search for:', query)
+    // Check for Google Custom Search API credentials
+    const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || process.env.GOOGLE_MAPS_API_KEY
+    const GOOGLE_SEARCH_ENGINE_ID = process.env.GOOGLE_SEARCH_ENGINE_ID
 
-    // In a real implementation with Claude MCP WebSearch:
-    // const searchResults = await claudeWebSearch(query)
+    if (!GOOGLE_API_KEY || !GOOGLE_SEARCH_ENGINE_ID) {
+      logger.warn('Google Custom Search API not configured - falling back to manual search')
+      return res.json({
+        success: true,
+        requiresClaudeCodeAI: true,
+        message: `Model ${manufacturer} ${model} not found in database. Google API not configured.`,
+        searchQuery: {
+          manufacturer,
+          model,
+          kw,
+          serialNumber,
+          fuelType: fuelType || 'Diesel'
+        },
+        claudePrompt: `Search manufacturer website for ${manufacturer} ${model} ${kw}kW generator specifications. I need: engine specs, oil capacity, oil type, coolant capacity, coolant type, oil filter part number, air filter part number, fuel filter part number, and service intervals.`,
+        timestamp: new Date().toISOString()
+      })
+    }
 
-    // Simulated search results structure for development
-    const results = []
+    // Perform Google Custom Search for generator specifications
+    logger.info('Performing Google Custom Search...', { manufacturer, model })
 
-    // Note: This endpoint expects to be enhanced with actual WebSearch implementation
-    // The frontend AI service will handle parsing and confidence filtering
+    const searchQuery = `${manufacturer} ${model} ${kw}kW generator specifications oil coolant filter capacity service intervals site:${manufacturer.toLowerCase()}.com OR site:resources.${manufacturer.toLowerCase()}.com`
+    const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${GOOGLE_SEARCH_ENGINE_ID}&q=${encodeURIComponent(searchQuery)}&num=5`
+
+    const searchResponse = await fetch(searchUrl)
+    const searchData = await searchResponse.json()
+
+    if (!searchResponse.ok || !searchData.items || searchData.items.length === 0) {
+      logger.warn('No search results found:', searchData.error || 'No items')
+      return res.json({
+        success: false,
+        error: 'No specifications found. Model may not be available online.',
+        searchQuery: {
+          manufacturer,
+          model,
+          kw,
+          serialNumber,
+          fuelType: fuelType || 'Diesel'
+        },
+        results: [],
+        timestamp: new Date().toISOString()
+      })
+    }
+
+    // Return search results for frontend parsing
+    logger.info(`Found ${searchData.items.length} search results`)
 
     res.json({
       success: true,
-      results,
-      query,
+      searchQuery: {
+        manufacturer,
+        model,
+        kw,
+        serialNumber,
+        fuelType: fuelType || 'Diesel'
+      },
+      results: searchData.items.map(item => ({
+        title: item.title,
+        link: item.link,
+        snippet: item.snippet,
+        displayLink: item.displayLink
+      })),
+      totalResults: searchData.searchInformation?.totalResults || 0,
       timestamp: new Date().toISOString()
     })
+
   } catch (error) {
     logger.error('AI unit search error:', error)
     res.status(500).json({
       success: false,
       error: error.message,
-      results: []
+      confidence: 0.0
     })
   }
 })
@@ -1819,6 +1872,32 @@ app.get('/api/customers/search', async (req, res) => {
       success: false,
       error: error.message,
       customers: []
+    })
+  }
+})
+
+// Get full Zoho account details by ID
+// GET /api/customers/:id
+app.get('/api/customers/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+
+    logger.info('Fetching full account details for ID:', id)
+
+    // Fetch full account data from Zoho
+    const account = await zohoIntegration.getAccountById(id)
+
+    res.json({
+      success: true,
+      account
+    })
+
+  } catch (error) {
+    logger.error('Failed to fetch account details:', error)
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      account: null
     })
   }
 })

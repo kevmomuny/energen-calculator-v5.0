@@ -56,12 +56,26 @@ Extract the following information and return it as valid JSON:
 - keyDates: array of {date, event, description}
 
 ### 4. Services Requested
-Array of service objects:
+Array of service objects with MANDATORY source citations:
 - description: What service is needed
-- frequency: How often (weekly, monthly, quarterly, etc.)
+- frequency: ONLY extract if EXPLICITLY stated in document (e.g., "annual", "quarterly", "semi-annual")
+  * If document says "annual PM" or "annual maintenance", frequency is 1 visit per year
+  * CRITICAL: Do NOT infer frequency from task lists - one PM visit can include multiple tasks
+  * If frequency not stated, set to null
+- frequencyQuote: EXACT text from document that states the frequency (REQUIRED if frequency provided)
+- sourcePage: Page number where this service is mentioned (REQUIRED)
+- sourceSection: Section/paragraph identifier (e.g., "Section 4.a", "SOW Page 2")
 - details: Specific requirements or specifications
 - quantity: Number of units/sites if specified
-- rawText: Original text from document for reference
+- rawText: Original text from document for reference (REQUIRED)
+- isComprehensiveVisit: true if this describes ONE visit with multiple tasks, false if separate visits
+
+CRITICAL RULES FOR SERVICE EXTRACTION:
+1. Distinguish between "one visit with checklist" vs "multiple separate visits"
+2. Example: "Annual PM including oil change, coolant check, load test" = 1 visit, not 3
+3. NEVER infer quarterly frequency unless document explicitly says "quarterly"
+4. Quote exact frequency language - do not paraphrase
+5. If unsure about frequency, mark confidence as low and flag for review
 
 ### 5. Stipulations & Requirements
 Array of stipulation objects:

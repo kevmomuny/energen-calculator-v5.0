@@ -2860,22 +2860,107 @@
 
         function collectServiceData() {
             // Collect all service configuration data from tables
+            // CRITICAL: Format must match backend structure (object keyed by kwRange, not array)
             const services = {};
-            
-            // Service A
-            services.serviceA = [];
+
+            // Service A - Convert to object format expected by backend
+            services.serviceA = {
+                name: "Service A - Comprehensive Inspection (Quarterly)",
+                frequency: 4,
+                data: {}
+            };
             document.querySelectorAll('#service-a tbody tr').forEach(row => {
+                const kwRangeElement = row.querySelector('.kw-range-label');
+                if (!kwRangeElement) return; // Skip if no kw-range element
+
                 const cells = row.querySelectorAll('input');
-                services.serviceA.push({
-                    kwRange: row.querySelector('.kw-range-label').textContent,
-                    laborHours: parseFloat(cells[0].value) || 0,
-                    shopHours: parseFloat(cells[1].value) || 0,
-                    parts: parseFloat(cells[2].value) || 0  // NOW collecting parts price!
-                });
+                const kwRange = kwRangeElement.textContent;
+                // Backend expects: { "2-14": { labor: 1, mobilization: 2, parts: 621.65 } }
+                services.serviceA.data[kwRange] = {
+                    labor: parseFloat(cells[0]?.value) || 0,           // Labor hours
+                    mobilization: parseFloat(cells[1]?.value) || 0,    // Mobilization hours (was "shopHours")
+                    parts: parseFloat(cells[2]?.value) || 0            // Parts cost
+                };
             });
-            
-            // Continue for other services...
-            
+
+            // Service B - Convert to object format
+            services.serviceB = {
+                name: "Service B - Oil & Filter Service (Annual)",
+                frequency: 1,
+                data: {}
+            };
+            document.querySelectorAll('#service-b tbody tr').forEach(row => {
+                const kwRangeElement = row.querySelector('.kw-range-label');
+                if (!kwRangeElement) return; // Skip if no kw-range element
+
+                const cells = row.querySelectorAll('input');
+                const kwRange = kwRangeElement.textContent;
+                services.serviceB.data[kwRange] = {
+                    labor: parseFloat(cells[0]?.value) || 0,
+                    mobilization: parseFloat(cells[1]?.value) || 0,
+                    filterCost: parseFloat(cells[2]?.value) || 0,
+                    oilGallons: parseFloat(cells[3]?.value) || 0
+                };
+            });
+
+            // Service C - Coolant Service
+            services.serviceC = {
+                name: "Service C - Coolant Service (Bi-Annual)",
+                frequency: 2,
+                data: {}
+            };
+            document.querySelectorAll('#service-c tbody tr').forEach(row => {
+                const kwRangeElement = row.querySelector('.kw-range-label');
+                if (!kwRangeElement) return; // Skip if no kw-range element
+
+                const cells = row.querySelectorAll('input');
+                const kwRange = kwRangeElement.textContent;
+                services.serviceC.data[kwRange] = {
+                    labor: parseFloat(cells[0]?.value) || 0,
+                    mobilization: parseFloat(cells[1]?.value) || 0,
+                    coolantGallons: parseFloat(cells[2]?.value) || 0,
+                    hoseBeltCost: parseFloat(cells[3]?.value) || 0  // FIXED: backend expects hoseBeltCost not hosesBeltsCost
+                };
+            });
+
+            // Service D - Analysis Service
+            services.serviceD = {
+                name: "Service D - Oil & Fuel Analysis (Annual)",
+                frequency: 1,
+                data: {}
+            };
+            document.querySelectorAll('#service-d tbody tr').forEach(row => {
+                const kwRangeElement = row.querySelector('.kw-range-label');
+                if (!kwRangeElement) return; // Skip if no kw-range element
+
+                const cells = row.querySelectorAll('input');
+                const kwRange = kwRangeElement.textContent;
+                services.serviceD.data[kwRange] = {
+                    labor: parseFloat(cells[0]?.value) || 0,
+                    mobilization: parseFloat(cells[1]?.value) || 0
+                };
+            });
+
+            // Service E - Load Bank Testing
+            services.serviceE = {
+                name: "Service E - Load Bank Testing (Annual)",
+                frequency: 1,
+                data: {}
+            };
+            document.querySelectorAll('#service-e tbody tr').forEach(row => {
+                const kwRangeElement = row.querySelector('.kw-range-label');
+                if (!kwRangeElement) return; // Skip if no kw-range element
+
+                const cells = row.querySelectorAll('input');
+                const kwRange = kwRangeElement.textContent;
+                services.serviceE.data[kwRange] = {
+                    labor: parseFloat(cells[0]?.value) || 0,
+                    mobilization: parseFloat(cells[1]?.value) || 0
+                };
+            });
+
+            // Continue for Services F-J as needed...
+
             return services;
         }
 
@@ -3374,6 +3459,164 @@
         // Initialize the new Labor & Travel tab
         updateRateMode();
         updateOvertimeRates();
+
+        // ===== PHASE 2: VISUAL INDICATORS FOR MODIFIED VALUES =====
+
+        let defaultSettings = null;
+
+        // Load default settings from JSON
+        async function loadDefaultSettings() {
+            try {
+                const response = await fetch('/config/default-settings.json');
+                defaultSettings = await response.json();
+                console.log('✅ Loaded default settings for visual indicators');
+
+                // Apply visual indicators to all service tables
+                applyVisualIndicators();
+            } catch (error) {
+                console.warn('Could not load default settings for visual indicators:', error);
+            }
+        }
+
+        // Apply visual indicators to all inputs in service tables
+        function applyVisualIndicators() {
+            if (!defaultSettings) return;
+
+            // Service A visual indicators
+            document.querySelectorAll('#service-a tbody tr').forEach(row => {
+                const kwRangeElement = row.querySelector('.kw-range-label');
+                if (!kwRangeElement) return; // Skip if no kw-range element found
+
+                const kwRange = kwRangeElement.textContent;
+                const cells = row.querySelectorAll('input');
+                const defaults = defaultSettings.serviceA?.data?.[kwRange];
+
+                if (defaults && cells.length >= 3) {
+                    applyIndicator(cells[0], defaults.labor, 'Labor Hours');
+                    applyIndicator(cells[1], defaults.mobilization, 'Mobilization Hours');
+                    applyIndicator(cells[2], defaults.parts, 'Parts Cost');
+                }
+            });
+
+            // Service B visual indicators
+            document.querySelectorAll('#service-b tbody tr').forEach(row => {
+                const kwRangeElement = row.querySelector('.kw-range-label');
+                if (!kwRangeElement) return; // Skip if no kw-range element found
+
+                const kwRange = kwRangeElement.textContent;
+                const cells = row.querySelectorAll('input');
+                const defaults = defaultSettings.serviceB?.data?.[kwRange];
+
+                if (defaults && cells.length >= 4) {
+                    applyIndicator(cells[0], defaults.labor, 'Labor Hours');
+                    applyIndicator(cells[1], defaults.mobilization, 'Mobilization Hours');
+                    applyIndicator(cells[2], defaults.filterCost, 'Filter Cost');
+                    applyIndicator(cells[3], defaults.oilGallons, 'Oil Gallons');
+                }
+            });
+
+            // Service C visual indicators
+            document.querySelectorAll('#service-c tbody tr').forEach(row => {
+                const kwRangeElement = row.querySelector('.kw-range-label');
+                if (!kwRangeElement) return; // Skip if no kw-range element found
+
+                const kwRange = kwRangeElement.textContent;
+                const cells = row.querySelectorAll('input');
+                const defaults = defaultSettings.serviceC?.data?.[kwRange];
+
+                if (defaults && cells.length >= 4) {
+                    applyIndicator(cells[0], defaults.labor, 'Labor Hours');
+                    applyIndicator(cells[1], defaults.mobilization, 'Mobilization Hours');
+                    applyIndicator(cells[2], defaults.coolantGallons, 'Coolant Gallons');
+                    applyIndicator(cells[3], defaults.hoseBeltCost, 'Hoses/Belts Cost');
+                }
+            });
+
+            // Service D visual indicators
+            document.querySelectorAll('#service-d tbody tr').forEach(row => {
+                const kwRangeElement = row.querySelector('.kw-range-label');
+                if (!kwRangeElement) return; // Skip if no kw-range element found
+
+                const kwRange = kwRangeElement.textContent;
+                const cells = row.querySelectorAll('input');
+                const defaults = defaultSettings.serviceD?.data?.[kwRange];
+
+                if (defaults && cells.length >= 2) {
+                    applyIndicator(cells[0], defaults.labor, 'Labor Hours');
+                    applyIndicator(cells[1], defaults.mobilization, 'Mobilization Hours');
+                }
+            });
+
+            // Service E visual indicators
+            document.querySelectorAll('#service-e tbody tr').forEach(row => {
+                const kwRangeElement = row.querySelector('.kw-range-label');
+                if (!kwRangeElement) return; // Skip if no kw-range element found
+
+                const kwRange = kwRangeElement.textContent;
+                const cells = row.querySelectorAll('input');
+                const defaults = defaultSettings.serviceE?.data?.[kwRange];
+
+                if (defaults && cells.length >= 2) {
+                    applyIndicator(cells[0], defaults.labor, 'Labor Hours');
+                    applyIndicator(cells[1], defaults.mobilization, 'Mobilization Hours');
+                }
+            });
+        }
+
+        // Apply visual indicator to a single input element
+        function applyIndicator(inputElement, defaultValue, fieldName) {
+            if (!inputElement || defaultValue === undefined) return;
+
+            const currentValue = parseFloat(inputElement.value) || 0;
+            const tolerance = 0.01; // Allow for floating point precision
+
+            // Add input listener to update styling when value changes
+            inputElement.addEventListener('input', () => {
+                const newValue = parseFloat(inputElement.value) || 0;
+                updateInputStyling(inputElement, newValue, defaultValue, fieldName);
+            });
+
+            // Apply initial styling
+            updateInputStyling(inputElement, currentValue, defaultValue, fieldName);
+        }
+
+        // Update styling based on comparison to default
+        function updateInputStyling(inputElement, currentValue, defaultValue, fieldName) {
+            const tolerance = 0.01;
+            const difference = currentValue - defaultValue;
+
+            if (Math.abs(difference) <= tolerance) {
+                // Value matches default - remove styling
+                inputElement.style.color = '';
+                inputElement.style.fontWeight = '';
+                inputElement.title = `${fieldName}: Default value`;
+            } else if (difference > 0) {
+                // Value increased - orange
+                inputElement.style.color = '#ff8c00'; // Dark orange
+                inputElement.style.fontWeight = 'bold';
+                const percent = ((difference / defaultValue) * 100).toFixed(1);
+                inputElement.title = `${fieldName}: Increased by ${difference.toFixed(2)} (+${percent}% from default ${defaultValue})`;
+            } else {
+                // Value decreased - blue
+                inputElement.style.color = '#4a90e2'; // Blue
+                inputElement.style.fontWeight = 'bold';
+                const percent = ((Math.abs(difference) / defaultValue) * 100).toFixed(1);
+                inputElement.title = `${fieldName}: Decreased by ${Math.abs(difference).toFixed(2)} (-${percent}% from default ${defaultValue})`;
+            }
+        }
+
+        // Load defaults when modal opens
+        loadDefaultSettings();
+
+        // Re-apply visual indicators when settings are loaded
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'LOAD_SETTINGS') {
+                // Give the UI time to populate
+                setTimeout(() => {
+                    applyVisualIndicators();
+                }, 100);
+            }
+        });
     </script>
 </body>
 </html>

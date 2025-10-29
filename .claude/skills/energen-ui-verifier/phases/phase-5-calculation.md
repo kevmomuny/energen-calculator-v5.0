@@ -40,11 +40,50 @@
 4. Compare UI display to API response (must match)
 
 **Pricing Accuracy Tests:**
-- Service A (175kW Diesel, Quarterly): Should be ~$1,700-$2,000 per quarter
-- Service B (175kW Diesel, Quarterly): Should be ~$400-$600 per quarter
-- Service D (175kW Diesel, Annual): Should be max ~$93 (one-time)
-- Custom (8 hours): Should be 8 × $85 = $680
+- Service A (300kW Diesel, Annual): Should be ~$1,873/year
+- Service B (300kW Diesel, Annual): Should be ~$1,852/year
+- Service C (300kW Diesel, Annual): Should be ~$2,165/year
+- Service D (300kW Diesel, Annual with Oil+Coolant): Should be $33.10/year
+- Service D (300kW Diesel, Annual with all fluids): Should be $93.10/year
+- Service E (300kW Diesel, Annual): Should be ~$3,820/year
+- Custom (8 hours): Should be 8 × labor rate (e.g., 8 × $200 = $1,600)
 - Annual total: Should be sum of all annual costs
+- Top totals: TOTAL QUOTE, LABOR HOURS, MATERIALS must update in real-time
+
+**Prevailing Wage Impact on Calculations:**
+
+**When prevailing wage is ENABLED:**
+1. Verify `/api/calculate` request includes prevailingWage flag
+2. Verify labor rate calculation uses:
+   - Base: Prevailing wage rate (API or manual)
+   - Add: Business overhead ($115.00 default)
+   - Formula: `laborRate = prevailingWageRate + businessOverhead`
+3. Example validation:
+   - API rate: $121.50 (Electrician Journeyman, Alameda)
+   - Business overhead: $115.00
+   - **Expected labor rate: $236.50/hour**
+4. Compare to non-prevailing wage:
+   - Default labor rate: $180.00/hour (from default-settings.json)
+   - Difference: $56.50/hour premium
+
+**API Request Validation:**
+```javascript
+// Capture /api/calculate payload with prevailing wage
+{
+  generatorKw: 300,
+  fuelType: "diesel",
+  selectedServices: [...],
+  settings: {
+    laborRate: 236.50,  // ← Prevailing wage + overhead
+    prevailingWage: {
+      enabled: true,
+      apiRate: 121.50,
+      businessOverhead: 115.00,
+      manualOverride: false
+    }
+  }
+}
+```
 
 **Evidence Required:**
 - Screenshot before calculation
@@ -54,11 +93,15 @@
 - Network request/response capture
 - Comparison: API response vs UI display
 - Validation: Totals match expected ranges
+- Side-by-side calculation: default rate vs prevailing wage rate
+- Verify all services (A-K) use prevailing wage rate consistently
 
 **Known Issues:**
 - E2E-004: Calculation may return $0 if services not properly selected via DOM
 - Bug #4: Pricing data may not transfer to PDF/Zoho (check state.units[0].serverCalculations)
 - Bug #8: Frequency field may be missing in serviceBreakdown
+- BUG-026: Top totals (TOTAL QUOTE, LABOR HOURS, MATERIALS) require summary-calculator.js import in init.js (FIXED)
+- BUG-027: Service D price display was overwritten by generic pricing code in service-pricing.js (FIXED with skip at line 217)
 
 **Fail If:**
 - Calculate button doesn't respond
@@ -70,5 +113,8 @@
 - UI totals don't match API totals
 - Quarterly totals incorrect
 - Console errors during calculation
+- Prevailing wage setting doesn't affect calculation
+- Labor rate doesn't reflect prevailing wage + overhead
+- Some services use prevailing wage, others don't (inconsistency)
 
 ---

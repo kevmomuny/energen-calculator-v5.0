@@ -1,0 +1,461 @@
+// =========================================================================
+// EQUIPMENT FIELD CAPTURE FORM - ZOHO CREATOR
+// =========================================================================
+// Purpose: Technician-facing form for photo-anchored equipment verification
+// Primary Evidence: Technician photos with GPS anchor
+// Reference Standard: Manufacturer specs (secondary validation)
+// =========================================================================
+
+// -------------------------------------------------------------------------
+// FORM CONFIGURATION
+// -------------------------------------------------------------------------
+form EquipmentFieldCapture
+{
+    // Basic Equipment Identification
+    field Equipment_ID type text [read-only, auto-number: "EQP-{YYYY}-{####}"];
+    field Customer_Name type text [required, max-length: 200];
+    field Site_Address type text [required, max-length: 300];
+    field Equipment_Location_Description type text [max-length: 500, help-text: "e.g., Rooftop Unit 3, Generator Pad Behind Building"];
+
+    // GPS Auto-Capture (Primary Anchor)
+    field GPS_Latitude type decimal [read-only, auto-capture];
+    field GPS_Longitude type decimal [read-only, auto-capture];
+    field GPS_Accuracy type decimal [read-only, auto-capture, help-text: "meters"];
+    field Capture_Timestamp type datetime [read-only, default: now];
+
+    // Photo Evidence (PRIMARY SOURCE)
+    field Nameplate_Photo type file [required, accept: "image/*", max-size: 10, help-text: "Photo of manufacturer nameplate"];
+    field Battery_Bank_Photo type file [accept: "image/*", max-size: 10, help-text: "Full view of battery configuration"];
+    field Additional_Photos type file [multiple, accept: "image/*", max-size: 50, help-text: "Oil filter, coolant system, other components"];
+    field Service_Sticker_Photo type file [accept: "image/*", max-size: 10, help-text: "Previous service sticker if present"];
+
+    // Technician Field Observations
+    field Battery_Count_Tech type number [help-text: "Count batteries physically present"];
+    field Oil_Filter_Visible type radio ["Yes", "No", "Uncertain"];
+    field Coolant_System_Type type dropdown ["Radiator", "Heat Exchanger", "Air-Cooled", "Unknown"];
+    field Equipment_Condition type dropdown ["Excellent", "Good", "Fair", "Poor", "Critical"];
+    field Field_Notes type textarea [max-length: 2000];
+
+    // Installed Parts Subform (Field Observations)
+    subform Installed_Parts
+    {
+        field Part_Type type dropdown ["Oil Filter", "Air Filter", "Fuel Filter", "Belt", "Battery", "Spark Plug", "Other"];
+        field Part_Photo type file [accept: "image/*", max-size: 5];
+        field Part_Number_Visible type text [max-length: 100];
+        field Quantity type number [default: 1];
+        field Condition type dropdown ["New", "Good", "Worn", "Failed"];
+        field Notes type text [max-length: 500];
+    }
+
+    // Technician Information
+    field Technician_Name type text [required, lookup: Users];
+    field Technician_ID type text [read-only, auto-fill: current_user.ID];
+    field Service_Date type date [default: today];
+
+    // Processing Status (Backend)
+    field AI_Processing_Status type dropdown ["Pending", "Processing", "Complete", "Failed"] [read-only, default: "Pending"];
+    field WorkDrive_Folder_Link type url [read-only];
+    field CRM_Equipment_Record_ID type text [read-only];
+    field Cross_Validation_Status type dropdown ["Not Started", "In Progress", "Match Found", "Discrepancy Detected", "Manual Review Required"] [read-only];
+}
+
+// -------------------------------------------------------------------------
+// ON LOAD - Auto-capture GPS coordinates
+// -------------------------------------------------------------------------
+void EquipmentFieldCapture.onLoad()
+{
+    try
+    {
+        // Auto-capture GPS using Zoho Creator's built-in geolocation
+        gps_data = thisapp.getCurrentLocation();
+
+        if(gps_data != null && gps_data.get("latitude") != null)
+        {
+            input.GPS_Latitude = gps_data.get("latitude");
+            input.GPS_Longitude = gps_data.get("longitude");
+            input.GPS_Accuracy = gps_data.get("accuracy");
+
+            info "GPS coordinates captured successfully";
+        }
+        else
+        {
+            alert "Unable to capture GPS location. Please enable location services.";
+        }
+
+        // Set capture timestamp
+        input.Capture_Timestamp = zoho.currenttime;
+
+        // Auto-fill technician info
+        current_user_info = zoho.loginuser;
+        input.Technician_Name = current_user_info.get("name");
+        input.Technician_ID = current_user_info.get("id");
+    }
+    catch (e)
+    {
+        alert "Error capturing location data: " + e.toString();
+    }
+}
+
+// -------------------------------------------------------------------------
+// ON SUBMIT - Primary Workflow
+// -------------------------------------------------------------------------
+void EquipmentFieldCapture.onSubmit()
+{
+    try
+    {
+        info "Starting equipment verification workflow...";
+
+        // Step 1: Validate GPS anchor exists
+        if(input.GPS_Latitude == null || input.GPS_Longitude == null)
+        {
+            alert "GPS coordinates are required. Please enable location services and try again.";
+            cancel submit;
+        }
+
+        // Step 2: Upload photos to WorkDrive
+        workdrive_result = uploadPhotosToWorkDrive();
+        if(workdrive_result.get("success") == true)
+        {
+            input.WorkDrive_Folder_Link = workdrive_result.get("folder_link");
+            info "Photos uploaded to WorkDrive successfully";
+        }
+        else
+        {
+            alert "Failed to upload photos: " + workdrive_result.get("error");
+            cancel submit;
+        }
+
+        // Step 3: Trigger Catalyst AI Processing
+        input.AI_Processing_Status = "Processing";
+        ai_result = triggerCatalystAI(workdrive_result.get("nameplate_url"));
+
+        // Step 4: Create Equipment Master Record in CRM
+        crm_result = createEquipmentMasterRecord(ai_result);
+        if(crm_result.get("success") == true)
+        {
+            input.CRM_Equipment_Record_ID = crm_result.get("record_id");
+            info "Equipment record created in CRM: " + crm_result.get("record_id");
+        }
+        else
+        {
+            alert "Warning: CRM record creation failed. Record saved to Creator only.";
+        }
+
+        // Step 5: Search Manufacturer Master Database
+        input.Cross_Validation_Status = "In Progress";
+        manufacturer_match = searchManufacturerDatabase(ai_result);
+
+        // Step 6: Trigger Cross-Validation if match found
+        if(manufacturer_match.get("found") == true)
+        {
+            validation_result = triggerCrossValidation(ai_result, manufacturer_match);
+
+            if(validation_result.get("has_discrepancies") == true)
+            {
+                input.Cross_Validation_Status = "Discrepancy Detected";
+                sendDiscrepancyAlert(validation_result.get("discrepancies"));
+            }
+            else
+            {
+                input.Cross_Validation_Status = "Match Found";
+            }
+        }
+        else
+        {
+            input.Cross_Validation_Status = "Manual Review Required";
+            info "No manufacturer match found - manual data entry required";
+        }
+
+        // Step 7: Mark AI processing complete
+        input.AI_Processing_Status = "Complete";
+
+        success "Equipment verification submitted successfully!";
+    }
+    catch (e)
+    {
+        input.AI_Processing_Status = "Failed";
+        alert "Error in submission workflow: " + e.toString();
+        // Allow submission to save field data even if workflow fails
+    }
+}
+
+// -------------------------------------------------------------------------
+// HELPER FUNCTION: Upload Photos to WorkDrive
+// -------------------------------------------------------------------------
+map uploadPhotosToWorkDrive()
+{
+    try
+    {
+        // Create folder structure: Equipment/{Equipment_ID}/{Timestamp}
+        folder_path = "Equipment/" + input.Equipment_ID + "/" + input.Capture_Timestamp.toString("yyyy-MM-dd-HHmmss");
+        folder_id = getFolderID(folder_path);
+
+        result = Map();
+
+        // Upload nameplate photo (required)
+        if(input.Nameplate_Photo != null)
+        {
+            nameplate_upload = uploadToWorkDrive(input.Nameplate_Photo, folder_id, "nameplate.jpg");
+            result.put("nameplate_url", nameplate_upload.get("download_url"));
+        }
+
+        // Upload battery bank photo (optional)
+        if(input.Battery_Bank_Photo != null)
+        {
+            uploadToWorkDrive(input.Battery_Bank_Photo, folder_id, "battery_bank.jpg");
+        }
+
+        // Upload additional photos (optional)
+        if(input.Additional_Photos != null)
+        {
+            photo_count = 1;
+            for each photo in input.Additional_Photos
+            {
+                uploadToWorkDrive(photo, folder_id, "additional_" + photo_count + ".jpg");
+                photo_count = photo_count + 1;
+            }
+        }
+
+        // Upload service sticker photo (optional)
+        if(input.Service_Sticker_Photo != null)
+        {
+            uploadToWorkDrive(input.Service_Sticker_Photo, folder_id, "service_sticker.jpg");
+        }
+
+        // Get folder public link
+        folder_link = createPublicLink(folder_id);
+        result.put("folder_link", folder_link);
+        result.put("success", true);
+
+        return result;
+    }
+    catch (e)
+    {
+        return {"success": false, "error": e.toString()};
+    }
+}
+
+// -------------------------------------------------------------------------
+// HELPER FUNCTION: Trigger Catalyst AI Processing
+// -------------------------------------------------------------------------
+map triggerCatalystAI(nameplate_url)
+{
+    try
+    {
+        // Call Catalyst function for OCR and data extraction
+        catalyst_endpoint = "https://catalyst-function.zoho.com/baas/extract-equipment-data";
+
+        params = Map();
+        params.put("image_url", nameplate_url);
+        params.put("equipment_id", input.Equipment_ID);
+
+        headers = Map();
+        headers.put("Content-Type", "application/json");
+
+        response = invokeurl
+        [
+            url: catalyst_endpoint
+            type: POST
+            parameters: params.toString()
+            headers: headers
+        ];
+
+        return response;
+    }
+    catch (e)
+    {
+        return {"success": false, "error": e.toString()};
+    }
+}
+
+// -------------------------------------------------------------------------
+// HELPER FUNCTION: Create Equipment Master Record in CRM
+// -------------------------------------------------------------------------
+map createEquipmentMasterRecord(ai_data)
+{
+    try
+    {
+        // Create record in Zoho CRM Equipment_Master module
+        record = Map();
+        record.put("Equipment_ID", input.Equipment_ID);
+        record.put("Customer_Name", input.Customer_Name);
+        record.put("Site_Address", input.Site_Address);
+        record.put("GPS_Latitude", input.GPS_Latitude);
+        record.put("GPS_Longitude", input.GPS_Longitude);
+        record.put("GPS_Accuracy", input.GPS_Accuracy);
+        record.put("Capture_Date", input.Capture_Timestamp);
+        record.put("Technician_Name", input.Technician_Name);
+        record.put("WorkDrive_Folder", input.WorkDrive_Folder_Link);
+
+        // Add AI-extracted data
+        if(ai_data.get("manufacturer") != null)
+        {
+            record.put("Manufacturer", ai_data.get("manufacturer"));
+        }
+        if(ai_data.get("model") != null)
+        {
+            record.put("Model_Number", ai_data.get("model"));
+        }
+        if(ai_data.get("serial_number") != null)
+        {
+            record.put("Serial_Number", ai_data.get("serial_number"));
+        }
+
+        // Add technician observations
+        record.put("Battery_Count_Field", input.Battery_Count_Tech);
+        record.put("Equipment_Condition", input.Equipment_Condition);
+        record.put("Field_Notes", input.Field_Notes);
+
+        response = zoho.crm.createRecord("Equipment_Master", record);
+
+        if(response.get("id") != null)
+        {
+            return {"success": true, "record_id": response.get("id")};
+        }
+        else
+        {
+            return {"success": false, "error": "CRM record creation failed"};
+        }
+    }
+    catch (e)
+    {
+        return {"success": false, "error": e.toString()};
+    }
+}
+
+// -------------------------------------------------------------------------
+// HELPER FUNCTION: Search Manufacturer Master Database
+// -------------------------------------------------------------------------
+map searchManufacturerDatabase(ai_data)
+{
+    try
+    {
+        manufacturer = ai_data.get("manufacturer");
+        model = ai_data.get("model");
+
+        if(manufacturer == null || model == null)
+        {
+            return {"found": false, "reason": "Insufficient data for search"};
+        }
+
+        // Search Manufacturer_Master_Database form
+        criteria = "(Manufacturer == \"" + manufacturer + "\" && Model_Number == \"" + model + "\")";
+        records = ManufacturerDataEntry[criteria];
+
+        if(records.count() > 0)
+        {
+            match = records.get(0);
+            return {
+                "found": true,
+                "record_id": match.ID,
+                "manufacturer": match.Manufacturer,
+                "model": match.Model_Number,
+                "kw_rating": match.kW_Rating,
+                "oil_capacity": match.Oil_Capacity_Quarts,
+                "coolant_capacity": match.Coolant_Capacity_Gallons,
+                "battery_config": match.Battery_Configuration,
+                "oem_parts": match.OEM_Parts
+            };
+        }
+        else
+        {
+            return {"found": false, "reason": "No matching manufacturer record"};
+        }
+    }
+    catch (e)
+    {
+        return {"found": false, "error": e.toString()};
+    }
+}
+
+// -------------------------------------------------------------------------
+// HELPER FUNCTION: Trigger Cross-Validation
+// -------------------------------------------------------------------------
+map triggerCrossValidation(field_data, manufacturer_data)
+{
+    try
+    {
+        discrepancies = List();
+
+        // Compare battery count
+        if(input.Battery_Count_Tech != null && manufacturer_data.get("battery_config") != null)
+        {
+            mfg_battery_count = manufacturer_data.get("battery_config").toNumber();
+            if(input.Battery_Count_Tech != mfg_battery_count)
+            {
+                discrepancies.add({
+                    "field": "Battery Count",
+                    "field_value": input.Battery_Count_Tech,
+                    "manufacturer_value": mfg_battery_count,
+                    "severity": "Medium"
+                });
+            }
+        }
+
+        // Compare kW rating (if extracted by AI)
+        if(field_data.get("kw_rating") != null && manufacturer_data.get("kw_rating") != null)
+        {
+            field_kw = field_data.get("kw_rating").toNumber();
+            mfg_kw = manufacturer_data.get("kw_rating").toNumber();
+            variance = ((field_kw - mfg_kw) / mfg_kw * 100).abs();
+
+            if(variance > 5)
+            {
+                discrepancies.add({
+                    "field": "kW Rating",
+                    "field_value": field_kw,
+                    "manufacturer_value": mfg_kw,
+                    "variance_percent": variance,
+                    "severity": "High"
+                });
+            }
+        }
+
+        return {
+            "has_discrepancies": discrepancies.size() > 0,
+            "discrepancies": discrepancies,
+            "total_checks": 2
+        };
+    }
+    catch (e)
+    {
+        return {"has_discrepancies": false, "error": e.toString()};
+    }
+}
+
+// -------------------------------------------------------------------------
+// HELPER FUNCTION: Send Discrepancy Alert
+// -------------------------------------------------------------------------
+void sendDiscrepancyAlert(discrepancies)
+{
+    try
+    {
+        // Send email to quality control team
+        message = "Equipment ID: " + input.Equipment_ID + "\n\n";
+        message = message + "Discrepancies detected between field observations and manufacturer specs:\n\n";
+
+        for each disc in discrepancies
+        {
+            message = message + "Field: " + disc.get("field") + "\n";
+            message = message + "Field Value: " + disc.get("field_value") + "\n";
+            message = message + "Manufacturer Value: " + disc.get("manufacturer_value") + "\n";
+            message = message + "Severity: " + disc.get("severity") + "\n\n";
+        }
+
+        sendmail
+        [
+            from: zoho.adminuserid
+            to: "quality@energenllc.com"
+            subject: "Equipment Verification Discrepancy - " + input.Equipment_ID
+            message: message
+        ];
+    }
+    catch (e)
+    {
+        info "Failed to send discrepancy alert: " + e.toString();
+    }
+}
+
+// -------------------------------------------------------------------------
+// END OF EQUIPMENT FIELD CAPTURE FORM
+// -------------------------------------------------------------------------

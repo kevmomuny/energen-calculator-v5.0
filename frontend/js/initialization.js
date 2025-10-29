@@ -11,18 +11,18 @@ import { updateStatus, showCriticalError } from './utilities.js';
  * Service Definitions - Structure only, prices from calculation engine
  */
 export const SERVICES = {
-    'A': { name: 'A-Comprehensive Inspection', description: 'Complete system inspection', defaultFreq: 4 },
-    'B': { name: 'B-Oil & Filter Service', description: 'Oil change and filters', defaultFreq: 1 },
-    'C': { name: 'C-Coolant Service', description: 'Coolant flush and refill', defaultFreq: 1 },
-    'D': { name: 'D-Oil & Fuel Analysis', description: 'Laboratory testing', defaultFreq: 1 },
-    'E': { name: 'E-Load Bank Testing', description: 'Full load testing', defaultFreq: 1 },
+    'A': { name: 'A-Comprehensive Inspection', description: 'Complete system inspection', defaultFreq: 0 },
+    'B': { name: 'B-Oil & Filter Service', description: 'Oil change and filters', defaultFreq: 0 },
+    'C': { name: 'C-Coolant Service', description: 'Coolant flush and refill', defaultFreq: 0 },
+    'D': { name: 'D-Oil & Fuel Analysis', description: 'Laboratory testing', defaultFreq: 0 },
+    'E': { name: 'E-Load Bank Testing', description: 'Full load testing', defaultFreq: 0 },
     'F': { name: 'F-Diesel Engine Tune-Up', description: 'Diesel engine optimization', defaultFreq: 0, fuelType: 'Diesel' },
     'G': { name: 'G-Gas Engine Tune-Up', description: 'Gas engine optimization', defaultFreq: 0, fuelType: 'Natural Gas' },
     'H': { name: 'H-Electrical Testing', description: 'Generator electrical testing (5 year)', defaultFreq: 0 },
-    'I': { name: 'I-Transfer Switch Service', description: 'Transfer switch maintenance', defaultFreq: 1 },
-    'J': { name: 'J-Thermal Imaging', description: 'Infrared thermal scan', defaultFreq: 1 },
+    'I': { name: 'I-Transfer Switch Service', description: 'Transfer switch maintenance', defaultFreq: 0 },
+    'J': { name: 'J-Thermal Imaging', description: 'Infrared thermal scan', defaultFreq: 0 },
     'K': { name: 'K-Battery Replacement', description: 'Battery maintenance and replacement', defaultFreq: 0, isCustom: false },
-    'CUSTOM': { name: 'Custom Service/Parts', description: 'Additional services or parts', defaultFreq: 1, isCustom: true }
+    'CUSTOM': { name: 'Custom Service/Parts', description: 'Additional services or parts', defaultFreq: 0, isCustom: true }
 };
 
 /**

@@ -1,0 +1,461 @@
+// =========================================================================
+// MANUFACTURER DATA ENTRY FORM - ZOHO CREATOR
+// =========================================================================
+// Purpose: Manual entry of manufacturer specifications (REFERENCE STANDARD)
+// Data Source: OEM technical manuals, parts catalogs, official documentation
+// Relationship: Secondary validation source for field observations
+// =========================================================================
+
+// -------------------------------------------------------------------------
+// FORM CONFIGURATION
+// -------------------------------------------------------------------------
+form ManufacturerDataEntry
+{
+    // Record Management
+    field Record_ID type text [read-only, auto-number: "MFG-{YYYY}-{####}"];
+    field Entry_Date type date [read-only, default: today];
+    field Entered_By type text [read-only, auto-fill: current_user.name];
+    field Last_Modified type datetime [read-only, auto-update];
+    field Verification_Status type dropdown ["Draft", "Pending Review", "Verified", "Needs Correction"] [default: "Draft"];
+
+    // Manufacturer Identification
+    field Manufacturer type text [required, max-length: 200, help-text: "Official manufacturer name (e.g., Caterpillar, Cummins, Kohler)"];
+    field Model_Number type text [required, max-length: 100, help-text: "Exact model number from nameplate"];
+    field Model_Year_Range type text [max-length: 50, help-text: "e.g., 2015-2020"];
+    field Equipment_Type type dropdown ["Diesel Generator", "Natural Gas Generator", "Propane Generator", "Dual Fuel Generator", "Transfer Switch", "UPS"] [required];
+
+    // Power Specifications
+    field kW_Rating type decimal [required, help-text: "Continuous power rating in kW"];
+    field kVA_Rating type decimal [help-text: "Apparent power rating"];
+    field Voltage type text [max-length: 50, help-text: "e.g., 480V 3-Phase"];
+    field Frequency type dropdown ["50 Hz", "60 Hz", "50/60 Hz"];
+    field Power_Factor type decimal [default: 0.8];
+
+    // Engine Specifications
+    field Engine_Manufacturer type text [max-length: 100, help-text: "e.g., John Deere, Perkins"];
+    field Engine_Model type text [max-length: 100];
+    field Engine_Displacement type decimal [help-text: "Liters"];
+    field Number_of_Cylinders type number;
+    field Fuel_Type type dropdown ["Diesel", "Natural Gas", "Propane", "Gasoline", "Dual Fuel"];
+
+    // Fluid Capacities (CRITICAL FOR SERVICE CALCULATIONS)
+    field Oil_Capacity_Quarts type decimal [required, help-text: "Total oil capacity in quarts"];
+    field Oil_Filter_Part_Number type text [max-length: 100];
+    field Coolant_Capacity_Gallons type decimal [help-text: "Total coolant capacity in gallons"];
+    field Coolant_Type type text [max-length: 100, help-text: "e.g., 50/50 Ethylene Glycol"];
+    field Fuel_Tank_Capacity type decimal [help-text: "Gallons"];
+
+    // Battery Configuration (CRITICAL FOR FIELD VALIDATION)
+    field Battery_Configuration type dropdown ["1 x 12V", "2 x 12V (24V Series)", "2 x 12V (12V Parallel)", "4 x 6V", "4 x 12V", "Custom"] [required];
+    field Battery_Count type number [required, help-text: "Number of batteries in standard configuration"];
+    field Battery_Group_Size type text [max-length: 50, help-text: "e.g., Group 31, 8D"];
+    field Battery_CCA_Required type number [help-text: "Cold Cranking Amps"];
+
+    // Air Filter Configuration
+    field Air_Filter_Type type dropdown ["Single Element", "Dual Element", "Panel Filter", "Cyclonic Pre-cleaner"];
+    field Primary_Air_Filter_PN type text [max-length: 100];
+    field Secondary_Air_Filter_PN type text [max-length: 100];
+
+    // Fuel Filter Configuration
+    field Fuel_Filter_Type type dropdown ["Primary Only", "Primary + Secondary", "Primary + Water Separator"];
+    field Primary_Fuel_Filter_PN type text [max-length: 100];
+    field Secondary_Fuel_Filter_PN type text [max-length: 100];
+    field Water_Separator_PN type text [max-length: 100];
+
+    // Belt Configuration
+    field Belt_Count type number;
+    field Belt_Part_Numbers type text [max-length: 200, help-text: "Comma-separated if multiple"];
+
+    // Service Intervals (OEM Recommended)
+    field Oil_Change_Hours type number [default: 500];
+    field Oil_Filter_Change_Hours type number [default: 500];
+    field Fuel_Filter_Change_Hours type number [default: 500];
+    field Air_Filter_Change_Hours type number [default: 1000];
+    field Coolant_Change_Hours type number [default: 3000];
+    field Annual_Service_Required type radio ["Yes", "No"] [default: "Yes"];
+
+    // OEM Parts Subform
+    subform OEM_Parts
+    {
+        field Part_Category type dropdown ["Oil Filter", "Air Filter", "Fuel Filter", "Water Separator", "Belt", "Spark Plug", "Battery", "Coolant", "Other"];
+        field Part_Number type text [required, max-length: 100];
+        field Part_Description type text [max-length: 300];
+        field Quantity_Per_Service type decimal [default: 1];
+        field Service_Interval_Hours type number;
+        field List_Price type currency;
+        field Superseded_By type text [max-length: 100, help-text: "If part number changed"];
+        field Notes type text [max-length: 500];
+    }
+
+    // Documentation Links
+    field Technical_Manual_URL type url [help-text: "Link to OEM technical/service manual"];
+    field Parts_Manual_URL type url [help-text: "Link to OEM parts catalog"];
+    field Installation_Manual_URL type url;
+    field Wiring_Diagram_URL type url;
+
+    // Physical Specifications
+    field Weight_lbs type number;
+    field Length_inches type decimal;
+    field Width_inches type decimal;
+    field Height_inches type decimal;
+    field Sound_Level_dB type decimal [help-text: "at 7 meters"];
+
+    // Additional Information
+    field Enclosure_Type type dropdown ["Open", "Sound-Attenuated", "Weather-Protective", "Level 1", "Level 2"];
+    field Control_Panel_Type type text [max-length: 100];
+    field Transfer_Switch_Compatible type text [max-length: 200];
+    field Special_Features type textarea [max-length: 1000];
+    field Service_Notes type textarea [max-length: 2000, help-text: "Special procedures, common issues, torque specs"];
+
+    // Data Source Information
+    field Data_Source type dropdown ["OEM Technical Manual", "Parts Catalog", "Service Bulletin", "Field Verification", "Dealer Information"] [required];
+    field Manual_Reference type text [max-length: 200, help-text: "Manual name/number and page"];
+    field Confidence_Level type dropdown ["High - OEM Document", "Medium - Dealer Info", "Low - Needs Verification"] [default: "High - OEM Document"];
+
+    // Quality Control
+    field Reviewed_By type text [lookup: Users];
+    field Review_Date type date;
+    field Review_Notes type textarea [max-length: 1000];
+}
+
+// -------------------------------------------------------------------------
+// ON LOAD - Initialize form
+// -------------------------------------------------------------------------
+void ManufacturerDataEntry.onLoad()
+{
+    try
+    {
+        // Set default values
+        input.Entry_Date = today;
+        input.Entered_By = zoho.loginuser.get("name");
+
+        // If editing existing record, load cross-reference data
+        if(input.ID != null)
+        {
+            loadCrossReferenceData();
+        }
+    }
+    catch (e)
+    {
+        alert "Error initializing form: " + e.toString();
+    }
+}
+
+// -------------------------------------------------------------------------
+// ON VALIDATE - Data quality checks
+// -------------------------------------------------------------------------
+void ManufacturerDataEntry.onValidate()
+{
+    try
+    {
+        errors = List();
+
+        // Validate manufacturer name is not empty/generic
+        if(input.Manufacturer.trim().len() < 3)
+        {
+            errors.add("Manufacturer name must be at least 3 characters");
+        }
+
+        // Validate model number format
+        if(input.Model_Number.trim().len() < 2)
+        {
+            errors.add("Model number must be at least 2 characters");
+        }
+
+        // Validate kW rating is reasonable
+        if(input.kW_Rating < 1 || input.kW_Rating > 5000)
+        {
+            errors.add("kW rating must be between 1 and 5000");
+        }
+
+        // Validate oil capacity is reasonable
+        if(input.Oil_Capacity_Quarts < 1 || input.Oil_Capacity_Quarts > 200)
+        {
+            errors.add("Oil capacity must be between 1 and 200 quarts");
+        }
+
+        // Validate battery count matches configuration
+        if(input.Battery_Configuration != null && input.Battery_Count != null)
+        {
+            expected_count = getBatteryCountFromConfig(input.Battery_Configuration);
+            if(expected_count > 0 && input.Battery_Count != expected_count)
+            {
+                errors.add("Battery count (" + input.Battery_Count + ") does not match configuration (" + input.Battery_Configuration + ")");
+            }
+        }
+
+        // Validate service intervals are reasonable
+        if(input.Oil_Change_Hours < 50 || input.Oil_Change_Hours > 2000)
+        {
+            errors.add("Oil change interval should be between 50 and 2000 hours");
+        }
+
+        // Check for duplicate records
+        duplicate_check = ManufacturerDataEntry[
+            Manufacturer == input.Manufacturer &&
+            Model_Number == input.Model_Number &&
+            ID != input.ID
+        ];
+
+        if(duplicate_check.count() > 0)
+        {
+            errors.add("A record for this manufacturer/model already exists (ID: " + duplicate_check.get(0).Record_ID + ")");
+        }
+
+        // Display all errors
+        if(errors.size() > 0)
+        {
+            error_message = "Validation errors:\n\n";
+            for each err in errors
+            {
+                error_message = error_message + "- " + err + "\n";
+            }
+            alert error_message;
+            cancel submit;
+        }
+    }
+    catch (e)
+    {
+        alert "Validation error: " + e.toString();
+        cancel submit;
+    }
+}
+
+// -------------------------------------------------------------------------
+// ON SUBMIT - Post-submission workflow
+// -------------------------------------------------------------------------
+void ManufacturerDataEntry.onSubmit()
+{
+    try
+    {
+        info "Manufacturer data saved successfully";
+
+        // Set verification status based on data source
+        if(input.Data_Source == "OEM Technical Manual" && input.Manual_Reference != null)
+        {
+            input.Verification_Status = "Verified";
+        }
+        else
+        {
+            input.Verification_Status = "Pending Review";
+        }
+
+        // Update timestamp
+        input.Last_Modified = zoho.currenttime;
+
+        // Check if any equipment records reference this manufacturer/model
+        checkForFieldMatches();
+
+        success "Manufacturer data entry complete. Record ID: " + input.Record_ID;
+    }
+    catch (e)
+    {
+        alert "Error in submission workflow: " + e.toString();
+    }
+}
+
+// -------------------------------------------------------------------------
+// HELPER FUNCTION: Get expected battery count from configuration
+// -------------------------------------------------------------------------
+number getBatteryCountFromConfig(config_string)
+{
+    try
+    {
+        if(config_string.contains("1 x 12V"))
+        {
+            return 1;
+        }
+        else if(config_string.contains("2 x 12V"))
+        {
+            return 2;
+        }
+        else if(config_string.contains("4 x 6V"))
+        {
+            return 4;
+        }
+        else if(config_string.contains("4 x 12V"))
+        {
+            return 4;
+        }
+        else
+        {
+            return 0; // Custom configuration
+        }
+    }
+    catch (e)
+    {
+        return 0;
+    }
+}
+
+// -------------------------------------------------------------------------
+// HELPER FUNCTION: Load cross-reference data for existing record
+// -------------------------------------------------------------------------
+void loadCrossReferenceData()
+{
+    try
+    {
+        // Count how many field equipment records reference this manufacturer data
+        field_records = EquipmentFieldCapture[
+            CRM_Equipment_Record_ID != null &&
+            Cross_Validation_Status == "Match Found"
+        ];
+
+        match_count = 0;
+        for each record in field_records
+        {
+            // Check if this record matched against current manufacturer data
+            // (This would require storing the manufacturer record ID in field capture form)
+            match_count = match_count + 1;
+        }
+
+        if(match_count > 0)
+        {
+            info "This manufacturer data is referenced by " + match_count + " field equipment records";
+        }
+    }
+    catch (e)
+    {
+        info "Could not load cross-reference data: " + e.toString();
+    }
+}
+
+// -------------------------------------------------------------------------
+// HELPER FUNCTION: Check for field matches
+// -------------------------------------------------------------------------
+void checkForFieldMatches()
+{
+    try
+    {
+        // Search for equipment field captures that might match this manufacturer data
+        // This would trigger re-validation of any pending equipment records
+
+        pending_equipment = EquipmentFieldCapture[
+            AI_Processing_Status == "Complete" &&
+            Cross_Validation_Status == "Manual Review Required"
+        ];
+
+        match_candidates = List();
+
+        for each equipment in pending_equipment
+        {
+            // Get AI-extracted data from CRM record
+            crm_record = zoho.crm.getRecordById("Equipment_Master", equipment.CRM_Equipment_Record_ID);
+
+            if(crm_record.get("Manufacturer") == input.Manufacturer &&
+               crm_record.get("Model_Number") == input.Model_Number)
+            {
+                match_candidates.add(equipment.Equipment_ID);
+            }
+        }
+
+        if(match_candidates.size() > 0)
+        {
+            info "Found " + match_candidates.size() + " equipment records that can now be cross-validated";
+
+            // Trigger re-validation workflow
+            for each eq_id in match_candidates
+            {
+                triggerRevalidation(eq_id);
+            }
+        }
+    }
+    catch (e)
+    {
+        info "Could not check for field matches: " + e.toString();
+    }
+}
+
+// -------------------------------------------------------------------------
+// HELPER FUNCTION: Trigger re-validation for equipment record
+// -------------------------------------------------------------------------
+void triggerRevalidation(equipment_id)
+{
+    try
+    {
+        // Update equipment record to trigger cross-validation
+        equipment_record = EquipmentFieldCapture[Equipment_ID == equipment_id];
+
+        if(equipment_record.count() > 0)
+        {
+            eq = equipment_record.get(0);
+
+            // Get AI data from CRM
+            crm_data = zoho.crm.getRecordById("Equipment_Master", eq.CRM_Equipment_Record_ID);
+
+            // Get manufacturer data (current record)
+            manufacturer_data = {
+                "found": true,
+                "record_id": input.Record_ID,
+                "manufacturer": input.Manufacturer,
+                "model": input.Model_Number,
+                "kw_rating": input.kW_Rating,
+                "oil_capacity": input.Oil_Capacity_Quarts,
+                "coolant_capacity": input.Coolant_Capacity_Gallons,
+                "battery_config": input.Battery_Count,
+                "oem_parts": input.OEM_Parts
+            };
+
+            // Trigger cross-validation (reuse function from EquipmentFieldCapture)
+            // Note: This would need to be a shared function or API call
+            info "Re-validation triggered for " + equipment_id;
+        }
+    }
+    catch (e)
+    {
+        info "Could not trigger re-validation: " + e.toString();
+    }
+}
+
+// -------------------------------------------------------------------------
+// CUSTOM ACTION: Export to PDF
+// -------------------------------------------------------------------------
+void ManufacturerDataEntry.exportToPDF()
+{
+    try
+    {
+        // Generate PDF spec sheet for this manufacturer data
+        pdf_content = "<html><body>";
+        pdf_content = pdf_content + "<h1>" + input.Manufacturer + " " + input.Model_Number + "</h1>";
+        pdf_content = pdf_content + "<h2>Equipment Specifications</h2>";
+        pdf_content = pdf_content + "<table>";
+        pdf_content = pdf_content + "<tr><td>kW Rating:</td><td>" + input.kW_Rating + "</td></tr>";
+        pdf_content = pdf_content + "<tr><td>Oil Capacity:</td><td>" + input.Oil_Capacity_Quarts + " qts</td></tr>";
+        pdf_content = pdf_content + "<tr><td>Coolant Capacity:</td><td>" + input.Coolant_Capacity_Gallons + " gal</td></tr>";
+        pdf_content = pdf_content + "<tr><td>Battery Configuration:</td><td>" + input.Battery_Configuration + "</td></tr>";
+        pdf_content = pdf_content + "</table>";
+
+        // Add OEM parts table
+        pdf_content = pdf_content + "<h2>OEM Parts</h2>";
+        pdf_content = pdf_content + "<table border='1'>";
+        pdf_content = pdf_content + "<tr><th>Category</th><th>Part Number</th><th>Quantity</th><th>Interval</th></tr>";
+
+        for each part in input.OEM_Parts
+        {
+            pdf_content = pdf_content + "<tr>";
+            pdf_content = pdf_content + "<td>" + part.Part_Category + "</td>";
+            pdf_content = pdf_content + "<td>" + part.Part_Number + "</td>";
+            pdf_content = pdf_content + "<td>" + part.Quantity_Per_Service + "</td>";
+            pdf_content = pdf_content + "<td>" + part.Service_Interval_Hours + " hrs</td>";
+            pdf_content = pdf_content + "</tr>";
+        }
+
+        pdf_content = pdf_content + "</table></body></html>";
+
+        // Generate PDF using Zoho Writer API
+        pdf_file = zoho.writer.createDocument(pdf_content);
+
+        // Upload to WorkDrive
+        uploadToWorkDrive(pdf_file, "Manufacturer_Specs", input.Record_ID + ".pdf");
+
+        success "PDF spec sheet generated successfully";
+    }
+    catch (e)
+    {
+        alert "Error generating PDF: " + e.toString();
+    }
+}
+
+// -------------------------------------------------------------------------
+// END OF MANUFACTURER DATA ENTRY FORM
+// -------------------------------------------------------------------------

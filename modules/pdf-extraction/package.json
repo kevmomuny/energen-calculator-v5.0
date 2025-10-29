@@ -1,0 +1,36 @@
+{
+  "name": "@energen/pdf-extraction",
+  "version": "1.0.0",
+  "description": "Automated pipeline to extract manufacturer data from static HTML database and PDF manuals",
+  "type": "commonjs",
+  "main": "migration-script.cjs",
+  "bin": {
+    "pdf-migrate": "./migration-script.cjs"
+  },
+  "scripts": {
+    "migrate": "node migration-script.cjs",
+    "migrate:dry-run": "node migration-script.cjs --dry-run",
+    "migrate:resume": "node migration-script.cjs --resume",
+    "test-parser": "node test-parser.cjs",
+    "test-pdf": "node test-pdf-processor.cjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.67.0",
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12",
+    "commander": "^12.0.0",
+    "dotenv": "^16.0.3",
+    "pdf-parse": "^1.1.1",
+    "winston": "^3.11.0"
+  },
+  "keywords": [
+    "pdf",
+    "extraction",
+    "zoho",
+    "migration",
+    "ai",
+    "parser"
+  ],
+  "author": "Energen Systems",
+  "license": "MIT"
+}

@@ -192,6 +192,21 @@ function updateSummaryDOM(grandTotal, totalLaborCost, totalLaborHours, totalMate
         annualTotalEl.textContent = `$${formatMoney(grandTotal)}`;
         console.log('[SIDEBAR] Updated annual-total:', grandTotal);
     }
+
+    // UPDATE QUARTERLY TOTALS (FIX FOR ISSUE #2)
+    // Calculate quarterly distribution (assuming equal distribution for now)
+    // TODO: Get actual quarterly breakdown from API response if available
+    const quarterlyTotal = grandTotal / 4;
+
+    const q1El = document.getElementById('q1-total');
+    const q2El = document.getElementById('q2-total');
+    const q3El = document.getElementById('q3-total');
+    const q4El = document.getElementById('q4-total');
+
+    if (q1El) q1El.textContent = `$${formatMoney(quarterlyTotal)}`;
+    if (q2El) q2El.textContent = `$${formatMoney(quarterlyTotal)}`;
+    if (q3El) q3El.textContent = `$${formatMoney(quarterlyTotal)}`;
+    if (q4El) q4El.textContent = `$${formatMoney(quarterlyTotal)}`;
 }
 
 /**
@@ -427,12 +442,52 @@ export function buildQuoteData(state) {
     // Build customer object with correct property names for PDF service
     const companyName = document.getElementById('companyName')?.value || '';
 
-    // Build settings object with prevailing wage override
+    // Build comprehensive settings object from state.activeSettings
+    // FIXED: Use ALL settings from modal, not just labor rates
     const settings = {
+        // Labor & Travel rates
         laborRate: state.activeSettings?.laborRate || 180.00,
         mobilizationRate: state.activeSettings?.mobilizationRate || 180.00,
-        oilPrice: parseFloat(document.getElementById('oilPrice')?.value) || 16.00,
-        oilMarkup: parseFloat(document.getElementById('oilMarkup')?.value) || 1.5
+        overtimeRate: state.activeSettings?.overtimeRate || 270.00,
+        doubleTimeRate: state.activeSettings?.doubleTimeRate || 360.00,
+        travelTimeRate: state.activeSettings?.travelTimeRate || 100.00,
+        mileageRate: state.activeSettings?.mileageRate || 2.50,
+
+        // Shop location
+        shopAddress: state.activeSettings?.shopAddress || '150 Mason Circle, Suite K, Concord, CA 94520',
+        distanceFromShop: state.activeSettings?.distanceFromShop || 0,
+
+        // Tax settings
+        currentTaxRate: state.activeSettings?.currentTaxRate || 8.4,
+
+        // Material costs - use settings, allow UI override if present
+        oilCost: state.activeSettings?.oilCost || 16.00,
+        oilMarkup: state.activeSettings?.oilMarkup || 1.5,
+        coolantCost: state.activeSettings?.coolantCost || 15.00,
+        coolantMarkup: state.activeSettings?.coolantMarkup || 1.5,
+        partsMarkup: state.activeSettings?.partsMarkup || 1.25,
+        freightRate: state.activeSettings?.freightRate || 0.05,
+
+        // Analysis & Inspection costs
+        fuelAnalysisCost: state.activeSettings?.fuelAnalysisCost || 60.00,
+        oilAnalysisCost: state.activeSettings?.oilAnalysisCost || 16.55,
+        coolantAnalysisCost: state.activeSettings?.coolantAnalysisCost || 16.55,
+        airFilterCost: state.activeSettings?.airFilterCost || 100.00,
+        numberOfInspections: state.activeSettings?.numberOfInspections || 4,
+
+        // Other costs
+        transformerRental: state.activeSettings?.transformerRental || 1500.00,
+        deliveryCost: state.activeSettings?.deliveryCost || 3500.00,
+        annualEscalation: state.activeSettings?.annualEscalation || 2.5,
+
+        // Allow UI override for oil price/markup (for backwards compatibility)
+        oilPrice: parseFloat(document.getElementById('oilPrice')?.value) || state.activeSettings?.oilCost || 16.00,
+        oilPriceMarkup: parseFloat(document.getElementById('oilMarkup')?.value) || state.activeSettings?.oilMarkup || 1.5,
+
+        // CRITICAL: Include service-specific data (labor hours, mobilization hours, parts costs per kW range)
+        // This allows per-quote customization from the settings modal
+        // Format: serviceA: { name, frequency, data: { "2-14": { labor, mobilization, parts } } }
+        ...(state.activeSettings?.services || {})
     };
 
     // Override labor rate if prevailing wage is enabled

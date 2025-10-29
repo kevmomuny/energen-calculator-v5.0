@@ -1,7 +1,0 @@
-{
-  "status": 401,
-  "error": {
-    "code": 57,
-    "message": "You are not authorized to perform this operation"
-  }
-}
