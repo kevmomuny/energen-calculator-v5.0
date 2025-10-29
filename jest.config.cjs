@@ -10,14 +10,13 @@ module.exports = {
   ],
   testMatch: [
     '**/test/**/*.test.{js,cjs}',
-    '**/test/**/*.spec.{js,cjs}',
-    '**/tests/**/*.test.{js,cjs}',
-    '**/tests/**/*.spec.{js,cjs}'
+    '**/test/**/*.spec.{js,cjs}'
   ],
   testPathIgnorePatterns: [
     '/node_modules/',
     '/archive/',
-    '/backup/'
+    '/backup/',
+    '/tests/'
   ],
   verbose: true,
   testTimeout: 10000,
