@@ -220,6 +220,7 @@ NUL
 # Files containing secrets (GitHub push protection)
 .claude/settings.local.json
 copilot-zoho-query.bat
+scripts/admin/QUICK_START_CLEANUP.bat
 
 # Verbose backup files (archived)
 .claude/*.backup*
@@ -262,3 +263,15 @@ build/
 output/pdfs/
 output/rfp-evaluations/
 temp/
+
+# Claude Code Performance - Added 2025-10-29
+# Prevent large directories from being scanned
+.claude/skills/*/node_modules/
+.claude/skills/*/package-lock.json
+.claude/skills/*/.git/
+Windows-MCP/
+zoho-proxy-mcp/
+agent-coordination/
+agent-fleet/
+agent-logs/
+worktrees/
