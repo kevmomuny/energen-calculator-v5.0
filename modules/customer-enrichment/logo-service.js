@@ -3,10 +3,10 @@
  * @module customer-enrichment/logo-service
  * @version 2.0.0
  * @date 2025-01-09
- * 
+ *
  * CRITICAL: Clearbit Logo API shutting down December 1, 2025
  * This implementation uses Brandfetch as the primary provider with fallback options
- * 
+ *
  * Features:
  * - Multiple logo providers (Brandfetch primary, Logo.dev backup)
  * - Smart caching with TTL
@@ -66,7 +66,7 @@ export class LogoService {
   constructor(config = {}) {
     this.config = { ...LogoServiceConfig.DEFAULTS, ...config };
     this.provider = this.config.provider;
-    
+
     // Initialize cache
     this.cache = new LRUCache({
       max: this.config.cacheSize,
@@ -105,7 +105,7 @@ export class LogoService {
    */
   async getLogoUrl(domain, options = {}) {
     const startTime = Date.now();
-    
+
     try {
       // Normalize domain
       domain = this.normalizeDomain(domain);
@@ -116,7 +116,7 @@ export class LogoService {
       // Check cache first
       const cacheKey = this.getCacheKey(domain, options);
       const cached = this.cache.get(cacheKey);
-      
+
       if (cached) {
         this.metrics.hits++;
         this.updateMetrics(Date.now() - startTime);
@@ -127,11 +127,11 @@ export class LogoService {
 
       // Try primary provider
       let result = await this.fetchFromProvider(this.provider, domain, options);
-      
+
       // Fallback to secondary providers if primary fails
       if (!result && this.provider !== 'fallback') {
         console.warn(`Primary provider ${this.provider} failed for ${domain}, trying fallbacks`);
-        
+
         for (const [name, provider] of Object.entries(this.providers)) {
           if (name !== this.provider && name !== 'fallback') {
             try {
@@ -158,7 +158,7 @@ export class LogoService {
     } catch (error) {
       this.metrics.errors++;
       console.error('Logo service error:', error);
-      
+
       // Return fallback lettermark on error
       return this.providers.fallback.generateLogo(domain, options);
     }
@@ -181,7 +181,7 @@ export class LogoService {
    */
   async getLogoVariations(domain) {
     const variations = {};
-    
+
     // Get different themes and types
     const configs = [
       { key: 'lightLogo', options: { theme: 'light', type: 'logo' } },
@@ -255,24 +255,24 @@ export class LogoService {
 
   normalizeDomain(input) {
     if (!input) return null;
-    
+
     // Extract domain from email
     const emailMatch = input.match(/@(.+)/);
     if (emailMatch) return emailMatch[1];
-    
+
     // Clean URL to domain
-    let domain = input
+    const domain = input
       .replace(/^https?:\/\//, '')
       .replace(/^www\./, '')
       .replace(/\/.*$/, '')
       .toLowerCase()
       .trim();
-    
+
     // Basic validation
     if (!domain.includes('.') || domain.length < 3) {
       return null;
     }
-    
+
     return domain;
   }
 
@@ -282,7 +282,7 @@ export class LogoService {
 
   updateMetrics(responseTime) {
     const total = this.metrics.hits + this.metrics.misses;
-    this.metrics.avgResponseTime = 
+    this.metrics.avgResponseTime =
       (this.metrics.avgResponseTime * (total - 1) + responseTime) / total;
   }
 }
@@ -307,22 +307,22 @@ class BrandfetchProvider {
 
     // Build Brandfetch URL
     let url = `${this.config.baseUrl}/${domain}`;
-    
+
     if (type !== 'logo') {
       url += `/${type}`;
     }
-    
+
     url += `/theme/${theme}`;
     url += `/fallback/${fallback}`;
-    
+
     if (height) url += `/h/${height}`;
     if (width) url += `/w/${width}`;
-    
+
     url += `?c=${this.config.clientId}`;
 
     // Validate logo exists
     const response = await fetch(url, { method: 'HEAD' });
-    
+
     if (!response.ok) {
       return null;
     }
@@ -340,7 +340,7 @@ class BrandfetchProvider {
 
   async fetchBrandColors(domain) {
     const url = `${this.config.apiUrl}/${domain}`;
-    
+
     try {
       const response = await fetch(url, {
         headers: {
@@ -353,7 +353,7 @@ class BrandfetchProvider {
       }
 
       const data = await response.json();
-      
+
       return {
         primary: data.colors?.primary || '#000000',
         secondary: data.colors?.secondary || null,
@@ -395,7 +395,7 @@ class LogoDevProvider {
 
     try {
       const response = await fetch(url, { method: 'HEAD' });
-      
+
       if (!response.ok) {
         return null;
       }
@@ -428,14 +428,14 @@ class FallbackProvider {
     // Extract initials from domain
     const name = domain.split('.')[0];
     const initials = this.getInitials(name);
-    
+
     // Generate colors based on domain
     const colors = this.generateColors(domain, theme);
-    
+
     if (format === 'svg') {
       const svg = this.generateSVG(initials, size, colors);
       const dataUrl = `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
-      
+
       return {
         url: dataUrl,
         provider: 'fallback',
@@ -450,7 +450,7 @@ class FallbackProvider {
       const svg = this.generateSVG(initials, size, colors);
       const pngBuffer = await this.svgToPng(svg, size);
       const dataUrl = `data:image/png;base64,${pngBuffer.toString('base64')}`;
-      
+
       return {
         url: dataUrl,
         provider: 'fallback',
@@ -470,7 +470,7 @@ class FallbackProvider {
       .replace(/[-_]/g, ' ')
       .split(' ')
       .filter(w => w.length > 0);
-    
+
     if (words.length >= 2) {
       return (words[0][0] + words[1][0]).toUpperCase();
     } else if (name.length >= 2) {
@@ -486,9 +486,9 @@ class FallbackProvider {
     for (let i = 0; i < domain.length; i++) {
       hash = domain.charCodeAt(i) + ((hash << 5) - hash);
     }
-    
+
     const hue = Math.abs(hash) % 360;
-    
+
     if (theme === 'dark') {
       return {
         background: `hsl(${hue}, 70%, 25%)`,

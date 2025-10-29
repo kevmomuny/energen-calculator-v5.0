@@ -27,9 +27,9 @@ export class Container {
    * @param {Object} options - Registration options
    */
   register(name, service, options = {}) {
-    const { 
-      singleton = true, 
-      factory = false, 
+    const {
+      singleton = true,
+      factory = false,
       alias = null,
       dependencies = []
     } = options;
@@ -60,10 +60,10 @@ export class Container {
    * @param {Array<string>} dependencies - Required dependencies
    */
   registerFactory(name, factory, dependencies = []) {
-    this.register(name, factory, { 
-      factory: true, 
-      singleton: true, 
-      dependencies 
+    this.register(name, factory, {
+      factory: true,
+      singleton: true,
+      dependencies
     });
   }
 
@@ -137,7 +137,7 @@ export class Container {
     const resolvedDeps = dependencies.map(dep => this.resolve(dep));
 
     // Create instance
-    const instance = typeof factory === 'function' 
+    const instance = typeof factory === 'function'
       ? factory(...resolvedDeps)
       : new factory(...resolvedDeps);
 
@@ -169,8 +169,8 @@ export class Container {
    */
   has(name) {
     const actualName = this.aliases.get(name) || name;
-    return this.singletons.has(actualName) || 
-           this.factories.has(actualName) || 
+    return this.singletons.has(actualName) ||
+           this.factories.has(actualName) ||
            this.services.has(actualName);
   }
 
@@ -203,24 +203,24 @@ export class Container {
    */
   createChild() {
     const child = new Container();
-    
+
     // Copy parent registrations
     for (const [name, service] of this.singletons) {
       child.singletons.set(name, service);
     }
-    
+
     for (const [name, config] of this.factories) {
       child.factories.set(name, config);
     }
-    
+
     for (const [name, service] of this.services) {
       child.services.set(name, service);
     }
-    
+
     for (const [alias, name] of this.aliases) {
       child.aliases.set(alias, name);
     }
-    
+
     return child;
   }
 }
@@ -301,7 +301,7 @@ export class ModuleContainer extends Container {
 
     this.modules.set(name, module);
     this.moduleLoadOrder.push(name);
-    
+
     // Register the module as a singleton service
     this.registerSingleton(name, module);
 
@@ -322,10 +322,10 @@ export class ModuleContainer extends Container {
   async initializeModules() {
     for (const name of this.moduleLoadOrder) {
       const module = this.modules.get(name);
-      
+
       // Auto-inject common dependencies
       this.injectCommonDependencies(module);
-      
+
       await module.init(module.config);
       this.logger.info(`Initialized module: ${name}`);
     }
@@ -339,17 +339,17 @@ export class ModuleContainer extends Container {
   injectCommonDependencies(module) {
     // Inject container itself
     module.inject('container', this);
-    
+
     // Inject event bus if available
     if (this.has('eventBus')) {
       module.inject('eventBus', this.resolve('eventBus'));
     }
-    
+
     // Inject logger if available
     if (this.has('logger')) {
       module.inject('logger', this.resolve('logger'));
     }
-    
+
     // Inject config service if available
     if (this.has('config')) {
       module.inject('config', this.resolve('config'));

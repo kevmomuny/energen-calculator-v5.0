@@ -1,0 +1,9 @@
+node_modules/
+archive/
+backup/
+dist/
+build/
+*.min.js
+*.backup*
+**/*enhanced*.js
+**/*complete.cjs

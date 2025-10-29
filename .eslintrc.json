@@ -6,7 +6,7 @@
   },
   "extends": "eslint:recommended",
   "parserOptions": {
-    "ecmaVersion": 2021,
+    "ecmaVersion": 2022,
     "sourceType": "module",
     "ecmaFeatures": {
       "jsx": false
@@ -37,6 +37,8 @@
     "no-dupe-keys": "warn"
   },
   "ignorePatterns": [
+    "*/*enhanced*",
+    "*/*complete.cjs",
     "node_modules/",
     "archive/",
     "backup/",
